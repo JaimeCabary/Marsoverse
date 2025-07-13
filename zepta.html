@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MarsoVerse: Main Gameplay Terminal" />
+  <title>MarsoVerse - Gameplay Terminal</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2&display=swap" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+</head>
+<body>
+  <div class="background-animation"></div>
+  <header class="top-bar">
+    <span>XP: <span id="playerXP">0</span></span>
+    <span>Money: <span id="playerMoney">0</span></span>
+  </header>
+  <main>
+    <section class="section active" id="gameSection" aria-labelledby="gameTitle">
+      <h1 id="gameTitle" class="visually-hidden">MarsoVerse Gameplay Terminal</h1>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span>ZEPTA Terminal v1.0 - Welcome, <span id="playerName">Adventurer</span></span>
+          <span>Age: <span id="playerAge">25</span></span>
+        </div>
+        <div class="terminal-output" id="terminalOutput"></div>
+        <div class="terminal-input">
+          <input type="text" id="commandInput" placeholder="Enter ZEPTA command..." aria-label="ZEPTA command input" />
+          <button id="submitCommand" aria-label="Submit command"><i class="fas fa-arrow-right"></i></button>
+        </div>
+        <div class="terminal-options">
+          <button id="newGameBtn">New Game</button>
+          <button id="questsBtn">Quests</button>
+        </div>
+      </div>
+      <div class="panel map-panel hidden" id="mapPanel">
+        <h2>Map</h2>
+        <p>Explore Martian terrain (placeholder).</p>
+      </div>
+      <div class="panel friends-panel hidden" id="friendsPanel">
+        <h2>Friends</h2>
+        <ul id="relationshipsList"></ul>
+      </div>
+      <div class="panel wallet-panel hidden" id="walletPanel">
+        <h2>Wallet</h2>
+        <p>Balance: <span id="walletBalance">0</span> Mars Credits</p>
+      </div>
+      <div class="panel you-panel hidden" id="youPanel">
+        <h2>You</h2>
+        <p>Name: <span id="youName">Adventurer</span></p>
+        <p>Age: <span id="youAge">25</span></p>
+        <p>XP: <span id="youXP">0</span></p>
+        <h3>Skills</h3>
+        <ul id="skillsList"></ul>
+        <h3>Family Tree</h3>
+        <canvas id="familyTreeCanvas" width="600" height="400"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="Main navigation">
+    <button class="nav-item" id="mapBtn" aria-label="Map"><i class="fas fa-map"></i></button>
+    <button class="nav-item" id="friendsBtn" aria-label="Friends"><i class="fas fa-users"></i></button>
+    <button class="nav-item" id="walletBtn" aria-label="Wallet"><i class="fas fa-wallet"></i></button>
+    <button class="nav-item" id="youBtn" aria-label="You"><i class="fas fa-user"></i></button>
+  </nav>
+
+  <audio id="marsostorySound" src="sounds/marsostory.mp3" preload="auto" loop></audio>
+  <audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>
+  <audio id="bondSound" src="sounds/bond.mp3" preload="auto"></audio>
+  <audio id="birthSound" src="sounds/birth.mp3" preload="auto"></audio>
+
+  <script src="scripts/zepta.js"></script>
+</body>
+</html>

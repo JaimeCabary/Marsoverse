@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snake on Mars</title>
+  <link rel="stylesheet" href="snake.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  
+  
+</head>
+<body>
+  <h1>Marsoverse Snake🐍</h1>
+  <div class="status">
+    <p>XP: <span id="xpDisplay">0</span></p>
+  </div>
+
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+  <div class="controls">
+    <button onclick="restart()">Restart</button>
+    <a href="/index.html" class="back-home">⬅️ Return to Mars</a>
+    <br>
+    <span>High Score: <span id="highScoreDisplay">0</span></span>
+  </div>
+  <!-- <div style="text-align:center; margin-bottom: 10px;">
+  
+</div> -->
+
+  <script src="snake.js"></script>
+</body>
+</html>

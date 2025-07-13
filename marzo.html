@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>MarsoVerse - Game</title>
+  <meta name="description" content="MarsoVerse Gameplay Environment" />
+  <link rel="stylesheet" href="styles/marzo.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <!-- Three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+  <!-- 🎮 HUD -->
+
+<header class="hud">
+  <div class="stars"></div>
+  <span id="playerNameHUD">Player</span>
+  <span id="playerXP">XP: 0</span>
+  <span id="walletIcon"><i class="fas fa-wallet"></i> $<span id="walletAmount">0</span></span>
+</header>
+
+  <!-- 🚀 Pages -->
+  <main>
+    <section class="page active" id="homePage">
+      <h1 id="welcomeMessage">Hello, Player</h1>
+      <h5 class="intro-text">Get ready to explore, build, and survive on Mars.</h5>
+
+      <div class="launch-btn-wrapper">
+        <div class="orbit-label">Click Mars to launch the game</div>
+        <button id="launchMarsBtn" class="we">
+          <canvas id="marsButtonCanvas"></canvas>
+        </button>
+      </div>
+
+
+
+      <!-- <button id="launchMarsBtn"> -->
+        <!-- <canvas id="marsButtonCanvas"></canvas> Three.js will render Mars here -->
+        <!-- <span class="orbitron-text">Click Here to Launch Game</span> -->
+      <!-- </button> -->
+
+    </section>
+
+    <section class="page" id="leaderboardPage">
+      <h2>Leaderboard</h2>
+      <ul id="leaderboardList">
+        <li>👑 MarsKing - 4320 XP</li>
+        <li>🚀 CyborgQueen - 3290 XP</li>
+        <li>🛡️ MechaKnight - 2840 XP</li>
+      </ul>
+    </section>
+
+    <section class="page" id="friendsPage">
+      <h2>Friends</h2>
+      <ul id="friendsList">
+        <li>Elena: <span class="friendStatus">Companion</span></li>
+        <li>Errin: <span class="friendStatus">Companion</span></li>
+      </ul>
+    </section>
+    <!-- 📄 Enhanced Settings Section - MarsoVerse -->
+<section class="page" id="settingsPage">
+  <h2>Settings & Profile</h2>
+
+  <!-- 🌟 Player Visual Card -->
+  <div class="profile-card">
+    <div class="avatar-wrapper">
+      <img id="playerAvatar" src="images/avatar-placeholder.png" alt="Your Avatar">
+      <input type="file" id="avatarUpload" accept="image/*">
+    </div>
+    <div class="info">
+      <p>Name: <span id="youName">Player</span></p>
+      <p>Age: <span id="youAge">Unknown</span></p>
+      <p>XP: <span id="youXP">0</span></p>
+      <p>Wallet: <span id="walletAmount">0</span> USDT</p>
+    </div>
+  </div>
+
+  <!-- 👤 Visual Profile -->
+  <div class="visual-profile">
+    <div class="choice">
+      <img id="companionProfileImg" src="images/default.png" alt="Companion">
+      <h5 id="companionProfileName">Companion</h5>
+    </div>
+    <div class="choice">
+      <img id="cyborgProfileImg" src="images/jerry.png" alt="Cyborg">
+      <h5 id="cyborgProfileName">Cyborg</h5>
+    </div>
+  </div>
+
+  <!-- 🎛 Settings Controls -->
+  <div class="settings">
+    <label><input type="checkbox" id="muteToggle" /> Mute All Sounds</label>
+    <label><input type="checkbox" id="musicToggle" checked /> Play Music</label>
+    <label><input type="checkbox" id="sfxToggle" checked /> Play SFX</label>
+    <label><button id="signInBtn">Sign In with Google or Apple</button></label>
+    <label><button id="connectWalletBtn">Connect Phantom Wallet</button></label>
+    <label><button id="shareBtn">Share Game for XP</button></label>
+    <label><button id="chatBtn">Chat with Companions</button></label>
+    <label><button id="resetBtn">Delete Game & Reset Progress</button></label>
+  </div>
+
+  <!-- 📦 App Info -->
+  <div class="app-info">
+    <h3>About MarsoVerse</h3>
+    <p>MarsoVerse is an immersive survival adventure game set on Mars.<br>
+    Discover new worlds, form alliances, and thrive in a planet reborn.</p>
+    <h4>Our Story</h4>
+    <p>Over the last decade, the Earth's core has been disintegrating.<br>
+    But luckily, due to scientific breakthroughs by our scientists...<br>
+    Under Astrida Marvella, the zeptahacker herself...<br>
+    We found a way to warm Mars and make it habitable.<br>
+    You are one of the first survivors. Welcome to MarsoVerse.</p>
+        <ul>
+      <li>🌍 Version: 1.0.0</li>
+      <li>⚙️ Build: 2025.07.12</li>
+      <li>📅 Copyright © 2025 MarsoVerse</li>
+    </ul>
+  </div>
+</section>
+
+    <!-- <section class="page" id="settingsPage">
+      <h2>Settings & Profile</h2>
+      <p>Name: <span id="youName">Player</span></p>
+      <p>Age: <span id="youAge">Unknown</span></p>
+      <p>XP: <span id="youXP">0</span></p>
+      <p>Companion: <span id="youCompanion">Errin</span></p>
+      <p>Cyborg: <span id="youCompanion">Errin</span></p>
+
+
+      <div class="settings">
+        <label><input type="checkbox" id="muteToggle" /> Mute All Sounds</label>
+        <label><input type="checkbox" id="musicToggle" checked /> Play Music</label>
+        <label><input type="checkbox" id="sfxToggle" checked /> Play SFX</label>
+        <label><button id="signInBtn">Sign In with Google or Apple</button></label>
+        <label><button id="shareBtn">Share Game for XP</button></label>
+        <label><button id="chatBtn">Chat with Companions</button></label>
+      </div>
+    </section> -->
+  </main>
+
+  <!-- 🔽 Bottom Nav -->
+  <nav class="navbar">
+    <button class="nav-item" data-target="homePage"><i class="fas fa-home"></i></button>
+    <button class="nav-item" onclick="location.href='mars.html'"><i class="fas fa-map-marked-alt"></i></button>
+    <button class="nav-item" data-target="leaderboardPage"><i class="fas fa-trophy"></i></button>
+    <button class="nav-item" data-target="friendsPage"><i class="fas fa-users"></i></button>
+    <button class="nav-item" data-target="settingsPage"><i class="fas fa-cog"></i></button>
+  </nav>
+  <div id="companionReward" class="reward-overlay hidden">
+  <div class="reward-box choice" id="companionBox">
+    <img id="companionImg" src="" alt="Companion">
+    <h5 id="companionNameText">Companion</h5>
+    <p id="rewardText">You win 1 USDT and 5 XP!</p>
+  </div>
+</div>
+  <!-- 🎵 Full Sound Stack -->
+  <audio id="introSound" src="sounds/intro.mp3" preload="auto" loop></audio>
+  <audio id="marsostory" src="sounds/marsostory.mp3" preload="auto" loop></audio>
+  <audio id="afterstorySound" src="sounds/afterstory.mp3" preload="auto"></audio>
+  <audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>
+  <audio id="sparkleSound" src="sounds/sparkle.mp3" preload="auto"></audio>
+  <audio id="levelupSound" src="sounds/levelup.mp3" preload="auto"></audio>
+  <audio id="xpSound" src="sounds/xp.mp3" preload="auto"></audio>
+  <audio id="popSound" src="sounds/pop.mp3" preload="auto"></audio>
+  <audio id="bondSound" src="sounds/bond.mp3" preload="auto"></audio>
+  <audio id="birthSound" src="sounds/birthsound.mp3" preload="auto"></audio>
+  <audio id="explosionSound" src="sounds/explosion.mp3" preload="auto"></audio>
+  <audio id="riserSound" src="sounds/riser-hit-sfx-001-289802.mp3" preload="auto"></audio>
+  <audio id="swooshSound" src="sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3" preload="auto"></audio>
+  <audio id="typingSound" src="sounds/typing.mp3" preload="auto"></audio>
+
+  <!-- 📜 JS -->
+  <script src="scripts/marzo.js"></script>
+</body>
+</html>

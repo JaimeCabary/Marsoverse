@@ -1,0 +1,32 @@
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: radial-gradient(circle at center, #0c0c1c, #000);
+  color: #00ffee;
+  text-align: center;
+}
+
+canvas {
+  background-image: url('assets/space-bg.png');
+  background-size: cover;
+  display: block;
+  margin: 1rem auto;
+  border: 2px solid #00ffee;
+}
+@media (max-width: 768px) {
+  canvas {
+    width: 95vw;
+    height: 80vh;
+  }
+}
+#gameOverScreen {
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2rem;
+  border: 2px solid red;
+  border-radius: 12px;
+}

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MarsOverse Blackjack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+    * { box-sizing: border-box; }
+    body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Orbitron', sans-serif;
+  background-image: url('black.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-attachment: fixed;
+  color: #fff;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+section {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+    #game {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100vh;
+      padding: 20px;
+      
+    }
+
+    h1 { margin-bottom: 10px; }
+
+    #dealer-area, #player-area {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      width: 80px;
+      height: 120px;
+      background-size: cover;
+      border-radius: 8px;
+    }
+
+    #controls {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 10px 18px;
+      font-size: 1rem;
+      background-color: #FF4B00;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+
+    #status {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    #balance {
+      font-size: 1.1rem;
+      margin-top: 5px;
+    }
+    #rules-slide {
+  position: relative;
+  z-index: 15;
+  background: linear-gradient(rgba(0,0,0,0.85), rgba(15,5,5,0.95)), url('mars-scroll-bg.png') center center/cover no-repeat;
+  color: #ffd6b8;
+  padding: 40px 20px;
+  font-family: 'Orbitron', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#slide-box {
+  background: rgba(24, 8, 2, 0.8);
+  border: 1px solid #ff6600;
+  border-radius: 12px;
+  padding: 30px 25px;
+  max-width: 650px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 20px #ff5500aa;
+  backdrop-filter: blur(4px);
+}
+
+#slide-title {
+  color: #FFA94A;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+#slide-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #ffdbb2;
+  margin-bottom: 25px;
+}
+
+.slide-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.slide-actions button {
+  background-color: #FF4B00;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 12px #FF4B00bb;
+}
+
+.slide-actions button:hover {
+  background-color: #FF6B20;
+}
+
+.back-btn {
+  color: #ffcc99;
+  text-decoration: none;
+  font-size: 0.95rem;
+  text-shadow: 0 0 3px #ff7f50;
+}
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95));/* You can go higher: 0.85 for darker */
+  z-index: -1;
+  pointer-events: none;
+}
+#resultModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(15, 5, 5, 0.95));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+#resultBox {
+  background: rgba(24, 8, 2, 0.8);
+  border: 1px solid #ff6600;
+  border-radius: 12px;
+  padding: 30px 25px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 20px #ff5500aa;
+  backdrop-filter: blur(4px);
+  color: #ffdbb2;
+  font-family: 'Orbitron', sans-serif;
+}
+
+#resultBox h2 {
+  color: #FFA94A;
+  margin-bottom: 15px;
+}
+
+#resultBox p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+#resultBox button {
+  background-color: #FF4B00;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 12px #FF4B00bb;
+}
+
+#resultBox button:hover {
+  background-color: #FF6B20;
+}
+  </style>
+</head>
+<body>
+  <div id="overlay"></div>
+
+  <section id="rules-slide" class="slide-container">
+    <div id="slide-box">
+      <h2 id="slide-title">🪐 Welcome to MarsOverse Blackjack</h2>
+      <p id="slide-text">
+        Welcome, Commander. In MarsOverse, Blackjack isn’t just a game — it’s a battle of wits.<br><br>
+        Your goal? Get as close to <strong>21</strong> without going over... and beat the dealer.
+      </p>
+      <div class="slide-actions">
+        <button onclick="nextSlide()">Next</button>
+        <a href="#game" class="back-btn">← Skip Intro</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="game">
+    <h1>🪐 MarsOverse Blackjack</h1>
+
+    <div id="balance">XP: 0 | Balance: 0.00 USDT</div>
+
+    <div id="dealer-area">
+      <h2>Dealer</h2>
+      <div id="dealer-cards" class="cards"></div>
+    </div>
+
+    <div id="player-area">
+      <h2>You</h2>
+      <div id="player-cards" class="cards"></div>
+    </div>
+
+    <div id="controls">
+      <button onclick="startGame()">Start Game</button>
+      <button onclick="hit()">Hit</button>
+      <button onclick="stand()">Stand</button>
+    </div>
+
+    <div id="status"></div>
+    <br><br>
+  </section>
+
+  <div id="resultModal" style="display: none;">
+    <div id="resultBox">
+      <h2 id="resultTitle">Result</h2>
+      <p id="resultMessage">You win!</p>
+      <button onclick="closeResult()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    const deck = [];
+    const suits = ['S', 'H', 'D', 'C'];
+    const ranks = ['A','2','3','4','5','6','7','8','9','0','J','Q','K']; // 0 = 10
+    let playerHand = [], dealerHand = [];
+    let xp = 0, balance = 0.00;
+    const betAmount = 0.01;
+
+    function getCardImage(code) {
+      return `https://deckofcardsapi.com/static/img/${code}.png`;
+    }
+
+    function shuffleDeck() {
+      deck.length = 0;
+      for (let suit of suits) {
+        for (let rank of ranks) {
+          let code = rank + suit;
+          deck.push(code);
+        }
+      }
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+    }
+
+    function dealCard(hand, containerId) {
+      const card = deck.pop();
+      hand.push(card);
+      const img = document.createElement("img");
+      img.src = getCardImage(card);
+      img.className = "card";
+      document.getElementById(containerId).appendChild(img);
+    }
+
+    function handValue(hand) {
+      let sum = 0, aces = 0;
+      for (let card of hand) {
+        let rank = card[0];
+        if (rank === 'A') {
+          sum += 11;
+          aces++;
+        } else if (['K','Q','J','0'].includes(rank)) {
+          sum += 10;
+        } else {
+          sum += parseInt(rank);
+        }
+      }
+      while (sum > 21 && aces > 0) {
+        sum -= 10;
+        aces--;
+      }
+      return sum;
+    }
+
+    function startGame() {
+      shuffleDeck();
+      playerHand = [];
+      dealerHand = [];
+      document.getElementById("dealer-cards").innerHTML = "";
+      document.getElementById("player-cards").innerHTML = "";
+      document.getElementById("status").textContent = "";
+
+      dealCard(playerHand, "player-cards");
+      dealCard(dealerHand, "dealer-cards");
+      dealCard(playerHand, "player-cards");
+      dealCard(dealerHand, "dealer-cards");
+
+      updateStatus();
+    }
+
+    function hit() {
+      if (playerHand.length === 0) return;
+      dealCard(playerHand, "player-cards");
+      const val = handValue(playerHand);
+      if (val > 21) {
+        endGame("Bust! You lose.");
+      } else {
+        updateStatus();
+      }
+    }
+
+    function stand() {
+      if (playerHand.length === 0) return;
+      while (handValue(dealerHand) < 17) {
+        dealCard(dealerHand, "dealer-cards");
+      }
+
+      const playerVal = handValue(playerHand);
+      const dealerVal = handValue(dealerHand);
+
+      if (dealerVal > 21 || playerVal > dealerVal) {
+        xp += 10;
+        balance += betAmount;
+        endGame(`You win! 🏆 +10 XP +$${betAmount.toFixed(2)} USDT`);
+      } else if (playerVal === dealerVal) {
+        endGame("It's a draw!");
+      } else {
+        endGame("Dealer wins. 😞");
+      }
+    }
+
+    function endGame(message) {
+  document.getElementById("status").textContent = message;
+  updateBalance();
+  document.getElementById("status").scrollIntoView({ behavior: "smooth" });
+  
+  showResultDialog(message); // 👈 NEW: opens dialog
+}
+
+    function updateStatus() {
+      const val = handValue(playerHand);
+      document.getElementById("status").textContent = `Your Hand: ${val}`;
+    }
+
+    function updateBalance() {
+      document.getElementById("balance").textContent = `XP: ${xp} | Balance: ${balance.toFixed(2)} USDT`;
+    }
+    function showResultDialog(message) {
+  document.getElementById("resultMessage").innerHTML = message;
+  document.getElementById("resultModal").style.display = "flex";
+}
+
+function closeResult() {
+  document.getElementById("resultModal").style.display = "none";
+}
+
+    updateBalance();
+  </script>
+  <script>
+  const slides = [
+    {
+      title: "🪐 Welcome to MarsOverse Blackjack",
+      text: `Welcome, Commander. In MarsOverse, Blackjack isn’t just a game — it’s a battle of wits.<br><br>
+      Your goal? Get as close to <strong>21</strong> without going over... and beat the dealer.`
+    },
+    {
+      title: "🎴 Understand the Cards",
+      text: `Each player (you and the dealer) is dealt <strong>2 cards</strong>.<br><br>
+      • Number cards = face value<br>
+      • Face cards (J, Q, K) = <strong>10</strong><br>
+      • Ace = <strong>1 or 11</strong>, whichever helps you more`
+    },
+    {
+      title: "🎮 How to Play",
+      text: `Tap <strong>"Hit"</strong> to draw another card.<br>
+      Tap <strong>"Stand"</strong> when you're done.<br><br>
+      The dealer draws until they reach 17.<br>
+      Go over 21 and you bust!`
+    },
+    {
+      title: "🏆 Rewards on Mars",
+      text: `• Win = +10 XP & 0.01 USDT<br>
+      • Draw = 0 XP<br>
+      • Lose = nothing 😞<br><br>
+      Each win brings you closer to unlocking Mars gear.`
+    },
+    {
+      title: "🚀 Ready to Deal?",
+      text: `Use logic, guts, and a bit of stardust luck.<br><br>
+      🎲 Tap below to start your first hand.`
+    }
+  ];
+
+  let currentSlide = 0;
+
+  function nextSlide() {
+    currentSlide++;
+    if (currentSlide < slides.length) {
+      document.getElementById("slide-title").innerHTML = slides[currentSlide].title;
+      document.getElementById("slide-text").innerHTML = slides[currentSlide].text;
+      if (currentSlide === slides.length - 1) {
+        document.querySelector(".slide-actions button").innerHTML = "🎮 Play Now";
+        document.querySelector(".slide-actions button").onclick = () => {
+        document.getElementById("rules-slide").style.display = "none";
+        document.getElementById("game").scrollIntoView({ behavior: 'smooth' });
+        };
+
+      }
+    }
+  }
+</script>
+</body>
+</html>
+

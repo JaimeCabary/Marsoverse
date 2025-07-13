@@ -1,0 +1,90 @@
+body {
+  background: radial-gradient(circle at center, #1a0f11, #000);
+  color: #00ffee;
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 1rem;
+}
+
+canvas {
+  background-image: url('assets/mars-grid.png'); /* Optional mars texture bg */
+  background-size: cover;
+  border: 2px solid #00ffee;
+  margin: 1rem auto;
+  display: block;
+}
+
+button {
+  background: #FF7100;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 1rem;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.status {
+  font-size: 18px;
+  margin-bottom: 1rem;
+}
+
+.back-home {
+  color: #fff;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 1rem;
+}
+@media (max-width: 600px) {
+  canvas {
+    width: 90vw;
+    height: 90vw;
+  }
+}
+@media (min-width: 601px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Top to bottom layout */
+    align-items: center;
+    height: 100vh;
+    padding: 0.5rem 0; /* Reduced padding */
+    margin: 0;
+    overflow: hidden;
+  }
+
+  h1 {
+    margin: 0.3rem 0;
+    font-size: 1.7rem;
+  }
+
+  canvas {
+    width: 340px;
+    height: 340px;
+    margin: 0.3rem 0;
+  }
+
+  .status,
+  .controls,
+  .back-home {
+    margin: 0.2rem 0;
+  }
+
+  .controls {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  .back-home {
+    font-size: 13px;
+  }
+}

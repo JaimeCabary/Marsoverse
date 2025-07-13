@@ -1,0 +1,460 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Exo 2', monospace;
+  background: #0A0A0F;
+  color: #FFFFFF;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+  touch-action: manipulation;
+}
+
+/* Background with SVG Icons */
+.background-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('images/rocket.svg') 10% 20% / 50px no-repeat,
+              url('images/rover.svg') 80% 30% / 50px no-repeat,
+              url('images/habitat.svg') 20% 70% / 50px no-repeat,
+              url('images/rocket.svg') 70% 80% / 50px no-repeat,
+              #0A0A0F;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+.storySection .background-animation {
+  background: url('images/rocket.svg') 10% 20% / 50px no-repeat,
+              url('images/rover.svg') 80% 30% / 50px no-repeat,
+              url('images/habitat.svg') 20% 70% / 50px no-repeat,
+              #0A0A0F;
+  filter: blur(5px);
+  opacity: 0.2;
+}
+
+/* Utility Classes */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Section Styles */
+.section {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  position: relative;
+  transition: transform 0.8s ease-in-out, opacity 0.5s ease;
+}
+
+.section.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.section.active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Welcome Section */
+.welcome h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  color: #FF6200;
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 0.1em;
+}
+
+.welcome-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.welcome input {
+  padding: 0.75rem 1rem;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 12px;
+  background: #B0B0B0;
+  color: #0A0A0F;
+  width: 100%;
+  margin-bottom: 1rem;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease;
+}
+
+.welcome input.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.welcome input.active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.welcome input:focus {
+  outline: none;
+  border: 2px solid #00A3FF;
+}
+
+.welcome button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.welcome button svg {
+  filter: drop-shadow(0 4px 8px rgba(255, 98, 0, 0.3));
+}
+
+.welcome button:hover svg {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.welcome button:active::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, #FF6200 10%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: particleBurst 0.5s ease-out;
+}
+
+@keyframes particleBurst {
+  to { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+.error-message {
+  color: #FF6200;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.error-message.active {
+  display: block;
+}
+
+/* Story Section */
+.story-container {
+  max-width: 90vw;
+  width: 100%;
+  text-align: left;
+}
+
+.story-instruction {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  color: #00A3FF;
+  margin-bottom: 1rem;
+  animation: floatAway 3s ease-in-out forwards;
+}
+
+@keyframes floatAway {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+
+.story {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.6;
+  padding: 1rem;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  width: 0;
+  color: #FFFFFF;
+}
+
+.story.animate {
+  animation: typewriter 4s steps(60) forwards;
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Post-Story Section */
+.adventure-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  color: #FF6200;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.wallet-btn, .game-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.wallet-btn svg, .game-btn svg {
+  filter: drop-shadow(0 4px 8px rgba(255, 98, 0, 0.3));
+}
+
+.wallet-btn:hover svg, .game-btn:hover svg {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.wallet-btn:active::after, .game-btn:active::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, #FF6200 10%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: particleBurst 0.5s ease-out;
+}
+
+/* Terminal Styles */
+.terminal {
+  background: #0A0A0F;
+  border: 2px solid #00A3FF;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 1rem auto;
+}
+
+.terminal-header {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  color: #FF6200;
+  margin-bottom: 1rem;
+}
+
+.terminal-output {
+  background: #B0B0B0;
+  min-height: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: 'Exo 2', monospace;
+  color: #0A0A0F;
+}
+
+.terminal-output p {
+  margin: 0.5rem 0;
+}
+
+.terminal-input {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.terminal-input input {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  background: #B0B0B0;
+  color: #0A0A0F;
+  font-family: 'Exo 2', monospace;
+}
+
+.terminal-input input:focus {
+  outline: none;
+  border: 2px solid #00A3FF;
+}
+
+.terminal-input button {
+  background: #FF6200;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0 8px 8px 0;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.terminal-input button:hover {
+  background: #FF8B33;
+}
+
+.terminal-options {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.terminal-options button {
+  background: #FF6200;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-family: 'Orbitron', sans-serif;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.terminal-options button:hover {
+  background: #FF8B33;
+  transform: scale(1.05);
+}
+
+.top-bar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #0A0A0F;
+  border-bottom: 2px solid #00A3FF;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  color: #FF6200;
+  font-family: 'Orbitron', sans-serif;
+  z-index: 10;
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0A0A0F;
+  border: 2px solid #00A3FF;
+  padding: 2rem;
+  transform: translateX(100%);
+  transition: transform 0.5s ease-in-out;
+  overflow-y: auto;
+}
+
+.panel.active {
+  transform: translateX(0);
+}
+
+.panel h2 {
+  color: #FF6200;
+  font-family: 'Orbitron', sans-serif;
+  margin-bottom: 1rem;
+}
+
+.panel p, .panel ul {
+  margin-bottom: 1rem;
+  color: #FFFFFF;
+}
+
+.panel ul {
+  list-style: none;
+}
+
+#familyTreeCanvas {
+  border: 1px solid #00A3FF;
+  background: #B0B0B0;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Navigation */
+.nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  background: #0A0A0F;
+  border-top: 2px solid #00A3FF;
+  padding: 1rem 0;
+  z-index: 10;
+  transform: translateY(100%);
+  transition: transform 0.5s ease-in-out;
+}
+
+.nav.active {
+  transform: translateY(0);
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.nav-item:hover {
+  color: #FF6200;
+  transform: scale(1.2);
+}
+
+.nav-item:focus {
+  outline: none;
+  color: #FF6200;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .welcome h1 {
+    font-size: 1.8rem;
+  }
+
+  .story {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+  }
+
+  .terminal, .panel {
+    margin: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .terminal-output {
+    min-height: 150px;
+    max-height: 200px;
+  }
+
+  #familyTreeCanvas {
+    width: 100%;
+    height: 300px;
+  }
+}
+
+@media (min-width: 768px) {
+  .welcome h1 { font-size: 3.5rem; }
+  .story { font-size: 2rem; }
+  .nav-item { font-size: 1.8rem; }
+}

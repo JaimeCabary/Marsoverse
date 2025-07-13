@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🚀 Mars Space Shooter</title>
+  <link rel="stylesheet" href="space.css" />
+</head>
+<body>
+  <h1>🚀 Mars Space Shooter</h1>
+  <p>XP: <span id="xpDisplay">0</span> | Lives: <span id="lifeDisplay">3</span></p>
+  <canvas id="gameCanvas" width="400" height="600"></canvas>
+  <div id="gameOverScreen" style="display:none;">
+    <h2>💀 You were killed by the enemy</h2>
+    <button onclick="resetGame()">Restart</button>
+    <button onclick="window.location.href='index.html'">Return Home</button>
+  </div>
+  <script src="space.js"></script>
+</body>
+</html>

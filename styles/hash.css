@@ -1,0 +1,263 @@
+/* === BODY BACKGROUND & STARS === */
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: radial-gradient(ellipse at center, #1a0f11 0%, #0c0c1c 40%, #000 100%);
+  background-size: 600% 600%;
+  animation: bgShift 25s ease infinite;
+  font-family: 'JetBrains Mono', monospace;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 200%;
+  height: 200%;
+  background-image:
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(white 1px, transparent 1px);
+  background-size: 50px 50px, 80px 80px;
+  background-position: 0 0, 25px 25px;
+  animation: twinkleStars 16s linear infinite;
+  opacity: 0.3;
+  z-index: 0;
+  filter: blur(0.4px);
+}
+body::after {
+  animation-direction: reverse;
+  opacity: 0.15;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes twinkleStars {
+  0% { transform: translateX(0) translateY(0); }
+  100% { transform: translateX(-50px) translateY(-30px); }
+}
+
+/* === ZEPTA TERMINAL === */
+#zepta-container {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 1rem;
+  z-index: 1;
+}
+
+#zepta-log {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.zepta-line {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  backdrop-filter: blur(5px);
+  max-width: 90%;
+  box-shadow: 0 0 4px rgba(255, 165, 0, 0.1);
+}
+
+.user-line {
+  align-self: flex-end;
+  background: rgba(255, 85, 0, 0.2);
+  border: 1px solid rgba(255, 85, 0, 0.3);
+}
+
+.zepta-reply {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* === STICKY ZEPTA INPUT BAR === */
+#zepta-bar {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 0.8rem 1rem;
+  width: 95%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: sticky;
+  bottom: 0;
+  margin: 0 auto;
+  z-index: 100;
+  border: 1px solid rgba(255, 165, 0, 0.2);
+  box-shadow: 0 0 6px rgba(255, 85, 0, 0.3);
+}
+
+#zepta-input {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 1rem;
+}
+
+#zepta-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+#zepta-send {
+  background: #ff5c33;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#zepta-send:hover {
+  background: #ff884d;
+  box-shadow: 0 0 8px rgba(255, 85, 0, 0.4);
+}
+
+/* === SUGGESTIONS DROPDOWN === */
+#suggestions {
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 700px;
+  color: white;
+  font-size: 0.95rem;
+  padding: 0.75rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.4rem;
+  z-index: 50;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 165, 0, 0.4);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+#suggestions::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #111822;
+  border-radius: inherit;
+  z-index: -1;
+  border: 1px solid rgba(255, 165, 0, 0.3);
+}
+
+.suggestion-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  z-index: 1;
+  transition: background 0.2s ease;
+  border-radius: 8px;
+}
+
+.suggestion-item:hover {
+  background: rgba(255, 165, 0, 0.2);
+}
+
+/* === RESPONSIVE STYLING === */
+@media (max-width: 600px) {
+  .zepta-line {
+    font-size: 0.85rem;
+  }
+
+  #zepta-bar {
+    padding: 0.7rem 0.8rem;
+  }
+
+  #zepta-send {
+    font-size: 1rem;
+    padding: 0.5rem 0.9rem;
+  }
+
+  #suggestions {
+    bottom: 80px;
+    width: 90%;
+  }
+}
+
+#zepta-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 768px) {
+  #zepta-bar {
+    gap: 0.5rem;
+  }
+
+  #commandInput,
+  #submitCommand {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  #terminalOutput {
+    font-size: 0.9rem;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}
+
+/* === NAVBAR === */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: transparent;
+  padding: 0.5rem;
+  text-align: center;
+  z-index: 1001;
+}
+
+.navbar h1 {
+  font-family: 'Russo One', sans-serif;
+  font-size: clamp(2rem, 2vw, 2rem);
+  background: linear-gradient(45deg, #FF6200 10%, #FFD700 25%, #00A3FF 50%, #FFFFFF 75%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: #ffffff;
+  animation: colorShift 3s infinite alternate;
+  margin: 0;
+}
+
+@keyframes colorShift {
+  0% { background-position: 0% }
+  100% { background-position: 100% }
+}

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Mars Poker ♠️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+      body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Orbitron', sans-serif;
+  background-image: url('pokertable.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-attachment: fixed;
+  color: #fff;
+}
+/* html, body {
+  height: 100%;
+  overflow: hidden; /* prevent scroll on all platforms */
+/* }  */
+
+
+
+section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 20px;
+  overflow: auto; /* important for mobile and long content */
+}
+
+    #game {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+    h1 {
+      margin-bottom: 10px;
+      color: #FFF4F0;
+      font-size: 2rem;
+      text-shadow: 0 0 10px #000000AA;
+    }
+
+    #dealer-area, #player-area, #table-area {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      width: 90px;
+      height: 125px;
+      background-size: cover;
+      border-radius: 8px;
+    }
+
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px 0;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 18px;
+      font-size: 1rem;
+      background-color: #FF4B00;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 8px #FF4B00aa;
+    }
+
+    #status {
+      font-size: 1.1rem;
+      margin-top: 10px;
+      color: #ffd;
+      text-shadow: 0 0 4px #ffa;
+    }
+
+    #balance {
+      font-size: 1rem;
+      margin-top: 5px;
+    }
+
+    a.back-home {
+      color: #ffb;
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+    #overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75); /* You can go higher: 0.85 for darker */
+  z-index: 0;
+  pointer-events: none;
+}
+#rules-scroll {
+  position: relative;
+  z-index: 10; /* Make it higher than overlay */
+  background: url('mars-scroll-bg.png') no-repeat center center;
+  background-size: cover;
+  background-color: #150505;
+  padding: 50px 20px 30px;
+  text-align: center;
+  color: #ffd6b8;
+  font-family: 'Orbitron', sans-serif;
+  box-shadow: inset 0 0 20px #FF4B00aa;
+}
+.scroll-container {
+  max-width: 680px;
+  margin: auto;
+  background: rgba(24, 8, 2, 0.75);
+  border: 1px solid #ff6600;
+  border-radius: 12px;
+  padding: 25px 20px;
+  box-shadow: 0 0 18px #ff440088, 0 0 12px #ff660044 inset;
+  backdrop-filter: blur(3px);
+}
+
+#rules-scroll h2 {
+  font-size: 1.7rem;
+  margin-bottom: 16px;
+  color: #FFA94A;
+  text-shadow: 0 0 4px #FF7F50, 0 0 10px #ff6600aa;
+}
+
+#rules-scroll p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #ffdbb2;
+  text-shadow: 0 0 6px #441a00;
+}
+
+.scroll-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.scroll-actions button {
+  background-color: #FF4B00;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 12px #FF4B00bb;
+  transition: background 0.3s ease;
+}
+
+.scroll-actions button:hover {
+  background-color: #FF6B20;
+}
+
+.back-btn {
+  color: #ffcc99;
+  text-decoration: none;
+  font-size: 0.95rem;
+  text-shadow: 0 0 3px #ff7f50;
+}
+#rules-slide {
+  position: relative;
+  z-index: 15;
+  background: rgba(1, 0, 0, 0.391); /* semi-transparent black over pokertable */
+color: #ffd6b8;
+  padding: 40px 20px;
+  font-family: 'Orbitron', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#slide-box {
+  background: rgba(24, 8, 2, 0.54);
+  border: 1px solid #ff6600;
+  border-radius: 12px;
+  padding: 30px 25px;
+  max-width: 650px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 20px #ff5500aa;
+  backdrop-filter: blur(4px);
+}
+
+#slide-title {
+  color: #FFA94A;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+#slide-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #ffdbb2;
+  margin-bottom: 25px;
+}
+
+.slide-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.slide-actions button {
+  background-color: #FF4B00;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 12px #FF4B00bb;
+}
+
+.slide-actions button:hover {
+  background-color: #FF6B20;
+}
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85); /* Darker overlay */
+  z-index: 0;
+  pointer-events: none;
+}
+
+
+.back-btn {
+  color: #ffcc99;
+  text-decoration: none;
+  font-size: 0.95rem;
+  text-shadow: 0 0 3px #ff7f50;
+}
+#resultModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(15, 5, 5, 0.95));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+#resultBox {
+  background: rgba(24, 8, 2, 0.8);
+  border: 1px solid #ff6600;
+  border-radius: 12px;
+  padding: 30px 25px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 20px #ff5500aa;
+  backdrop-filter: blur(4px);
+  color: #ffdbb2;
+  font-family: 'Orbitron', sans-serif;
+}
+
+#resultBox h2 {
+  color: #FFA94A;
+  margin-bottom: 15px;
+}
+
+#resultBox p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+#resultBox button {
+  background-color: #FF4B00;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 12px #FF4B00bb;
+}
+
+#resultBox button:hover {
+  background-color: #FF6B20;
+}
+
+  </style>
+</head>
+<body>
+  <div id="overlay"></div> <!-- Keep it here -->
+<section id="rules-slide" class="slide-container">
+  
+  <div id="slide-box">
+    <h2 id="slide-title">📜 Welcome to Mars Poker</h2>
+    <p id="slide-text">
+      You’ve landed on a hostile world, but one tradition keeps everyone sharp: <strong>Mars Poker</strong>.<br><br>
+      It’s you vs Cubeco — and every card you play earns you power on Mars.
+    </p>
+    <div class="slide-actions">
+      <button id="next-btn" onclick="nextSlide()">Next</button>
+      <a href="#" class="back-btn" onclick="showGame(); return false;">← Skip Rules</a>
+    </div>
+  </div>
+</section>
+ <section id="game" style="display: none;">
+    <h1>🪐Marsoverse Poker ♠️</h1>
+
+   <div id="balance">
+  XP: <span id="xpCount">0</span> |
+  Wallet: <span id="walletCount">0.00</span> USDT |
+  Highest XP: <span id="highXP">0</span>
+</div>
+
+
+    <div id="player-area">
+      <h3>Your Hand</h3>
+      <div id="playerHand" class="cards"></div>
+    </div>
+
+    <div id="table-area">
+      <h3>Community Cards</h3>
+      <div id="communityCards" class="cards"></div>
+    </div>
+
+    <div id="dealer-area">
+      <h3>Cubeco's Hand</h3>
+      <div id="botHand" class="cards"></div>
+    </div>
+
+    <div id="status"></div>
+
+    <div id="controls">
+      <button onclick="dealCards()">Deal</button>
+      <button onclick="reveal()">Reveal</button>
+      <button onclick="restart()">Restart</button>
+    </div>
+
+    <a href="/index.html" class="back-home">← Return to Mars</a>
+ </section>
+ <div id="resultModal" style="display: none;">
+  <div id="resultBox">
+    <h2 id="resultTitle">Result</h2>
+    <p id="resultMessage">You win!</p>
+    <button onclick="closeResult()">OK</button>
+  </div>
+</div>
+
+
+  <script>
+    let playerCards = [], botCards = [], communityCards = [];
+    let xp = parseInt(localStorage.getItem("marsXP") || 0);
+    let usdt = parseFloat(localStorage.getItem("marsUSDT") || 0);
+    let deckID = "";
+    let highXP = parseInt(localStorage.getItem("marsHighXP") || 0);
+document.getElementById("highXP").textContent = highXP;
+
+
+    document.getElementById("xpCount").textContent = xp;
+    document.getElementById("walletCount").textContent = usdt.toFixed(2);
+
+    async function fetchDeck() {
+      const res = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1");
+      const data = await res.json();
+      deckID = data.deck_id;
+    }
+
+    async function dealCards() {
+      if (!deckID) await fetchDeck();
+      const draw = await fetch(`https://deckofcardsapi.com/api/deck/${deckID}/draw/?count=7`);
+      const data = await draw.json();
+      const cards = data.cards;
+
+      playerCards = cards.slice(0, 2);
+      botCards = cards.slice(2, 4);
+      communityCards = cards.slice(4, 7);
+
+      document.getElementById("playerHand").innerHTML = renderCards(playerCards);
+      document.getElementById("botHand").innerHTML = `
+        <div class="card" style="background-image: url('https://deckofcardsapi.com/static/img/back.png')"></div>
+        <div class="card" style="background-image: url('https://deckofcardsapi.com/static/img/back.png')"></div>
+      `;
+      document.getElementById("communityCards").innerHTML = renderCards(communityCards);
+      document.getElementById("status").textContent = "";
+    }
+
+    function renderCards(cards) {
+      return cards.map(c => `<div class="card" style="background-image: url('${c.image}')"></div>`).join("");
+    }
+
+function reveal() {
+  // Show Cubeco's hand
+  document.getElementById("botHand").innerHTML = renderCards(botCards);
+
+  // Calculate scores
+  const playerScore = score(playerCards.concat(communityCards));
+  const botScore = score(botCards.concat(communityCards));
+
+  let resultMessage = "";
+  if (playerScore > botScore) {
+    xp += 5;
+    usdt += 0.01;
+    resultMessage = `🎉 You won!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>+5 XP, +0.01 USDT`;
+  } else if (playerScore < botScore) {
+    resultMessage = `🤖 Cubeco won!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>Try again!`;
+  } else {
+    xp += 2;
+    resultMessage = `⚖️ It's a draw!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>+2 XP`;
+  }
+  // Update high XP if current is greater
+  let highXP = parseInt(localStorage.getItem("marsHighXP") || 0);
+  if (xp > highXP) {
+    highXP = xp;
+    localStorage.setItem("marsHighXP", highXP);
+  }
+  document.getElementById("highXP").textContent = highXP;
+
+  // Update local storage and UI
+  localStorage.setItem("marsXP", xp);
+  localStorage.setItem("marsUSDT", usdt.toFixed(2));
+  document.getElementById("xpCount").textContent = xp;
+  document.getElementById("walletCount").textContent = usdt.toFixed(2);
+
+  // Show result modal
+  showResultDialog(resultMessage);
+}
+
+    function score(cards) {
+      return cards.reduce((total, c) => {
+        let val = c.value;
+        if (!isNaN(val)) return total + parseInt(val);
+        if (["KING", "QUEEN", "JACK"].includes(val)) return total + 10;
+        if (val === "ACE") return total + 11;
+        return total;
+      }, 0);
+    }
+
+function restart() {
+  playerCards = [];
+  botCards = [];
+  communityCards = [];
+  document.getElementById("playerHand").innerHTML = "";
+  document.getElementById("botHand").innerHTML = "";
+  document.getElementById("communityCards").innerHTML = "";
+  document.getElementById("status").textContent = "";
+
+  // Reset XP and wallet **visually** but not in storage
+  xp = 0;
+  usdt = 0;
+  document.getElementById("xpCount").textContent = "0";
+  document.getElementById("walletCount").textContent = "0.00";
+}
+
+  </script>
+  <script>
+  const slides = [
+    {
+      title: "📜 Welcome to Mars Poker",
+      text: `You’ve landed on a hostile world, but one tradition keeps everyone sharp: <strong>Mars Poker</strong>.<br><br>
+      It’s you vs Cubeco — and every card you play earns you power on Mars.`
+    },
+    {
+      title: "🎴 Understand the Cards",
+      text: `Each player is dealt <strong>2 cards</strong>.<br>The table shows <strong>3 shared cards</strong>.<br><br>
+      Card values:<br>
+      • Number cards = face value<br>
+      • Face cards (J, Q, K) = <strong>10</strong><br>
+      • Ace = <strong>11</strong>`
+    },
+    {
+      title: "🎮 How to Play",
+      text: `Step 1: Tap <strong>"Deal"</strong><br>
+      → You and Cubeco get 2 cards<br>
+      → 3 community cards appear<br><br>
+      Step 2: Tap <strong>"Reveal"</strong><br>
+      → See Cubeco's hand<br>
+      → Highest total score wins!`
+    },
+    {
+      title: "🏆 Win or Lose?",
+      text: `• <strong>You win</strong> → +5 XP & 0.01 USDT<br>
+      • <strong>Draw</strong> → +2 XP<br>
+      • <strong>You lose</strong> → No rewards<br><br>
+      Every win pushes your journey across Mars 🌌`
+    },
+    {
+      title: "🚀 Ready to Play?",
+      text: `Think fast. Tap smart.<br>
+      One round can change your mission.<br><br>
+      🪐 Good luck, Commander.`
+    }
+  ];
+
+  let currentSlide = 0;
+
+  function nextSlide() {
+    currentSlide++;
+    if (currentSlide < slides.length) {
+      document.getElementById("slide-title").innerHTML = slides[currentSlide].title;
+      document.getElementById("slide-text").innerHTML = slides[currentSlide].text;
+      if (currentSlide === slides.length - 1) {
+        document.querySelector(".slide-actions button").innerHTML = "🎮 Play Now";
+        document.querySelector(".slide-actions button").onclick = () => {
+          document.querySelector(".slide-actions button").onclick = () => {
+  showGame();
+};
+
+        };
+      }
+    }
+  }
+  function showGame() {
+  document.getElementById("rules-slide").style.display = "none";
+  document.getElementById("game").style.display = "flex";
+  document.getElementById("game").scrollIntoView({ behavior: "smooth" });
+}
+
+</script>
+<script>
+  function showResultDialog(message) {
+  document.getElementById("resultMessage").innerHTML = message;
+  document.getElementById("resultModal").style.display = "flex";
+}
+
+function closeResult() {
+  document.getElementById("resultModal").style.display = "none";
+}
+
+</script>
+</body>
+</html>

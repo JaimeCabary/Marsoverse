@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mars Poker</title>
+  <link rel="stylesheet" href="poker.css" />
+</head>
+<body>
+  <div class="poker-container">
+    <h1>Mars Poker ♠️</h1>
+
+    <div class="status">
+      <p><strong>XP:</strong> <span id="xpCount">0</span></p>
+      <p><strong>Wallet:</strong> <span id="walletCount">0.00</span> USDT</p>
+    </div>
+
+    <div class="game-area">
+      <h3>Your Hand</h3>
+      <div id="playerHand" class="card-row"></div>
+
+      <h3>Community Cards</h3>
+      <div id="communityCards" class="card-row"></div>
+
+      <h3>Cubeco's Hand</h3>
+      <div id="botHand" class="card-row"></div>
+    </div>
+
+    <div id="result" class="result-box"></div>
+
+    <div class="action-panel">
+      <button onclick="dealCards()">Deal</button>
+      <button onclick="reveal()">Reveal</button>
+      <button onclick="restart()">Restart</button>
+    </div>
+
+    <a href="/index.html" class="back-home">← Return to Mars</a>
+  </div>
+
+  <script src="poker.js"></script>
+</body>
+</html>

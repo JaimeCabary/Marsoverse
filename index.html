@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MarsoVerse – Welcome</title>
+  <link rel="stylesheet" href="styles/main.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://unpkg.com/@solana/web3.js@1.95.1/lib/index.iife.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+</head>
+<body>
+
+
+  <!-- 🌍 Intro Video -->
+<video id="introVideo" autoplay muted playsinline>
+  <source src="Earth Explosion.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+  <section id="welcomeSection" class="section active">
+    <h1 class="welcome-title">Welcome to MarsoVerse Adventurer</h1>
+    <button id="tugScroll" class="tug-btn">
+    <i class="fas fa-chevron-down"></i>
+  </button>
+  </section>
+
+  <section id="enterName" class="section">
+    <p class="prompt">Enter name: <span id="inputNameDisplay"></span><span class="cursor"></span></p>
+    <input type="text" id="playerName" class="mallo" autocomplete="off" />
+  </section>
+
+  <section id="enterAge" class="section">
+    <p class="prompt">Enter age: <span id="inputAgeDisplay"></span><span class="cursor"></span></p>
+    <input type="number" id="playerAge" class="mallo" autocomplete="off" min="18" max="100" />
+
+  </section>
+
+  <section id="playSection" class="section">
+    <!-- <div id="threeContainer" style="width:100%;height:100%;position:absolute;top:0;left:0;"></div> -->
+    <button id="playButton" class="neon-btn">Play</button>
+  </section>
+
+<section id="storySection" class="section">
+  <div id="threeStoryBg" style="position:absolute; top:0; left:0; width:100%; height:100%;"></div>
+  <h2 id="storyLine"></h2>
+</section>
+
+<section id="phasetwo" class="section">
+  <h1 class="welcome-title">Connect Solana Wallet to start</h1>
+
+  <button id="connectWalletBtn" class="neon-btn" style="margin-top:2rem;">
+    <i class="fas fa-wallet"></i>
+  </button>
+
+  <!-- Wallet status preview -->
+  <span id="walletPreview" style="display: none; font-family: Orbitron; color: white; margin-top: 1.5rem; display: inline-block;"></span>
+
+  <!-- "Skip" link -->
+  <p id="firstLink" style="margin-top:1rem; font-family: Orbitron; color: white; text-decoration: underline; cursor: pointer;">
+    I'll do that later
+  </p>
+</section>
+
+
+  <section id="genderSection" class="section">
+    <h3 class="prompt">Select your gender identity:</h3>
+  <div id="genderSelectWrapper">
+  <select id="genderSelect" class="prompt">
+    <option value="">Choose gender...</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
+
+  </section>
+
+  <section id="companionSection" class="section">
+  <h3 class="prompt">Choose your companion:</h3>
+  <br>
+  <br>
+
+  <div class="choices">
+    <div class="choice" data-name="Errin">
+      <img src="images/errin.png" alt="Errin">
+      <h5>Errin</h5>
+    </div>
+
+    <h4 class="or-text">OR</h4>
+
+    <div class="choice" data-name="Elena">
+      <img src="images/elena.png" alt="Elena">
+      <h5>Elena</h5>
+    </div>
+
+    <input type="text" id="companionName" class="mallo" autocomplete="off" placeholder="Enter your choice"/>
+  </div>
+</section>
+
+
+  <section id="cyborg" class="section">
+    <p class="prompt">Name your cyborg bot: </p>
+    <div class="choice">
+      <img src="images/jerry.png" alt="Jeremy">
+      <!-- <h5>Default: Jeremy </h5> -->
+    </div>
+    <input type="text" class="mallo" id="botName" placeholder="e.g. Jeremy"/>
+  </section>
+
+  <section id="launchSection" class="section">
+  <button id="launchBtn" class="neon-btn" style="margin-top:2rem;">Launch Game</button>
+  </section>
+
+<!-- 🎵 Full Sound Stack -->
+<audio id="introSound" src="sounds/intro.mp3" preload="auto" loop></audio>
+<audio id="marsostory" src="sounds/marsostory.mp3" preload="auto" loop></audio>
+<audio id="afterstorySound" src="sounds/afterstory.mp3" preload="auto"></audio>
+<audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>
+<audio id="sparkleSound" src="sounds/sparkle.mp3" preload="auto"></audio>
+<audio id="levelupSound" src="sounds/levelup.mp3" preload="auto"></audio>
+<audio id="xpSound" src="sounds/xp.mp3" preload="auto"></audio>
+<audio id="popSound" src="sounds/pop.mp3" preload="auto"></audio>
+<audio id="bondSound" src="sounds/bond.mp3" preload="auto"></audio>
+<audio id="birthSound" src="sounds/birthsound.mp3" preload="auto"></audio>
+<audio id="explosionSound" src="sounds/explosion.mp3" preload="auto"></audio>
+<audio id="riserSound" src="sounds/riser-hit-sfx-001-289802.mp3" preload="auto"></audio>
+<audio id="swooshSound" src="sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3" preload="auto"></audio>
+<audio id="typingSound" src="sounds/typing.mp3" preload="auto"></audio>
+
+
+  <script src="scripts/main.js "></script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MarsoVerse: A survival and exploration simulation on Mars." />
+  <title>MarsoVerse - Welcome</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2&display=swap" />
+  <link rel="icon" href="images/logo.png" type="image/x-icon" />
+</head>
+<body>
+  <div class="background-animation"></div>
+  <main> -->
+    <!-- Section 1: Welcome -->
+    <!-- <section class="section welcome active" id="welcomeSection" aria-labelledby="welcomeTitle">
+      <h1 id="welcomeTitle">Welcome Adventurer and Survivor to Mars</h1>
+      
+      <form id="welcomeForm" class="welcome-form">
+        <label for="playerName" class="visually-hidden">Enter your name</label>
+        <input
+          type="text"
+          id="playerName"
+          placeholder="Enter your name..."
+          aria-required="true"
+          required
+        />
+        <label for="playerAge" class="visually-hidden hidden" id="ageLabel">Enter your age</label>
+        <input
+          type="number"
+          id="playerAge"
+          class="hidden"
+          placeholder="Enter your age..."
+          min="18"
+          max="100"
+          aria-required="true"
+          required
+        />
+        <p id="errorMessage" class="error-message" role="alert"></p>
+        <button type="submit" id="startBtn" aria-label="Start adventure">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="40" r="38" fill="#FF6200" stroke="#FFFFFF" stroke-width="2"/>
+            <path d="M30 20L50 40L30 60V20Z" fill="#FFFFFF"/>
+          </svg>
+        </button>
+      </form> -->
+      <!-- Zara 3D Guide -->
+
+
+    <!-- </section> -->
+
+    <!-- Section 2: Story Page -->
+    <!-- <section class="section hidden" id="storySection" aria-labelledby="storyTitle">
+      <h2 id="storyTitle" class="visually-hidden">MarsoVerse Story</h2>
+      <div class="story-container">
+        <p class="story-instruction">Tap anywhere to continue the story</p>
+        <div class="story" id="storyText"></div>
+      </div>
+    </section> -->
+
+    <!-- Section 3: Post-Story -->
+    <!-- <section class="section hidden" id="postStorySection" aria-labelledby="postStoryTitle">
+      <h2 id="postStoryTitle" class="visually-hidden">Start Your Mars Adventure</h2>
+      <p class="adventure-text">Ready to blast off to Mars?</p>
+      <button class="wallet-btn" id="walletBtn" aria-label="Connect wallet">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="30" cy="30" r="28" fill="#FF6200" stroke="#FFFFFF" stroke-width="2"/>
+          <path d="M20 25H40V35H20V25Z" fill="#FFFFFF"/>
+          <path d="M35 28H40V32H35V28Z" fill="#B0B0B0"/>
+        </svg>
+      </button>
+      <button class="game-btn hidden" id="gameBtn" aria-label="Start game">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="30" cy="30" r="28" fill="#FF6200" stroke="#FFFFFF" stroke-width="2"/>
+          <path d="M22 15L42 30L22 45V15Z" fill="#FFFFFF"/>
+        </svg>
+      </button>
+    </section>
+  </main> -->
+
+  <!-- Audio Elements -->
+  <!-- <audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>
+  <audio id="introSound" src="sounds/intro.mp3" preload="auto" loop></audio>
+  <audio id="sparkleSound" src="sounds/sparkle.mp3" preload="auto"></audio>
+  <audio id="levelupSound" src="sounds/levelup.mp3" preload="auto"></audio>
+  <audio id="xpSound" src="sounds/xp.mp3" preload="auto"></audio>
+  <audio id="marsostorySound" src="sounds/marsostory.mp3" preload="auto" loop></audio>
+  <audio id="afterstorySound" src="sounds/afterstory.mp3" preload="auto"></audio>
+  <audio id="popSound" src="sounds/pop.mp3" preload="auto"></audio>
+  <audio id="bondSound" src="sounds/bond.mp3" preload="auto"></audio>
+  <audio id="birthSound" src="sounds/birth.mp3" preload="auto"></audio>
+
+  <script src="scripts/main.js"></script>
+</body>
+</html> -->
