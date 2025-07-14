@@ -1,0 +1,11 @@
+Model Information:
+* title:	2018 NASCAR Camaro
+* source:	https://sketchfab.com/3d-models/2018-nascar-camaro-cb243928ff814a6e92bef555e95e7a21
+* author:	3dautosports.com (https://sketchfab.com/3dautosports)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2018 NASCAR Camaro" (https://sketchfab.com/3d-models/2018-nascar-camaro-cb243928ff814a6e92bef555e95e7a21) by 3dautosports.com (https://sketchfab.com/3dautosports) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)

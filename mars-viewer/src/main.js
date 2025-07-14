@@ -2,15 +2,15 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.1;
-controls.minDistance = 1;
-controls.maxDistance = 100;
+// const controls = new OrbitControls(camera, renderer.domElement);
+// controls.enableDamping = true;
+// controls.dampingFactor = 0.1;
+// controls.minDistance = 1;
+// controls.maxDistance = 100;
 
-controls.enableZoom = true;
-controls.enablePan = true;
-controls.screenSpacePanning = true;
+// controls.enableZoom = true;
+// controls.enablePan = true;
+// controls.screenSpacePanning = true;
 
 // Remove existing app div content if present
 const app = document.getElementById('app');

@@ -96,6 +96,7 @@ body::after {
   padding: 1rem;
   display: flex;
   justify-content: space-between;
+  font-family: 'Orbitron', sans-serif;
   align-items: center;
   background: linear-gradient(90deg, #050030, #070038, #00002b);
   backdrop-filter: blur(10px);

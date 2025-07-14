@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Marzo Noughts & Crosses</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle at center, #0a0a0a, #000000);
+      color: #ff6600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .game-container {
+      text-align: center;
+      max-width: 100%;
+      width: 100%;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      color: #ffa500;
+      text-shadow: 0 0 4px #ff6600;
+    }
+
+    .score-box {
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5vmin;
+  width: 100%;
+  max-width: 60vmin;
+  max-height: 60vmin;
+  margin: 0 auto;
+}
+
+
+    .cell {
+      aspect-ratio: 1 / 1;
+      background: transparent;
+      border: 0.4vw solid #ff6600;
+      font-size: clamp(2rem, 6vw, 4rem);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 2vw;
+      transition: background 0.3s;
+      color: white;
+    }
+
+    .cell.x { color: #ffffff; }
+    .cell.o { color: #00ffff; }
+
+    .cell:hover {
+      background: rgba(255, 102, 0, 0.3);
+    }
+
+    .status {
+      margin-top: 15px;
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: #fff;
+    }
+
+    .controls {
+      margin-top: 15px;
+    }
+
+    select, button {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      margin: 5px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 1vw;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: #ff6600;
+      color: #000;
+      box-shadow: 0 0 4px #ff6600;
+    }
+
+    button:hover {
+      background-color: #ffa500;
+    }
+
+    select {
+      background-color: #222;
+      color: #fff;
+      border: 1px solid #00ffff;
+    }
+
+    @media (max-width: 700px) {
+      .board { gap: 4vw; }
+      .cell { border-width: 1vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Marzo Noughts & Crosses</h1>
+    <div class="score-box">
+      XP: <span id="xp">0</span> |
+      High Score: <span id="highScore">0</span>
+    </div>
+    <div class="board" id="board"></div>
+    <div class="status" id="status">Player X's turn</div>
+    <div class="controls">
+      <select id="modeSelect" onchange="resetGame()">
+        <option value="human">2 Players</option>
+        <option value="computer">Vs Computer</option>
+      </select>
+      <button onclick="resetGame()">Restart Game</button>
+    </div>
+  </div>
+
+  <script>
+    const board = document.getElementById('board');
+    const statusText = document.getElementById('status');
+    const xpDisplay = document.getElementById('xp');
+    const highScoreDisplay = document.getElementById('highScore');
+    const modeSelect = document.getElementById('modeSelect');
+
+    let currentPlayer = 'X';
+    let cells = Array(9).fill(null);
+    let gameOver = false;
+    let xp = 0;
+    let highScore = localStorage.getItem('highScore') || 0;
+    highScoreDisplay.textContent = highScore;
+
+    const winningCombos = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
+    ];
+
+    function checkWinner() {
+      for (let combo of winningCombos) {
+        const [a,b,c] = combo;
+        if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+          return cells[a];
+        }
+      }
+      return cells.every(cell => cell) ? 'Draw' : null;
+    }
+
+    function makeMove(i) {
+      if (!cells[i] && !gameOver) {
+        cells[i] = currentPlayer;
+        render();
+        const result = checkWinner();
+        if (result) {
+          gameOver = true;
+          if (result !== 'Draw') {
+            if (modeSelect.value === "human" || currentPlayer === 'X') xp++;
+            xpDisplay.textContent = xp;
+            if (xp > highScore) {
+              highScore = xp;
+              localStorage.setItem('highScore', xp);
+              highScoreDisplay.textContent = xp;
+            }
+          }
+          statusText.textContent = result === 'Draw' ? "It's a draw!" :
+            (modeSelect.value === 'computer' && result === 'O') ? "Computer wins!" :
+            `Player ${result} wins!`;
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          statusText.textContent = `Player ${currentPlayer}'s turn`;
+          if (modeSelect.value === 'computer' && currentPlayer === 'O') {
+            setTimeout(computerMove, 300);
+          }
+        }
+      }
+    }
+
+    function render() {
+      board.innerHTML = '';
+      cells.forEach((cell, i) => {
+        const cellEl = document.createElement('div');
+        cellEl.classList.add('cell');
+       if (cell === 'X') {
+  cellEl.classList.add('x');
+  cellEl.textContent = 'X';
+} else if (cell === 'O') {
+  cellEl.classList.add('o');
+  cellEl.textContent = 'O';
+}
+
+        cellEl.addEventListener('click', () => makeMove(i));
+        board.appendChild(cellEl);
+      });
+    }
+
+    function computerMove() {
+      let bestScore = -Infinity;
+      let move;
+      for (let i = 0; i < cells.length; i++) {
+        if (!cells[i]) {
+          cells[i] = 'O';
+          let score = minimax(cells, 0, false);
+          cells[i] = null;
+          if (score > bestScore) {
+            bestScore = score;
+            move = i;
+          }
+        }
+      }
+      makeMove(move);
+    }
+
+    function minimax(boardState, depth, isMaximizing) {
+      const winner = checkWinner();
+      if (winner === 'O') return 10 - depth;
+      if (winner === 'X') return depth - 10;
+      if (winner === 'Draw') return 0;
+
+      if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < boardState.length; i++) {
+          if (!boardState[i]) {
+            boardState[i] = 'O';
+            let score = minimax(boardState, depth + 1, false);
+            boardState[i] = null;
+            bestScore = Math.max(score, bestScore);
+          }
+        }
+        return bestScore;
+      } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < boardState.length; i++) {
+          if (!boardState[i]) {
+            boardState[i] = 'X';
+            let score = minimax(boardState, depth + 1, true);
+            boardState[i] = null;
+            bestScore = Math.min(score, bestScore);
+          }
+        }
+        return bestScore;
+      }
+    }
+
+    function resetGame() {
+      cells = Array(9).fill(null);
+      currentPlayer = 'X';
+      gameOver = false;
+      xp = 0;
+      xpDisplay.textContent = xp;
+      statusText.textContent = "Player X's turn";
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
