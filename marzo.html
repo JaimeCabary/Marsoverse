@@ -11,12 +11,36 @@
   <!-- Three.js -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- Cropper.js CSS -->
+  <link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet" />
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
   <!-- 🎮 HUD -->
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #111;
+      color: white;
+      padding-top: 40px;
+    }
+
+    .avatar-wrapper img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #0ff;
+      background: #222;
+    }
+
+    #avatarUpload {
+      margin-top: 15px;
+    }
+  </style>
 
 <header class="hud">
   <div class="stars"></div>
@@ -31,13 +55,11 @@
       <h1 id="welcomeMessage">Hello, Player</h1>
       <h5 class="intro-text">Get ready to explore, build, and survive on Mars.</h5>
 
-      <div class="launch-btn-wrapper">
-        <div class="orbit-label">Click Mars to launch the game</div>
-            <br>
-        <button id="launchMarsBtn" class="we">
-          <canvas id="marsButtonCanvas"></canvas>
-        </button>
-      </div>
+<div class="launch-btn-wrapper">
+  <div class="orbit-label">Click Mars to launch the game</div>
+  <canvas id="marsButtonCanvas"></canvas>
+</div>
+
 
   
       <button id="toScroll" class="tugg-btn">
@@ -47,7 +69,7 @@
       <!-- <section id="friendsPage" class="page"> -->
     <h2 class="section-heading">🕹️ Mini Games for XP</h2>
 
-    <div class="game-grid" id="game-grid>
+    <div id="game-grid">
   <a href="black\blacko.html" class="game-card">
     <img src="screens/blacko.png" alt="Blackjack">
     <p>Marsoverse Blackjack</p>
@@ -111,11 +133,18 @@
     <!-- 📄 Enhanced Settings Section - MarsoVerse -->
 <section class="page" id="settingsPage">
   <h2>Settings & Profile</h2>
+  <div id="cropModal" style="display: none; text-align: center;">
+  <h3>Crop your avatar</h3>
+  <img id="cropImage" style="max-width: 100%; max-height: 300px;" />
+  <br>
+  <button id="confirmCrop">✅ Done</button>
+</div>
+
 
   <!-- 🌟 Player Visual Card -->
   <div class="profile-card">
     <div class="avatar-wrapper">
-      <img id="playerAvatar" src="images/avatar-placeholder.png" alt="Your Avatar">
+      <img id="playerAvatar" src="https://via.placeholder.com/120" alt="Your Avatar">
       <input type="file" id="avatarUpload" accept="image/*">
     </div>
     <div class="info">
@@ -192,7 +221,7 @@
   <!-- 🔽 Bottom Nav -->
   <nav class="navbar">
     <button class="nav-item" data-target="homePage"><i class="fas fa-home"></i></button>
-    <button class="nav-item" onclick="location.href='mars.html'"><i class="fas fa-map-marked-alt"></i></button>
+    <button class="nav-item" onclick="playClickAndGo('mars-viewer/index.html')"><i class="fas fa-map-marked-alt"></i></button>
     <button class="nav-item" data-target="leaderboardPage"><i class="fas fa-trophy"></i></button>
     <button class="nav-item" data-target="friendsPage"><i class="fas fa-users"></i></button>
     <button class="nav-item" data-target="settingsPage"><i class="fas fa-cog"></i></button>
@@ -227,6 +256,53 @@
     document.querySelector(".game-grid").scrollIntoView({ behavior: "smooth" });
   });
 </script>
+<script>
+  function playClickAndGo(url) {
+    const clickSound = document.getElementById('clickSound');
+    clickSound.currentTime = 0;
+    clickSound.play();
+
+    // Give the sound time to play before redirecting
+    setTimeout(() => {
+      location.href = url;
+    }, 200); // Adjust delay to match the sound duration (0.2 seconds is typical)
+  }
+</script>
+<script>
+    const avatarInput = document.getElementById("avatarUpload");
+    const avatarImg = document.getElementById("playerAvatar");
+
+    // Load from localStorage if previously saved
+    const saved = localStorage.getItem("playerAvatar");
+    if (saved) {
+      avatarImg.src = saved;
+    }
+
+    avatarInput.addEventListener("change", () => {
+      const file = avatarInput.files[0];
+      if (!file) {
+        alert("No file selected.");
+        return;
+      }
+
+      // Check it's an image
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const result = e.target.result;
+        avatarImg.src = result;
+        localStorage.setItem("playerAvatar", result);
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+  <!-- Cropper.js JS -->
+<script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+
 
 </body>
 </html>

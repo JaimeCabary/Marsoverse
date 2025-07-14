@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("youAge").textContent = playerAge;
   document.getElementById("youXP").textContent = playerXP;
   document.getElementById("walletAmount").textContent = walletBalance;
+  
 
   // 🧭 Navigation Control
   const navButtons = document.querySelectorAll(".nav-item");
@@ -37,6 +38,14 @@ document.addEventListener("DOMContentLoaded", () => {
       playSound("clickSound");
     });
   });
+  const marsCanvas = document.getElementById("marsButtonCanvas");
+
+marsCanvas?.addEventListener("click", () => {
+  playSound("clickSound");
+  alert("Redirecting to Zepta terminal");
+  window.location.href = "hash.html";
+});
+
 
   // 🔊 Audio Control
   const music = document.getElementById("marsostory");
@@ -70,7 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🚀 Mars Launch Button Logic
   const launchBtn = document.getElementById("launchMarsBtn");
   launchBtn?.addEventListener("click", () => {
-    playSound("sparkleSound");
+    alert("Redirecting to Zepta terminal");
+    playSound("clickSound");
     window.location.href = "hash.html";
   });
     const compName = localStorage.getItem("companionName") || "None";
@@ -97,29 +107,38 @@ document.addEventListener("DOMContentLoaded", () => {
       location.reload();
     }
   });
-  const avatarInput = document.getElementById("avatarUpload");
-const avatarImg = document.getElementById("playerAvatar");
+  //  const avatarInput = document.getElementById("avatarUpload");
+  //   const avatarImg = document.getElementById("playerAvatar");
 
-// Load from storage on start
-const savedAvatar = localStorage.getItem("playerAvatar");
-if (savedAvatar) {
-  avatarImg.src = savedAvatar;
-}
+  //   const savedAvatar = localStorage.getItem("playerAvatar");
+  //   if (savedAvatar) {
+  //     avatarImg.src = savedAvatar;
+  //   }
 
-// Save on upload
-avatarInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  //   avatarInput.addEventListener("change", () => {
+  //     const file = avatarInput.files[0];
+  //     if (!file) {
+  //       alert("No file selected.");
+  //       return;
+  //     }
 
-  const reader = new FileReader();
-  reader.onload = function (event) {
-    avatarImg.src = event.target.result;
-    localStorage.setItem("playerAvatar", event.target.result);
-  };
-  reader.readAsDataURL(file);
-});
+  //     if (!file.type.startsWith("image/")) {
+  //       alert("Please select an image file.");
+  //       return;
+  //     }
 
+  //     const reader = new FileReader();
+  //     reader.onload = function (e) {
+  //       const result = e.target.result;
+  //       avatarImg.src = result;
+  //       localStorage.setItem("playerAvatar", result);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   });
 
+ document.getElementById("toScroll").addEventListener("click", function () {
+      document.getElementById("game-grid").scrollIntoView({ behavior: "smooth" });
+    });
   // ☄️ GLTF Button Renderer
   initMarsGLTF();
 });

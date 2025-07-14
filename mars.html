@@ -1,79 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Mars Game</title>
-    <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-canvas {
-  display: block;
-  width: 100vw;
-  height: 100vh;
-}
+<head>
+  <meta charset="UTF-8">
+  <title>Marsoverse Model Viewer</title>
+  <style>
+    /* body { margin: 0; overflow: hidden; font-family: Orbitron, sans-serif; } */
+    
 
-    </style>
-  </head>
-  <body>
-    <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
-    <script>
-      // Scene setup
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xb34700);
-      scene.fog = new THREE.Fog(0xb34700, 10, 50);
+    html, body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(ellipse at center, #0b0814 0%, #000 100%);
+    }
 
-      const camera = new THREE.PerspectiveCamera(
-        75, window.innerWidth / window.innerHeight, 0.1, 1000
-      );
-      camera.position.set(0, 1.5, 5);
+    canvas {
+      display: block;
+    }
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      padding: 0.5rem;
+      background: linear-gradient(90deg, rgb(115, 41, 1), #500000, #1c197d, #000);
+      border-top: 2px solid white;
+      z-index: 10;
+    }
 
-      // Lights
-      const sunlight = new THREE.DirectionalLight(0xffcc99, 1.5);
-      sunlight.position.set(5, 10, 7.5);
-      scene.add(sunlight);
+    .nav-item {
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid #ff7300;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
 
-      const ambient = new THREE.AmbientLight(0x402010);
-      scene.add(ambient);
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
 
-      // Ground
-      const ground = new THREE.Mesh(
-        new THREE.PlaneGeometry(100, 100),
-        new THREE.MeshStandardMaterial({ color: 0x8b0000 })
-      );
-      ground.rotation.x = -Math.PI / 2;
-      scene.add(ground);
+<canvas id="threeCanvas"></canvas>
+<div class="navbar">
+  <button class="nav-item" onclick="loadModel('models/mars/scene.gltf')">Mars</button>
+  <button class="nav-item" onclick="loadModel('models/mars_rover/scene.gltf')">Mars Rover</button>
+  <button class="nav-item" onclick="loadModel('models/mars_one_mission_base/scene.gltf')">Mission Base</button>
+  <button class="nav-item" onclick="loadModel('models/mars_desert_research_station/scene.gltf')">Desert Station</button>
+</div>
+<!-- Load THREE.js and GLTFLoader from CDN (UMD version) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/loaders/GLTFLoader.js"></script>
 
-      // Spinning Cube
-      const cube = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshStandardMaterial({ color: 0xaa0000 })
-      );
-      cube.position.y = 0.5;
-      scene.add(cube);
 
-      // Resize
-      window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
+<script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('threeCanvas'), antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.position.set(0, 1.5, 5);
 
-      // Animate
-      function animate() {
-        cube.rotation.y += 0.01;
-        renderer.render(scene, camera);
-        requestAnimationFrame(animate);
-      }
-      animate();
-    </script>
-  </body>
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(10, 10, 10);
+  scene.add(light);
+
+  const loader = new THREE.GLTFLoader();
+  loader.load('models/mars/scene.gltf', gltf => {
+    scene.add(gltf.scene);
+  }, undefined, error => {
+    console.error(error);
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+
+</body>
 </html>

@@ -29,7 +29,7 @@ body::after {
   background-position: 0 0, 25px 25px;
   animation: twinkleStars 16s linear infinite;
   opacity: 0.3;
-  z-index: 0;
+  z-index: -1;
   filter: blur(0.4px);
 }
 body::after {
@@ -203,6 +203,9 @@ main {
   min-height: 100vh;
   overflow-y: auto;
 }
+#homePage::-webkit-scrollbar {
+  display: none;
+}
 /* #settingsPage.page.active {
   display: flex;
   flex-direction: column;
@@ -218,7 +221,7 @@ main {
 
 #homePage h1,
 #homePage p {
-  margin: 0.5rem 0;
+  margin: 0.5px 0;
 }
 
 /* .page.active {
@@ -393,25 +396,17 @@ li:hover {
   margin-bottom: 2rem;
 }
 
-.avatar-wrapper {
-  position: relative;
-  text-align: center;
-}
-
 .avatar-wrapper img {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
-  border: 2px solid #0ff;
   object-fit: cover;
+  border: 3px solid #0ff;
+  background: #222;
 }
 
 #avatarUpload {
-  margin-top: 0.5rem;
-  font-family: 'Orbitron';
-  font-size: 0.8rem;
-  display: block;
-  color: #fff;
+  margin-top: 15px;
 }
 
 /* 📋 Player Info beside avatar */
@@ -486,81 +481,7 @@ li:hover {
   }
 }
 
-/* }
- .choice {
-  border: 2px solid #0ff;
-  width: 200px;
-  height: 150px;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.05);
-}
- .choice:hover {
-  transform: scale(1.1);
-}
- .choice img {
-  width: 100px;
-}
 
- .choice h5 {
-  font-family: 'Orbitron';
-  margin: 5px 0 0;
-}
-
- .or-text {
-  font-family: 'Orbitron';
-  margin: 10px 0;
-}
- .mallo {
-  margin-top: 20px;
-  padding: 8px 12px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-family: 'Orbitron';
-}
- .choice.selected {
-  border-color: lime;
-  background: rgba(0, 255, 0, 0.1);
-  transform: scale(1.05);
-}
-@media (min-width: 1025px) { */
-  /* #companionSection {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; Center vertically */
-    /* height: 100vh;
-    padding: 40px 0;  Still gives breathing room */
-    /* box-sizing: border-box;
-  } */ 
-
-   /* .choices {
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 40px;
-    flex-wrap: wrap; /* Just in case width is tight */
-  /* } */ 
-
-   /* .or-text {
-    margin: 0 20px;
-  } */
-
-   /* .choice {
-    width: 150px;
-    height: 140px;
-  }
-
-   .choice img {
-    width: 80px;
-  } */
-
-   /* .mallo {
-    margin-top: 30px;
-    font-size: 1.1rem;
-  } */
-/* } */
 .profile-card {
   display: flex;
   gap: 1rem;
@@ -570,26 +491,19 @@ li:hover {
   margin-bottom: 1.5rem;
 }
 
-.avatar-wrapper {
-  position: relative;
-  text-align: center;
-}
+   .avatar-wrapper img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #0ff;
+      background: #222;
+    }
 
-.avatar-wrapper img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 2px solid #0ff;
-  object-fit: cover;
-}
+    #avatarUpload {
+      margin-top: 15px;
+    }
 
-#avatarUpload {
-  margin-top: 0.5rem;
-  font-family: 'Orbitron';
-  font-size: 0.8rem;
-  display: block;
-  color: #fff;
-}
 
 .info p {
   margin: 0.25rem 0;
@@ -611,7 +525,6 @@ li:hover {
   font-size: 1.2rem;
   color: #fff;
 }
-
 .launch-btn-wrapper {
   position: relative;
   width: 120px;
@@ -623,7 +536,6 @@ li:hover {
   justify-content: center;
 }
 
-/* Orbit-style static label */
 .orbit-label {
   position: absolute;
   top: -24px;
@@ -632,37 +544,22 @@ li:hover {
   font-family: 'Orbitron', sans-serif;
   font-size: 12px;
   color: #fff5f5;
-  /* text-shadow: 0 0 3px #fff, 0 0 6px #fffefe; */
   pointer-events: none;
 }
 
-#launchMarsBtn {
-  position: relative;
+#marsButtonCanvas {
   display: block;
   width: 120px;
   height: 120px;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: #ff431e;
   background-image: url('../models/mars/textures/mars.jpeg');
-  background-color: orange;
   background-size: cover;
   background-position: center;
-  border-radius: 50%;
   border: 1px solid #5d0e00;
   box-shadow: 0 0 20px #000000, 0 0 40px #551700;
-  cursor: pointer;
-  padding: 0;
-  outline: none;
   animation: spin 12s linear infinite;
-  overflow: hidden;
-}
-#launchMarsBtn:hover {
-  transform: scale(1.1);
-}
-#marsButtonCanvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  pointer-events: none;
 }
 
 @keyframes spin {
@@ -683,12 +580,16 @@ li:hover {
       text-shadow: 0 0 4px #ff7300;
     }
 
-    .game-grid {
+    #game-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 18px;
       max-width: 700px;
       margin: auto;
+    }
+    #game-grid a {
+      text-decoration: none;
+      color: white;
     }
 
     .game-card {
