@@ -1,0 +1,21 @@
+# # Ignore anything that's not inside the Marsoverse folder
+# /*
+# !/styles/
+# !/scripts/
+# !/images/
+# !/screens/
+# !/sounds/
+# !/models/
+# !/poker/
+# !/black/
+# !/space/
+# !/snake/
+# !/mini/
+# !/index.html
+# !/mars.html
+# !/zepta.html
+# !/marzo.html
+# !/hash.html
+.env
+server/.env
+telemetry/.env

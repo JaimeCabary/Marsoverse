@@ -1,0 +1,11 @@
+Model Information:
+* title:	FHC: Crying Child
+* source:	https://sketchfab.com/3d-models/fhc-crying-child-b60b17251195459e95c60d8992139a0c
+* author:	Speed․F1 (https://sketchfab.com/speed.f1)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "FHC: Crying Child" (https://sketchfab.com/3d-models/fhc-crying-child-b60b17251195459e95c60d8992139a0c) by Speed․F1 (https://sketchfab.com/speed.f1) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
