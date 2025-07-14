@@ -8,10 +8,43 @@
 body {
   margin: 0;
   font-family: 'Orbitron', sans-serif;
-  background: radial-gradient(ellipse at center, #201629 0%, #000000 100%);
+  /* background: radial-gradient(ellipse at center, #201629 0%, #000000 100%); */
+  background: radial-gradient(ellipse at center, #0b0814 0%, #000 100%);
+  animation: bgShift 25s ease infinite;
   color: #fff;
   overflow-x: hidden; /* Only horizontal hidden */
   overflow-y: auto;   /* Allow vertical scrolling */
+}
+body::before,
+body::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image:
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(white 1px, transparent 1px);
+  background-size: 50px 50px, 80px 80px;
+  background-position: 0 0, 25px 25px;
+  animation: twinkleStars 16s linear infinite;
+  opacity: 0.3;
+  z-index: 0;
+  filter: blur(0.4px);
+}
+body::after {
+  animation-direction: reverse;
+  opacity: 0.15;
+}
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes twinkleStars {
+  0% { transform: translateX(0) translateY(0); }
+  100% { transform: translateX(-50px) translateY(-30px); }
 }
 
 /* 🌌 STARFIELD INSIDE HUD */
@@ -22,7 +55,7 @@ body {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  background: linear-gradient(90deg, #1c197d, #30003a 40%, #500000 80%);
+  background: linear-gradient(90deg, rgb(175, 114, 1) -14.9%, #1c197d, #30003a 40%, #500000 80%);
   overflow: hidden;
 }
 
@@ -170,6 +203,17 @@ main {
   min-height: 100vh;
   overflow-y: auto;
 }
+/* #settingsPage.page.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0;
+  margin-top: 20px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  overflow-y: auto;
+} */
 
 
 #homePage h1,
@@ -223,7 +267,7 @@ main {
   border: 1px solid white;
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Ccircle cx='3' cy='3' r='1.5' fill='%23FFFFFF'/%3E%3Ccircle cx='30' cy='20' r='1.2' fill='%23FFFFFF'/%3E%3Ccircle cx='60' cy='50' r='1.3' fill='%23FFFFFF'/%3E%3Ccircle cx='90' cy='70' r='1' fill='%23FFFFFF'/%3E%3C/svg%3E") repeat,
-    linear-gradient(90deg, #500000, #1c197d, #000);
+    linear-gradient(90deg, rgb(115, 41, 1) , #500000, #1c197d, #000);
   display: flex;
   justify-content: space-around;
   padding: 0.75rem 0;
@@ -321,6 +365,7 @@ li:hover {
   overflow-y: auto;
   max-height: calc(100vh - 60px);
   box-sizing: border-box;
+  min-height: 100vh;
 }
 #settingsPage::-webkit-scrollbar {
   display: none;
@@ -597,11 +642,12 @@ li:hover {
   width: 120px;
   height: 120px;
   background-image: url('../models/mars/textures/mars.jpeg');
+  background-color: orange;
   background-size: cover;
   background-position: center;
   border-radius: 50%;
   border: 1px solid #5d0e00;
-  box-shadow: 0 0 20px #000000, 0 0 40px #ff4500;
+  box-shadow: 0 0 20px #000000, 0 0 40px #551700;
   cursor: pointer;
   padding: 0;
   outline: none;
@@ -631,10 +677,10 @@ li:hover {
 
     .section-heading {
       text-align: center;
-      color: #00fff2;
+      color: #ffffff;
       font-size: 1.8rem;
       margin-bottom: 20px;
-      text-shadow: 0 0 10px #00f7ffaa;
+      text-shadow: 0 0 4px #ff7300;
     }
 
     .game-grid {
@@ -647,12 +693,12 @@ li:hover {
 
     .game-card {
       background: rgba(0, 0, 0, 0.6);
-      border: 2px solid #00fff2;
+      border: 2px solid #ff7300;
       border-radius: 16px;
       padding: 10px;
       text-align: center;
       transition: 0.3s ease;
-      box-shadow: 0 0 10px #00f7ff40;
+      box-shadow: 0 0 4px #ff2a0040;
       cursor: pointer;
     }
 
@@ -666,9 +712,9 @@ li:hover {
     .game-card:hover {
       transform: scale(1.05);
       background: rgba(0, 0, 0, 0.8);
-      box-shadow: 0 0 18px #00f7ff;
+      box-shadow: 0 0 4px #ffb700;
     }
-
+    
 
 
 /* .............>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
