@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>MarsoVerse - Game</title>
   <meta name="description" content="MarsoVerse Gameplay Environment" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="styles/marzo.css" />
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <!-- Three.js -->
@@ -32,17 +33,21 @@
 
       <div class="launch-btn-wrapper">
         <div class="orbit-label">Click Mars to launch the game</div>
+            <br>
         <button id="launchMarsBtn" class="we">
           <canvas id="marsButtonCanvas"></canvas>
         </button>
       </div>
-      <br>
-      <br>
+
+  
+      <button id="toScroll" class="tugg-btn">
+        <i class="fas fa-chevron-down"></i>
+      </button>
 
       <!-- <section id="friendsPage" class="page"> -->
     <h2 class="section-heading">🕹️ Mini Games for XP</h2>
 
-    <div class="game-grid">
+    <div class="game-grid" id="game-grid>
   <a href="black\blacko.html" class="game-card">
     <img src="screens/blacko.png" alt="Blackjack">
     <p>Marsoverse Blackjack</p>
@@ -217,5 +222,11 @@
 
   <!-- 📜 JS -->
   <script src="scripts/marzo.js"></script>
+  <script>
+  document.getElementById("toScroll").addEventListener("click", function () {
+    document.querySelector(".game-grid").scrollIntoView({ behavior: "smooth" });
+  });
+</script>
+
 </body>
 </html>

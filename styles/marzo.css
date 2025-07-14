@@ -714,6 +714,29 @@ li:hover {
       background: rgba(0, 0, 0, 0.8);
       box-shadow: 0 0 4px #ffb700;
     }
+    .tugg-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 2rem;
+  animation: bounce 1.5s infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin: 0; */
+  /* margin-bottom: 4px; */
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
     
 
 
