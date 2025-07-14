@@ -40,6 +40,68 @@
     #avatarUpload {
       margin-top: 15px;
     }
+#cropModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #111;
+  border: 2px solid #0ff;
+  padding: 16px;
+  z-index: 9999; /* 👈 HIGH Z-INDEX to stay above navbar */
+  color: white;
+  box-shadow: 0 0 20px #0ff;
+  border-radius: 12px;
+
+  width: 90vw;
+  max-width: 400px;
+
+  max-height: 80vh; /* 👈 Shorter on desktop */
+  overflow-y: auto;
+  text-align: center;
+}
+
+#cropImage {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 480px) {
+  #cropModal {
+    width: 95vw;
+    max-height: 85vh;
+    padding: 12px;
+  }
+}
+
+
+#cropModal button {
+  background-color: #0ff;
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#cropModal button:hover {
+  background-color: #00aaff;
+}
+
+#cancelCrop {
+  background-color: #ff4444;
+  color: #fff;
+  margin-left: 10px;
+}
+
+#cancelCrop:hover {
+  background-color: #cc0000;
+}
+
   </style>
 
 <header class="hud">
@@ -134,12 +196,14 @@
     <!-- 📄 Enhanced Settings Section - MarsoVerse -->
 <section class="page" id="settingsPage">
   <h2>Settings & Profile</h2>
-  <div id="cropModal" style="display: none; text-align: center;">
-  <h3>Crop your avatar</h3>
-  <img id="cropImage" style="max-width: 100%; max-height: 300px;" />
-  <br>
-  <button id="confirmCrop">✅ Done</button>
-</div>
+    <div id="cropModal" style="display: none; text-align: center;">
+        <h3>Crop your avatar</h3>
+        <img id="cropImage" style="max-width: 100%; max-height: 300px;" />
+        <br>
+        <button id="confirmCrop">✅ Done</button>
+        <button id="cancelCrop">❌ Cancel</button>
+    </div>
+
 
 
   <!-- 🌟 Player Visual Card -->
@@ -270,36 +334,103 @@
   }
 </script>
 <script>
-    const avatarInput = document.getElementById("avatarUpload");
-    const avatarImg = document.getElementById("playerAvatar");
 
-    // Load from localStorage if previously saved
-    const saved = localStorage.getItem("playerAvatar");
-    if (saved) {
-      avatarImg.src = saved;
-    }
+  let cropper;
 
-    avatarInput.addEventListener("change", () => {
-      const file = avatarInput.files[0];
-      if (!file) {
-        alert("No file selected.");
-        return;
-      }
+const avatarInput = document.getElementById("avatarUpload");
+const avatarImg = document.getElementById("playerAvatar");
+const cropModal = document.getElementById("cropModal");
+const cropImage = document.getElementById("cropImage");
+const confirmCrop = document.getElementById("confirmCrop");
 
-      // Check it's an image
-      if (!file.type.startsWith("image/")) {
-        alert("Please select an image file.");
-        return;
-      }
+// Load saved avatar
+const saved = localStorage.getItem("playerAvatar");
+if (saved) {
+  avatarImg.src = saved;
+}
 
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const result = e.target.result;
-        avatarImg.src = result;
-        localStorage.setItem("playerAvatar", result);
-      };
-      reader.readAsDataURL(file);
+// Avatar upload trigger
+avatarInput.addEventListener("change", () => {
+  const file = avatarInput.files[0];
+  if (!file || !file.type.startsWith("image/")) {
+    alert("Please select an image file.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    cropImage.src = e.target.result;
+    cropModal.style.display = "block";
+
+    if (cropper) cropper.destroy(); // Clean up if already exists
+    cropper = new Cropper(cropImage, {
+      aspectRatio: 1,
+      viewMode: 1,
+      background: false,
+      dragMode: 'move',
+      guides: true,
+      scalable: true,
+      zoomable: true,
     });
+  };
+  reader.readAsDataURL(file);
+});
+
+// Confirm crop
+confirmCrop.addEventListener("click", () => {
+  if (cropper) {
+    const canvas = cropper.getCroppedCanvas({
+      width: 150,
+      height: 150,
+    });
+
+    const croppedDataUrl = canvas.toDataURL("image/png");
+    avatarImg.src = croppedDataUrl;
+    localStorage.setItem("playerAvatar", croppedDataUrl);
+
+    cropper.destroy();
+    cropModal.style.display = "none";
+  }
+  
+});
+document.getElementById("cancelCrop").addEventListener("click", () => {
+  if (cropper) {
+    cropper.destroy();
+  }
+  cropModal.style.display = "none";
+});
+
+
+    // const avatarInput = document.getElementById("avatarUpload");
+    // const avatarImg = document.getElementById("playerAvatar");
+
+    // // Load from localStorage if previously saved
+    // const saved = localStorage.getItem("playerAvatar");
+    // if (saved) {
+    //   avatarImg.src = saved;
+    // }
+
+    // avatarInput.addEventListener("change", () => {
+    //   const file = avatarInput.files[0];
+    //   if (!file) {
+    //     alert("No file selected.");
+    //     return;
+    //   }
+
+    //   // Check it's an image
+    //   if (!file.type.startsWith("image/")) {
+    //     alert("Please select an image file.");
+    //     return;
+    //   }
+
+    //   const reader = new FileReader();
+    //   reader.onload = function (e) {
+    //     const result = e.target.result;
+    //     avatarImg.src = result;
+    //     localStorage.setItem("playerAvatar", result);
+    //   };
+    //   reader.readAsDataURL(file);
+    // });
   </script>
   <!-- Cropper.js JS -->
 <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>

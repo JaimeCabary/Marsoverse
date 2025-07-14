@@ -13,6 +13,264 @@ body {
   justify-content: flex-end;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
+  padding-top: 60px; /* Height of fixed navbar */
+  padding-bottom: 100px; /* Height of sticky input bar */
+}
+
+body::before,
+body::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 200%;
+  height: 200%;
+  background-image:
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(white 1px, transparent 1px);
+  background-size: 50px 50px, 80px 80px;
+  background-position: 0 0, 25px 25px;
+  animation: twinkleStars 16s linear infinite;
+  opacity: 0.3;
+  z-index: 0;
+  filter: blur(0.4px);
+}
+body::after {
+  animation-direction: reverse;
+  opacity: 0.15;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes twinkleStars {
+  0% { transform: translateX(0) translateY(0); }
+  100% { transform: translateX(-50px) translateY(-30px); }
+}
+
+/* === NAVBAR === */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: rgba(0, 0, 0, 0.101);
+  padding: 0.5rem 1rem;
+  text-align: center;
+  z-index: 1001;
+  backdrop-filter: blur(10px);
+}
+
+.navbar h1 {
+  font-family: 'Russo One', sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  background: linear-gradient(45deg, #FF6200 10%, #FFD700 25%, #00A3FF 50%, #FFFFFF 75%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: colorShift 3s infinite alternate;
+  margin: 0;
+}
+
+@keyframes colorShift {
+  0% { background-position: 0% }
+  100% { background-position: 100% }
+}
+
+/* === TERMINAL === */
+#zepta-container {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+#zepta-log {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.zepta-line {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  backdrop-filter: blur(5px);
+  max-width: 90%;
+  box-shadow: 0 0 4px rgba(255, 165, 0, 0.1);
+}
+
+.user-line {
+  align-self: flex-end;
+  background: rgba(255, 85, 0, 0.2);
+  border: 1px solid rgba(255, 85, 0, 0.3);
+}
+
+.zepta-reply {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* === STICKY ZEPTA INPUT BAR === */
+#zepta-bar {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 0.8rem 1rem;
+  width: 95%;
+  max-width: 700px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  border: 1px solid rgba(255, 165, 0, 0.2);
+  box-shadow: 0 0 6px rgba(255, 85, 0, 0.3);
+}
+
+#zepta-input {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 1rem;
+}
+
+#zepta-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+#zepta-send {
+  background: #ff5c33;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#zepta-send:hover {
+  background: #ff884d;
+  box-shadow: 0 0 8px rgba(255, 85, 0, 0.4);
+}
+
+/* === SUGGESTIONS DROPDOWN === */
+#suggestions {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 700px;
+  max-height: 250px;
+  overflow-y: auto;
+  color: white;
+  font-size: 0.95rem;
+  padding: 0.75rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.4rem;
+  z-index: 50;
+  border-radius: 12px;
+  background: #39557c88; /* <-- move background here */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* <-- move border here */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 4px rgba(255, 227, 175, 0.4);
+  animation: fadeIn 0.2s ease-out;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+#suggestions::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border-radius: inherit;
+  z-index: -1;
+  /* border: 1px solid rgba(255, 165, 0, 0.3); */
+  pointer-events: none;
+}
+
+.suggestion-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  z-index: 1;
+  transition: background 0.2s ease;
+  border-radius: 8px;
+}
+
+.suggestion-item:hover {
+  background: rgba(255, 165, 0, 0.2);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .zepta-line {
+    font-size: 0.85rem;
+  }
+
+  #zepta-bar {
+    padding: 0.6rem 0.8rem;
+    gap: 0.4rem;
+  }
+
+  #zepta-send {
+    font-size: 1rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  #suggestions {
+    bottom: 110px;
+    width: 90%;
+  }
+
+  #zepta-input {
+    font-size: 0.9rem;
+  }
+
+  .navbar h1 {
+    font-size: 1.5rem;
+  }
+}
+
+
+/* === BODY BACKGROUND & STARS === */
+/* body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: radial-gradient(ellipse at center, #1a0f11 0%, #0c0c1c 40%, #000 100%);
+  background-size: 600% 600%;
+  animation: bgShift 25s ease infinite;
+  font-family: 'JetBrains Mono', monospace;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
 }
 
 body::before,
@@ -49,7 +307,7 @@ body::after {
 }
 
 /* === ZEPTA TERMINAL === */
-#zepta-container {
+/*#zepta-container {
   position: relative;
   width: 100%;
   max-width: 700px;
@@ -90,10 +348,10 @@ body::after {
   align-self: flex-start;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
+} */
 
 /* === STICKY ZEPTA INPUT BAR === */
-#zepta-bar {
+/* #zepta-bar {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
   border-radius: 20px;
@@ -138,10 +396,10 @@ body::after {
 #zepta-send:hover {
   background: #ff884d;
   box-shadow: 0 0 8px rgba(255, 85, 0, 0.4);
-}
+} */
 
 /* === SUGGESTIONS DROPDOWN === */
-#suggestions {
+/* #suggestions {
   position: absolute;
   bottom: 90px;
   left: 50%;
@@ -186,10 +444,10 @@ body::after {
 
 .suggestion-item:hover {
   background: rgba(255, 165, 0, 0.2);
-}
+} */
 
 /* === RESPONSIVE STYLING === */
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
   .zepta-line {
     font-size: 0.85rem;
   }
@@ -233,10 +491,10 @@ body::after {
     max-height: 60vh;
     overflow-y: auto;
   }
-}
+} */
 
 /* === NAVBAR === */
-.navbar {
+/* .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
   background: transparent;
@@ -260,4 +518,4 @@ body::after {
 @keyframes colorShift {
   0% { background-position: 0% }
   100% { background-position: 100% }
-}
+  }  */
