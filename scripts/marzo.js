@@ -81,7 +81,7 @@ marsCanvas?.addEventListener("click", () => {
   launchBtn?.addEventListener("click", () => {
     alert("Redirecting to Zepta terminal");
     playSound("clickSound");
-    window.location.href = "hash.html";
+    window.location.href = "mars-viewer/index.html";
   });
     const compName = localStorage.getItem("companionName") || "None";
   const cybName = localStorage.getItem("cyborgName") || "None";
