@@ -62,12 +62,11 @@ let currentView = 'mars';
 
 // Models data
 const models = {
-  mars: { path: '/models/mars/scene.gltf', name: 'Mars' },
-  rover: { path: '/models/mars_rover/scene.gltf', name: 'Mars Rover' },
-  base: { path: '/models/mars_one_mission_base/scene.gltf', name: 'Mission Base' },
-  desert: { path: '/models/mars_desert_research_station/scene.gltf', name: 'Desert Station' }
-  // spacesuiit: {path: '/models/franz_viehbocks_spacesuit/scene.gltf', name: 'Space suit'}
-};
+  mars:   { path: './models/mars/scene.gltf', name: 'Mars' },
+  rover:  { path: './models/mars_rover/scene.gltf', name: 'Mars Rover' },
+  base:   { path: './models/mars_one_mission_base/scene.gltf', name: 'Mission Base' },
+  desert: { path: './models/mars_desert_research_station/scene.gltf', name: 'Desert Station' }
+}
 
 async function loadModel(path) {
   return new Promise((resolve, reject) => {

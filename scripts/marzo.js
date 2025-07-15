@@ -42,8 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 marsCanvas?.addEventListener("click", () => {
   playSound("clickSound");
-  alert("Redirecting to Zepta terminal");
-  window.location.href = "hash.html";
+  alert(`Blasting off to Mars Commander ${playerName}`);
+  window.location.href = "mars-viewer/dist/index.html";
 });
 
 
@@ -79,9 +79,9 @@ marsCanvas?.addEventListener("click", () => {
   // 🚀 Mars Launch Button Logic
   const launchBtn = document.getElementById("launchMarsBtn");
   launchBtn?.addEventListener("click", () => {
-    alert("Redirecting to Zepta terminal");
+    alert(`Blasting off to Mars Commander ${playerName}`);
     playSound("clickSound");
-    window.location.href = "mars-viewer/index.html";
+    window.location.href = "mars-viewer/dist/index.html";
   });
     const compName = localStorage.getItem("companionName") || "None";
   const cybName = localStorage.getItem("cyborgName") || "None";
