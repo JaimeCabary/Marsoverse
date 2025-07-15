@@ -1,0 +1,11 @@
+Model Information:
+* title:	Mandalorian - Grogu ( The force )
+* source:	https://sketchfab.com/3d-models/mandalorian-grogu-the-force-1cbbc8a231154426ade7d3b11cf5bb0e
+* author:	NestaEric (https://sketchfab.com/Nestaeric)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Mandalorian - Grogu ( The force )" (https://sketchfab.com/3d-models/mandalorian-grogu-the-force-1cbbc8a231154426ade7d3b11cf5bb0e) by NestaEric (https://sketchfab.com/Nestaeric) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
