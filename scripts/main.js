@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sections.forEach(sec => sec.classList.remove('active'));
     document.getElementById(id)?.classList.add('active');
   };
+  
 
   const introVideo = document.getElementById('introVideo');
   const explosionSound = document.getElementById('explosionSound');

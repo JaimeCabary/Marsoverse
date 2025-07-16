@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
   <title>Mars Viewer</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <!-- Orbitron font for your UI -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
@@ -166,6 +168,7 @@ html, body {
     align-items: center;
     width:100vw ;
     border-radius: 2rem;
+    margin: 0 auto 1.5rem auto;
     margin: 2px;
     display: inline-flex;
     justify-content: space-around;
@@ -174,11 +177,11 @@ html, body {
   }
 
   .nav-item {
-    font-size: 0.65rem;
+    font-size: 0.5rem;
     padding: 0.2rem;
     border-radius: 8px;
     flex: 0 0 auto;
-    line-height: 1; 
+    line-height: 0.9; 
     color: 0x0b0814;
    } 
 } 
@@ -191,6 +194,14 @@ html, body {
 <body>
   <div class="stars"></div>
   <!-- Your JS will create canvas and navbar dynamically -->
+   <!-- <iframe 
+  src="https://trek.nasa.gov/mars/"
+  width="100%" 
+  height="100%" 
+  style="position: fixed; top: 0; left: 0; z-index: 1; border: none;"
+  id="mars-trek-iframe">
+</iframe> -->
+
 <audio id="marsTheme" src="/sounds/mars_theme.mp3" loop></audio>
 
   <!-- Vite injects modules from /src/main.js -->

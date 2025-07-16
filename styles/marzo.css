@@ -9,12 +9,13 @@ body {
   margin: 0;
   font-family: 'Orbitron', sans-serif;
   /* background: radial-gradient(ellipse at center, #201629 0%, #000000 100%); */
-  background: radial-gradient(ellipse at center, #0b0814 0%, #000 100%);
+  /* background: radial-gradient(ellipse at center, #0b0814 0%, #000 100%); */
   animation: bgShift 25s ease infinite;
   color: #fff;
   overflow-x: hidden; /* Only horizontal hidden */
   overflow-y: auto;   /* Allow vertical scrolling */
 }
+
 body::before,
 body::after {
   content: '';

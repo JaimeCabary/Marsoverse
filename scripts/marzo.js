@@ -150,17 +150,38 @@ document.getElementById("saveProfileBtn").addEventListener("click", () => {
   // Always show jerry.png for cyborg until dynamic loading
   document.getElementById("cyborgProfileImg").src = "images/jerry.png";
 
-  // 🌗 Theme toggle switch
-document.getElementById("themeToggle").addEventListener("change", (e) => {
-  const body = document.body;
-  if (e.target.checked) {
-    // ☀️ Morning theme
-    body.style.background = "radial-gradient(ellipse at center, #fceabb 0%, #f8b500 100%)";
-  } else {
-    // 🌙 Night theme
-    body.style.background = "radial-gradient(ellipse at center, #0b0814 0%, #000 100%)";
-  }
-});
+  // const toggle = document.getElementById("themeToggle");
+
+  // // 🌙 Force night mode at load
+  // document.body.style.background = "radial-gradient(ellipse at center, #0b0814 0%, #000 100%)";
+
+  // // 🌞 Toggle handler
+  // toggle.addEventListener("change", (e) => {
+  //   if (e.target.checked) {
+  //     // Morning
+  //     document.body.style.background = "radial-gradient(ellipse at center, #fceabb 0%, #f8b500 100%)";
+  //   } else {
+  //     // Night
+  //     document.body.style.background = "radial-gradient(ellipse at center, #0b0814 0%, #000 100%)";
+  //   }
+  // });
+
+const toggle = document.getElementById("themeToggle");
+
+      // Start in night mode (dark bg)
+      document.body.style.background = "radial-gradient(ellipse at center, #0b0814 0%, #000 100%)";
+
+      toggle.addEventListener("change", (e) => {
+        if (e.target.checked) {
+          // Morning theme 🌞
+          document.body.style.background = "radial-gradient(ellipse at center, #fceabb 0%, #f8b500 100%)";
+        } else {
+          // Night theme 🌙
+          document.body.style.background = "radial-gradient(ellipse at center, #0b0814 0%, #000 100%)";
+        }
+      });
+
+
 
 
   // 🧹 Reset Functionality

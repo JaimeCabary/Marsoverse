@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin – Player Logs</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0c0c0f;
+      color: #0ff;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #f0f0f0;
+    }
+    table {
+      width: 95%;
+      margin: 2rem auto;
+      border-collapse: collapse;
+      background: #111;
+      color: #0ff;
+      box-shadow: 0 0 15px rgba(0,255,255,0.2);
+    }
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid #0ff;
+    }
+    th {
+      background-color: #0ff;
+      color: #111;
+    }
+    tr:hover {
+      background-color: rgba(0, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>👩🏾‍🚀 MarsoVerse Admin Dashboard</h1>
+  <table id="playerTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Companion</th>
+        <th>Cyborg</th>
+        <th>Wallet</th>
+        <th>XP</th>
+        <th>Missions</th>
+        <th>Level</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUCwISiy1WJo_yB2lPbUN56faUoKe-JEs",
+      authDomain: "marsoverse-c7e2d.firebaseapp.com",
+      projectId: "marsoverse-c7e2d",
+      storageBucket: "marsoverse-c7e2d.appspot.com",
+      messagingSenderId: "1055658003266",
+      appId: "1:1055658003266:web:e0f5ebe689d28c5432d6db",
+      measurementId: "G-XNW8MQM5HT"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const tableBody = document.querySelector('#playerTable tbody');
+
+    db.ref('players').on('value', (snapshot) => {
+      tableBody.innerHTML = '';
+      const data = snapshot.val();
+
+      if (data) {
+        Object.entries(data).forEach(([playerId, player]) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${player.name || '-'}</td>
+            <td>${player.age || '-'}</td>
+            <td>${player.gender || '-'}</td>
+            <td>${player.companion || '-'}</td>
+            <td>${player.cyborg || '-'}</td>
+            <td>${player.wallet || '-'}</td>
+            <td>${player.xp || 0}</td>
+            <td>${(player.missions || []).length}</td>
+            <td>${player.level || 1}</td>
+            <td>${player.timestamp ? new Date(player.timestamp).toLocaleString() : '-'}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
