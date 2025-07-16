@@ -7,6 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const playerAge = localStorage.getItem("playerAge") || "Unknown";
   const playerXP = localStorage.getItem("playerXP") || 0;
   const walletBalance = localStorage.getItem("walletBalance") || 0;
+  const playerEmail = localStorage.getItem("playerEmail");
+  document.getElementById("youEmail").textContent = playerEmail || "xyz@example.com";
+
+
 
   // 🧠 Update UI Elements
   document.getElementById("playerNameHUD").textContent = playerName;
@@ -75,6 +79,10 @@ marsCanvas?.addEventListener("click", () => {
       el.play();
     }
   }
+  const googleBtn = document.getElementById("googleSignInBtn");
+  if (googleBtn) {
+    googleBtn.addEventListener("click", signInWithGoogle);
+  }
 
   // 🚀 Mars Launch Button Logic
   const launchBtn = document.getElementById("launchMarsBtn");
@@ -83,6 +91,48 @@ marsCanvas?.addEventListener("click", () => {
     playSound("clickSound");
     window.location.href = "mars-viewer/dist/index.html";
   });
+  // Toggle edit section
+document.getElementById("toggleEditProfile").addEventListener("click", () => {
+  const editSection = document.getElementById("editProfileSection");
+  editSection.style.display = editSection.style.display === "none" ? "block" : "none";
+
+  // Fill current values
+  document.getElementById("editName").value = localStorage.getItem("playerName") || "";
+  document.getElementById("editAge").value = localStorage.getItem("playerAge") || "";
+  // document.getElementById("editEmail").value = localStorage.getItem("playerEmail") || "";
+});
+
+// Save button logic
+document.getElementById("saveProfileBtn").addEventListener("click", () => {
+  const newName = document.getElementById("editName").value;
+  const newAge = document.getElementById("editAge").value;
+  const newEmail = document.getElementById("editEmail").value;
+
+  localStorage.setItem("playerName", newName);
+  localStorage.setItem("playerAge", newAge);
+  localStorage.setItem("playerEmail", newEmail);
+
+  document.getElementById("youName").textContent = newName;
+  document.getElementById("youAge").textContent = newAge;
+  document.getElementById("youEmail").textContent = newEmail;
+
+  alert("✅ Profile updated!");
+
+  // Optionally hide section again
+  document.getElementById("editProfileSection").style.display = "none";
+});
+// Trigger save when Enter is pressed in any input
+["editName", "editAge", "editEmail"].forEach((id) => {
+  const input = document.getElementById(id);
+  input?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      document.getElementById("saveProfileBtn").click();
+    }
+  });
+});
+
+
     const compName = localStorage.getItem("companionName") || "None";
   const cybName = localStorage.getItem("cyborgName") || "None";
 
@@ -100,13 +150,26 @@ marsCanvas?.addEventListener("click", () => {
   // Always show jerry.png for cyborg until dynamic loading
   document.getElementById("cyborgProfileImg").src = "images/jerry.png";
 
+  // 🌗 Theme toggle switch
+document.getElementById("themeToggle").addEventListener("change", (e) => {
+  const body = document.body;
+  if (e.target.checked) {
+    // ☀️ Morning theme
+    body.style.background = "radial-gradient(ellipse at center, #fceabb 0%, #f8b500 100%)";
+  } else {
+    // 🌙 Night theme
+    body.style.background = "radial-gradient(ellipse at center, #0b0814 0%, #000 100%)";
+  }
+});
+
+
   // 🧹 Reset Functionality
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    if (confirm("Are you sure you want to delete your progress?")) {
-      localStorage.clear();
-      location.reload();
-    }
-  });
+  // document.getElementById("resetBtn").addEventListener("click", () => {
+  //   if (confirm("Are you sure you want to delete your progress?")) {
+  //     localStorage.clear();
+  //     location.reload();
+  //   }
+  // });
   //  const avatarInput = document.getElementById("avatarUpload");
   //   const avatarImg = document.getElementById("playerAvatar");
 

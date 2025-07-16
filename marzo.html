@@ -101,6 +101,95 @@
 #cancelCrop:hover {
   background-color: #cc0000;
 }
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: transparent;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+.switch {
+  --button-width: 3.5em;
+  --button-height: 2em;
+  --toggle-diameter: 1.5em;
+  --button-toggle-offset: calc((var(--button-height) - var(--toggle-diameter)) / 2);
+  --toggle-shadow-offset: 10px;
+  --toggle-wider: 3em;
+  --color-grey: #cccccc;
+  --color-green: #4296f4;
+
+  font-size: 17px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  margin-bottom: 1rem;
+}
+
+/* Hide default checkbox */
+.switch input {
+  display: none;
+}
+
+/* Custom slider */
+.switch .slider {
+  position: relative;
+  display: inline-block;
+  width: var(--button-width);
+  height: var(--button-height);
+  background-color: var(--color-grey);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Toggle circle */
+.switch .slider::before {
+  content: "";
+  position: absolute;
+  width: var(--toggle-diameter);
+  height: var(--toggle-diameter);
+  left: var(--button-toggle-offset);
+  top: var(--button-toggle-offset);
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+/* Move circle when checked */
+.switch input:checked + .slider::before {
+  transform: translateX(1.5em);
+  background-color: #fff;
+}
+
+/* Change bg when checked */
+.switch input:checked + .slider {
+  background-color: var(--color-green);
+}
+
+/* Theme stars and cloud */
+.star, .cloud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+}
+
+.star_1 { left: 5px; top: 2px; }
+.star_2 { left: 12px; top: 5px; }
+.star_3 { left: 8px; top: 12px; }
+
+.cloud {
+  left: 2rem;
+  top: -0.4rem;
+  width: 2rem;
+  height: auto;
+  opacity: 0.6;
+}
+
 
   </style>
 
@@ -155,6 +244,10 @@
    <a href="marxo/marxo.html" class="game-card">
     <img src="screens/marxos.png" alt="X and O">
     <p>MarzoX & O</p>
+  </a>
+   <a href="marsword/word.html" class="game-card">
+    <img src="screens/word.png" alt="X and O">
+    <p>MarsWord+</p>
   </a>
 
   <div class="game-card">
@@ -217,13 +310,27 @@
       <p>Age: <span id="youAge">Unknown</span></p>
       <p>XP: <span id="youXP">0</span></p>
       <p>Wallet: <span id="walletAmount">0</span> USDT</p>
+      <p>Email: <span id="youEmail">xyz@example.com</span></p>
     </div>
+    <!-- ✏️ Edit Profile Toggle -->
+    <button id="toggleEditProfile">
+      <i class="fas fa-pen"></i>
+    </button>
+
+    <!-- 🔧 Editable Profile Section (initially hidden) -->
+    <div id="editProfileSection" style="display: none; margin-top: 10px;">
+      <p>Edit Name: <input type="text" id="editName" placeholder="Enter name..."></p>
+      <p>Edit Age: <input type="number" id="editAge" min="1" placeholder="Enter age..."></p>
+      <p>Email: <input type="email" id="editEmail" placeholder="Enter email..."></p>
+      <button id="saveProfileBtn">💾 Save Profile</button>
+    </div>
+
   </div>
 
   <!-- 👤 Visual Profile -->
   <div class="visual-profile">
     <div class="choice">
-      <img id="companionProfileImg" src="images/default.png" alt="Companion">
+      <img id="companionProfileImg" src="images/errin1.png" alt="Companion">
       <h5 id="companionProfileName">Companion</h5>
     </div>
     <div class="choice">
@@ -234,14 +341,42 @@
 
   <!-- 🎛 Settings Controls -->
   <div class="settings">
-    <label><input type="checkbox" id="muteToggle" /> Mute All Sounds</label>
-    <label><input type="checkbox" id="musicToggle" checked /> Play Music</label>
-    <label><input type="checkbox" id="sfxToggle" checked /> Play SFX</label>
-    <label><button id="signInBtn">Sign In with Google or Apple</button></label>
-    <label><button id="connectWalletBtn">Connect Phantom Wallet</button></label>
-    <label><button id="shareBtn">Share Game for XP</button></label>
+ <label class="switch">
+    <input type="checkbox" id="muteToggle" />
+    <span class="slider"></span> Mute All Sounds
+  </label>
+
+  <label class="switch">
+    <input type="checkbox" id="musicToggle" checked />
+    <span class="slider"></span> Play Music
+  </label>
+
+  <label class="switch">
+    <input type="checkbox" id="sfxToggle" checked />
+    <span class="slider"></span> Play SFX
+  </label>
+
+    <button id="googleSignInBtn"><img src="https://img.icons8.com/ios-filled/50/ffffff/google-logo.png" class="icon" alt="Google" />
+Sign In with Google</button>
+    <button id="appleSignInBtn"> <img src="https://img.icons8.com/ios-filled/50/ffffff/mac-os.png" class="icon" alt="Apple" />
+Sign In with Apple</button> 
+    <button id="connectWalletBtn">Connect Phantom Wallet</button>
+    <button id="shareBtn">Share Game for XP</button>
     <label><button id="chatBtn">Chat with Companions</button></label>
-    <label><button id="resetBtn">Delete Game & Reset Progress</button></label>
+    <button id="resetBtn">Delete Game & Reset Progress</button>
+    <!-- 🌗 Theme Switch -->
+  <label class="switch" id="themeToggleLabel">
+    <input type="checkbox" id="themeToggle" />
+    <span class="slider">
+      <div class="star star_1"></div>
+      <div class="star star_2"></div>
+      <div class="star star_3"></div>
+      <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+        <path fill="#fff"
+          d="M5.52 6.41c-.28-.22-.63-.35-1.01-.35-0.89 0-1.61.72-1.63 1.61C2.2 8.01 1.33 9.22 1.33 10.62c0 1.23.91 2.25 2.09 2.41h8.37c1.16-.07 2.08-1.04 2.08-2.23 0-1.15-.86-2.1-1.97-2.23.01-.07.01-.14.01-.21 0-1.78-1.49-3.23-3.33-3.23-1.36 0-2.53.79-3.06 1.93z" />
+      </svg>
+    </span>
+  </label>
   </div>
 
   <!-- 📦 App Info -->
@@ -313,6 +448,9 @@
   <audio id="riserSound" src="sounds/riser-hit-sfx-001-289802.mp3" preload="auto"></audio>
   <audio id="swooshSound" src="sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3" preload="auto"></audio>
   <audio id="typingSound" src="sounds/typing.mp3" preload="auto"></audio>
+  <audio id="galaxySound" src="sounds/galaxy.mp3" preload="auto"></audio>
+  <audio id="astroSound" src="sounds/asteroid.mp3" preload="auto"></audio>
+
 
   <!-- 📜 JS -->
   <script src="scripts/marzo.js"></script>
@@ -432,8 +570,81 @@ document.getElementById("cancelCrop").addEventListener("click", () => {
     //   reader.readAsDataURL(file);
     // });
   </script>
+  <!-- <script>
+
+
+  </script> -->
   <!-- Cropper.js JS -->
 <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+<!-- Add this in your <head> or just before </body> -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBUCwISiy1WJo_yB2lPbUN56faUoKe-JEs",
+    authDomain: "marsoverse-c7e2d.firebaseapp.com",
+    projectId: "marsoverse-c7e2d",
+    storageBucket: "marsoverse-c7e2d.appspot.com",
+    messagingSenderId: "1055658003266",
+    appId: "1:1055658003266:web:e0f5ebe689d28c5432d6db",
+    measurementId: "G-XNW8MQM5HT"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Google Sign In Button Handler
+  // Google Sign In Button Handler
+window.signInWithGoogle = () => {
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      const user = result.user;
+      const name = user.displayName;
+      const email = user.email;
+      const googlePhoto = user.photoURL;
+
+      localStorage.setItem("playerName", name);
+      localStorage.setItem("playerEmail", email);
+
+      // Prompt for avatar replacement
+      const replaceAvatar = confirm(`🧑‍🚀 Welcome, ${name}!\n\nDo you want to replace your current avatar with your Google photo?`);
+
+      if (replaceAvatar) {
+        document.getElementById("playerAvatar").src = googlePhoto;
+        localStorage.setItem("playerAvatar", googlePhoto);
+
+        // Update file input if needed (optional)
+        const avatarInput = document.getElementById("avatarUpload");
+        if (avatarInput) {
+          avatarInput.value = ""; // reset manual selection since we're using Google photo
+        }
+      }
+
+      // Optional: Update name/email display in DOM
+      document.getElementById("youName").textContent = name;
+      document.getElementById("youEmail").textContent = email;
+    })
+    .catch((error) => {
+      console.error("Google sign-in error:", error);
+      alert("❌ Google sign-in failed");
+    });
+};
+
+</script>
+<script>
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (confirm("Are you sure you want to delete your progress?")) {
+      localStorage.clear();
+      location.reload();
+    }
+  });
+</script>
+
+
+
 
 
 </body>

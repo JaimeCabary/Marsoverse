@@ -639,6 +639,23 @@ li:hover {
   }
 }
 
+
+#toggleEditProfile{
+  font-family: 'Orbitron', sans-serif;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #ff7300;
+  color: white;
+  border-radius: 5px;
+  padding: 5px; 
+
+}
+#toggleEditProfile:hover{
+  font-family: 'Orbitron', sans-serif;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #00ffff;
+  color:#00ffff ;
+}
+
     
 
 

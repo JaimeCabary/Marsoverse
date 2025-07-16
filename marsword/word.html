@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MarsWord+ </title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      font-family: 'Orbitron', sans-serif;
+      background: #0a0a0f;
+      color: white;
+      overflow: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0ff;
+      padding: 1rem;
+      font-size: 2rem;
+      border-bottom: 1px solid #0ff;
+    }
+
+    #startScreen, #gameUI {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: calc(100vh - 60px);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    #instructions {
+      background: #111;
+      border: 1px solid #0ff;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      max-width: 600px;
+    }
+
+    #xpBar {
+      margin-top: 1rem;
+      color: #0ff;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 10px 20px;
+      background: #0ff;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #game {
+      display: grid;
+      grid-template-columns: repeat(4, 50px);
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .tile {
+      width: 50px;
+      height: 50px;
+      background: #111;
+      color: white;
+      font-size: 1.8rem;
+      text-align: center;
+      line-height: 50px;
+      border-radius: 6px;
+      border: 1px solid #0ff;
+    }
+
+    .correct { background: rgb(4, 255, 0); color: black; }
+    .close   { background: #ffc107; color: black; }
+    .wrong   { background: #c00; }
+
+    #keyboard {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+      max-width: 600px;
+    }
+
+    #keyboard button {
+      padding: 10px;
+      background: #222;
+      color: white;
+      border: 1px solid #0ff;
+      border-radius: 4px;
+    }
+    #keyboard button.active {
+    background: #0ff;
+    color: #000;
+    box-shadow: 0 0 10px #0ff;
+    }
+
+    #popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 10;
+      text-align: center;
+      color: #0ff;
+    }
+
+    #popup h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    #message { margin-top: 10px; color: #ffa500; }
+
+    .bg-icons {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-icons i {
+      position: absolute;
+      color: #ffffff;
+      font-size: 1.5rem;
+      animation: float 25s linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(110vh); }
+      100% { transform: translateY(-20vh); }
+    }
+
+    @media (min-width: 800px) {
+      #game {
+        grid-template-columns: repeat(4, 40px);
+        gap: 6px;
+      }
+
+      .tile {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+        line-height: 40px;
+      }
+
+      #keyboard button {
+        padding: 8px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+    
+
+  <!-- BACKGROUND DOODLES -->
+  <div class="bg-icons">
+    <script>
+      for (let i = 0; i < 20; i++) {
+        const icon = document.createElement("i");
+        icon.className = "fas fa-star";
+        icon.style.left = Math.random() * 100 + "%";
+        icon.style.top = Math.random() * 100 + "%";
+        icon.style.animationDelay = Math.random() * 20 + "s";
+        document.body.querySelector('.bg-icons').appendChild(icon);
+      }
+    </script>
+  </div>
+
+  <h1>MarsWord+ 🪐</h1>
+
+  <div id="startScreen">
+    <div id="instructions">
+      <p>🧠 Guess the 4-letter Mars word</p>
+      <p>🟩 Correct letter & position</p>
+      <p>🟨 Right letter, wrong position</p>
+      <p>⬛ Not in the word</p>
+      <p>6 attempts. Gain XP. Beat the high score!</p>
+      <div id="xpBar">XP: 0 | High Score: 0</div>
+    </div>
+    <button id="startBtn">Start Game</button>
+  </div>
+
+  <div id="gameUI" style="display:none;">
+    <div id="game"></div>
+    <div id="keyboard"></div>
+    <div id="message"></div>
+  </div>
+
+  <div id="popup">
+    <h2 id="popupTitle"></h2>
+    <p id="popupWord"></p>
+    <p id="popupXP"></p>
+    <button id="playAgainBtn">Play Again</button><br><br>
+    <a href="/marzo.html" style="color:#0ff;text-decoration:underline;">← Go back to Mars</a>
+  </div>
+
+  <script>
+    const WORDS = ["mars", "moon", "lava", "base", "dust", "core", "dark", "star", "sola", "nasa"];
+    let targetWord = "";
+    let currentRow = 0, currentCol = 0, grid = [];
+    const maxAttempts = 6;
+    let score = parseInt(localStorage.getItem("xp") || "0");
+    let high = parseInt(localStorage.getItem("highscore") || "0");
+    let keyListenerAdded = false;
+
+
+    const game = document.getElementById("game");
+    const keyboard = document.getElementById("keyboard");
+    const popup = document.getElementById("popup");
+    const popupTitle = document.getElementById("popupTitle");
+    const popupWord = document.getElementById("popupWord");
+    const popupXP = document.getElementById("popupXP");
+    const xpBar = document.getElementById("xpBar");
+
+    function startGame() {
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("gameUI").style.display = "flex";
+      popup.style.display = "none";
+      targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+      currentRow = currentCol = 0;
+      score = parseInt(localStorage.getItem("xp") || "0");
+      createGrid();
+      initKeyboard();
+      xpBar.textContent = `XP: ${score} | High Score: ${high}`;
+    }
+
+    document.getElementById("startBtn").onclick = startGame;
+    document.getElementById("playAgainBtn").onclick = startGame;
+
+    function createGrid() {
+      game.innerHTML = "";
+      grid = [];
+      for (let r = 0; r < maxAttempts; r++) {
+        const row = [];
+        for (let c = 0; c < 4; c++) {
+          const div = document.createElement("div");
+          div.className = "tile";
+          game.appendChild(div);
+          row.push(div);
+        }
+        grid.push(row);
+      }
+    }
+
+    function initKeyboard() {
+  keyboard.innerHTML = "";
+  const keys = "qwertyuiopasdfghjklzxcvbnm←↵".split("");
+
+  keys.forEach(k => {
+    const btn = document.createElement("button");
+    btn.textContent = k;
+    btn.onclick = () => handleKey(k);
+    keyboard.appendChild(btn);
+  });
+
+  if (!keyListenerAdded) {
+    document.addEventListener("keydown", e => {
+      let key = e.key.toLowerCase();
+      if (key === "backspace") key = "←";
+      if (key === "enter") key = "↵";
+      if (/^[a-z]$/.test(key) || key === "←" || key === "↵") {
+        handleKey(key);
+      }
+    });
+    keyListenerAdded = true;
+  }
+}
+
+
+    function handleKey(key) {
+  if (popup.style.display === "flex") return;
+
+  // Highlight the pressed key visually
+  const btns = Array.from(document.querySelectorAll('#keyboard button'));
+  const targetBtn = btns.find(b => b.textContent.toLowerCase() === key.toLowerCase());
+  if (targetBtn) {
+    targetBtn.classList.add('active');
+    setTimeout(() => targetBtn.classList.remove('active'), 150); // remove highlight after 150ms
+  }
+
+  if (/^[a-z]$/.test(key)) {
+    if (currentCol < 4) {
+      grid[currentRow][currentCol].textContent = key;
+      currentCol++;
+    }
+  } else if (key === "←") {
+    if (currentCol > 0) {
+      currentCol--;
+      grid[currentRow][currentCol].textContent = "";
+    }
+  } else if (key === "↵" && currentCol === 4) {
+    const guess = grid[currentRow].map(tile => tile.textContent).join("");
+    evaluateGuess(guess);
+  }
+}
+
+
+    function evaluateGuess(guess) {
+      const guessArr = guess.split("");
+      const targetArr = targetWord.split("");
+      const used = Array(4).fill(false);
+
+      guessArr.forEach((ch, i) => {
+        if (ch === targetArr[i]) {
+          grid[currentRow][i].classList.add("correct");
+          used[i] = true;
+        }
+      });
+
+      guessArr.forEach((ch, i) => {
+        if (ch !== targetArr[i]) {
+          const idx = targetArr.findIndex((t, j) => t === ch && !used[j]);
+          if (idx !== -1) {
+            grid[currentRow][i].classList.add("close");
+            used[idx] = true;
+          } else {
+            grid[currentRow][i].classList.add("wrong");
+          }
+        }
+      });
+
+      if (guess === targetWord) {
+        score += 10;
+        showPopup("🚀 Victory!", true);
+      } else {
+        score += 1;
+        currentRow++;
+        currentCol = 0;
+        if (currentRow === maxAttempts) {
+          showPopup("💥 Out of tries!", false);
+        }
+      }
+
+      if (score > high) {
+        high = score;
+        localStorage.setItem("highscore", high);
+      }
+      localStorage.setItem("xp", score);
+      xpBar.textContent = `XP: ${score} | High Score: ${high}`;
+    }
+
+    function showPopup(title, win) {
+      popup.style.display = "flex";
+      popupTitle.textContent = title;
+      popupWord.textContent = `The word was: ${targetWord.toUpperCase()}`;
+      popupXP.textContent = win ? "+10 XP" : "+1 XP";
+    }
+  </script>
+
+
+</body>
+</html>

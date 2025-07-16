@@ -51,14 +51,29 @@ scene.add(ground);
 
 // Loaders & Controls
 const loader = new GLTFLoader();
+// const controls = new OrbitControls(camera, renderer.domElement);
+// controls.enableDamping = true;
+// controls.dampingFactor = 0.1;
+// controls.minDistance = 1.5;
+// controls.maxDistance = 20;
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.1;
-controls.minDistance = 1.5;
-controls.maxDistance = 20;
+
+controls.enableZoom = true;
+controls.enablePan = true;
+controls.screenSpacePanning = true;
+
+// 🌌 ZOOM EXTREMES
+controls.minDistance = 0.1;      // Zoom all the way in
+controls.maxDistance = 42;     // Zoom all the way out
+
+// 🔄 FULL ORBIT (no angle locks)
+controls.minPolarAngle = 0;
+controls.maxPolarAngle = Math.PI;
 
 let currentModel = null;
-let currentView = 'mars';
+let currentView = 'base';
 
 // Models data
 const models = {
@@ -172,7 +187,78 @@ mapBtn.addEventListener('click', () => {
 });
 navContainer.appendChild(mapBtn);
 
+// Create Weather Tab button
+const weatherBtn = document.createElement('button');
+weatherBtn.textContent = 'Weather Insights';
+weatherBtn.className = 'nav-item';
+weatherBtn.addEventListener('click', () => {
+  showWeatherInsights();
+
+  currentView = 'weather';
+});
+navContainer.appendChild(weatherBtn);
+
 document.body.appendChild(navContainer);
+
+async function showWeatherInsights() {
+  console.log("Weather button clicked ✅");
+  clearScene(); // remove models & placeholders
+  const key = 'DEMO_KEY'; // use your real key in production
+  const proxy = "https://corsproxy.io/?";
+  const url = `${proxy}https://api.nasa.gov/insight_weather/?api_key=${key}&feedtype=json&ver=1.0`;
+
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const solKeys = data.sol_keys || [];
+
+    const container = document.getElementById('weather-container') || document.createElement('div');
+    container.id = 'weather-container';
+    container.style = 'position:absolute; top:10px; left:10px; color:white; padding:1rem; background:rgba(0,0,0,0.6); max-width:300px; font-family:Orbitron,monospace;';
+    container.innerHTML = '<h2>Mars Weather Insights</h2>';
+
+    solKeys.forEach(sol => {
+      const r = data[sol];
+      container.innerHTML += `
+        <div style="margin-bottom:1rem;">
+          <strong>Sol ${sol}</strong><br/>
+          Temp Avg: ${r.AT?.av?.toFixed(1)}°C, High: ${r.AT?.mx?.toFixed(1)}°C<br/>
+          Wind Avg: ${r.HWS?.av?.toFixed(2)} m/s<br/>
+          Pressure Avg: ${r.PRE?.av?.toFixed(1)} Pa<br/>
+          Season: ${r.Season}<br/>
+        </div>`;
+        console.log("Fetched data:", data);
+
+    });
+
+    document.body.appendChild(container);
+  } catch (e) {
+    console.error('Weather fetch failed:', e);
+  }
+}
+
+function clearScene() {
+  if (currentModel) {
+    scene.remove(currentModel);
+    currentModel.traverse(c => {
+      if (c.isMesh) {
+        c.geometry.dispose();
+        if (c.material.map) c.material.map.dispose();
+        c.material.dispose();
+      }
+    });
+    currentModel = null;
+  }
+
+  const old = document.getElementById('map-placeholder');
+  if (old) old.remove();
+
+  const weather = document.getElementById('weather-container');
+  if (weather) weather.remove();
+}
+
+
 
 function animate() {
   requestAnimationFrame(animate);
@@ -192,6 +278,15 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+window.addEventListener("DOMContentLoaded", () => {
+  const marsTheme = document.getElementById("marsTheme");
+  if (marsTheme) {
+    marsTheme.play().catch(err => {
+      console.warn("Autoplay might be blocked:", err);
+    });
+  }
+});
+
 
 // Load initial model
 showModel('base');
