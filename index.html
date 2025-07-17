@@ -14,6 +14,119 @@
   <script src="https://unpkg.com/@solana/web3.js@1.95.1/lib/index.iife.js"></script>
   <link rel="icon" href="images\logo.png" type="image/x-icon">
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<style>
+  /* HUD Background Video */
+.hud-bg {
+  position: fixed; /* not absolute */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+/* Optional: Overlay to darken the video */
+.hud-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.715); /* adjust darkness here */
+  z-index: 1;
+  pointer-events: none;
+}
+@media (min-width: 768px) {
+  .hud-bg {
+    width: 160vw;  /*Ensure video spans full viewport width */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: cover; /* Crop if necessary to avoid distortion */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the video */
+  }
+  .hud-overlay {
+  position: fixed;
+    top: 50%;
+    left: 50%;
+  width: 100%;
+  height: 100%;
+  /* backdrop-filter: blur(6px); */
+  background: rgba(0, 0, 0, 0.715);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+  transform: translate(-50%, -50%);
+}
+}
+
+
+/* .hud-overlaya {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.893); /* adjust darkness here */
+  /* z-index: 1;
+  pointer-events: none;
+} */ 
+
+/* Ensure section content appears above the HUD */
+.section > *:not(.hud-bg):not(.hud-overlay) {
+  z-index: 2;
+}
+
+/* .section > *:not(.hud-bg):not(.hud-overlaya) {
+  z-index: 2;
+} */
+.reward-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  transition: opacity 0.5s ease;
+}
+
+.reward-overlay.hidden {
+  display: none;
+}
+
+.reward-box {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 2px solid #0ff;
+  border-radius: 15px;
+  animation: fadeInZoom 0.5s ease-out;
+}
+
+.reward-box img {
+  width: 100px;
+  height: auto;
+}
+
+@keyframes fadeInZoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+</style>
 </head>
 <body>
 
@@ -25,6 +138,10 @@
 </video>
 
   <section id="welcomeSection" class="section active">
+    <video class="hud-bg" autoplay muted loop playsinline>
+  <source src="marshuda.mp4" type="video/mp4">
+</video>
+<div class="hud-overlay"></div>
     <h1 class="welcome-title">Welcome to MarsoVerse Adventurer</h1>
     <button id="tugScroll" class="tug-btn">
     <i class="fas fa-chevron-down"></i>
@@ -32,17 +149,29 @@
   </section>
 
   <section id="enterName" class="section">
+    <video class="hud-bg" autoplay muted loop playsinline>
+  <source src="marshud.mp4" type="video/mp4">
+</video>
+<div class="hud-overlay"></div>
     <p class="prompt">Enter name: <span id="inputNameDisplay"></span><span class="cursor"></span></p>
     <input type="text" id="playerName" class="mallo" autocomplete="off" />
   </section>
 
   <section id="enterAge" class="section">
+    <video class="hud-bg" autoplay muted loop playsinline>
+  <source src="marsanna.mp4" type="video/mp4">
+</video>
+<div class="hud-overlay"></div>
     <p class="prompt">Enter age: <span id="inputAgeDisplay"></span><span class="cursor"></span></p>
     <input type="number" id="playerAge" class="mallo" autocomplete="off" min="18" max="100" />
 
   </section>
 
   <section id="playSection" class="section">
+    <video class="hud-bg" autoplay muted loop playsinline>
+  <source src="marselsa.mp4" type="video/mp4">
+</video>
+<div class="hud-overlay"></div>
     <!-- <div id="threeContainer" style="width:100%;height:100%;position:absolute;top:0;left:0;"></div> -->
     <button id="playButton" class="neon-btn">Play</button>
   </section>
@@ -53,6 +182,10 @@
 </section>
 
 <section id="phasetwo" class="section">
+  <video class="hud-bg" autoplay muted loop playsinline>
+  <source src="marselsa.mp4" type="video/mp4">
+</video>
+<div class="hud-overlay"></div>
   <h1 class="welcome-title">Connect Solana Wallet to start</h1>
 
   <button id="connectWalletBtn" class="neon-btn" style="margin-top:2rem;">
@@ -70,6 +203,10 @@
 
 
   <section id="genderSection" class="section">
+    <video class="hud-bg" autoplay muted loop playsinline>
+  <source src="marselsa.mp4" type="video/mp4">
+</video>
+<div class="hud-overlay"></div>
     <h3 class="prompt">Select your gender identity:</h3>
   <div id="genderSelectWrapper">
   <select id="genderSelect" class="prompt">
@@ -83,11 +220,16 @@
   </section>
 
   <section id="companionSection" class="section">
+        <video class="hud-bg" autoplay muted loop playsinline>
+  <source src="marselsa.mp4" type="video/mp4">
+</video>
+<div class="hud-overlay"></div>
   <h3 class="prompt">Choose your companion:</h3>
   <br>
   <br>
 
   <div class="choices">
+
     <div class="choice" data-name="Errin">
       <img src="images/errin.png" alt="Errin">
       <h5>Errin</h5>
@@ -106,6 +248,10 @@
 
 
   <section id="cyborg" class="section">
+        <video class="hud-bg" autoplay muted loop playsinline>
+  <source src="marshuda.mp4" type="video/mp4">
+</video>
+<div class="hud-overlay"></div>
     <p class="prompt">Name your cyborg bot: </p>
     <div class="choice">
       <img src="images/jerry.png" alt="Jeremy">
@@ -115,6 +261,10 @@
   </section>
 
   <section id="launchSection" class="section">
+        <video class="hud-bg" autoplay muted loop playsinline>
+  <source src="astro.mp4" type="video/mp4">
+</video>
+<div class="hud-overlay"></div>
   <button id="launchBtn" class="neon-btn" style="margin-top:2rem;">Launch Game</button>
   </section>
 
@@ -136,6 +286,16 @@
 
 
   <script src="scripts/main.js "></script>
+  <!-- 🎁 Reward Popup -->
+<div class="reward-overlay hidden" id="rewardPopup">
+  <div class="reward-box" id="companionBox">
+    <img id="companionImg" src="images/elena.png" alt="Companion">
+    <h5 id="companionNameText">Elena</h5>
+    <p id="rewardText">You win 1 USDT and 5 XP!</p>
+    <button id="acceptReward" class="mallo" style="margin-top: 1rem;">Accept</button>
+  </div>
+</div>
+
 </body>
 </html>
 

@@ -8,6 +8,8 @@
   <title>Mars Viewer</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+
 
   <!-- Orbitron font for your UI -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
@@ -135,7 +137,7 @@ html, body {
     linear-gradient(90deg, rgb(115, 41, 1) , #500000, #1c197d, #000);
   display: flex;
   justify-content: space-around;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0.45rem;
   backdrop-filter: blur(10px);
   z-index: 1000;
   animation: navGlow 6s infinite ease-in-out alternate;
@@ -146,11 +148,12 @@ html, body {
   color: white;
   font-family: 'Orbitron', sans-serif;
     font-size: 1rem;
-    padding: 0.2rem 0.3rem;
+    padding: 0.4rem 0.4rem;
     border-radius: 8px;
     flex: 0 0 auto;
     line-height: 1; 
-    /* color: 0x0b0814; */
+    font-weight: bolder;
+    color: 0x0b0814;
   }
 
 
@@ -163,28 +166,34 @@ html, body {
 @media (max-width: 768px) {
   .navbar {
     align-self: center;
-    gap: 2px;
-    height: 40px;
+    gap: 8px;
+    height: auto; /* allow height to grow with rows */
     align-items: center;
-    width:100vw ;
+    width: 100vw;
     border-radius: 2rem;
-    margin: 0 auto 1.5rem auto;
-    margin: 2px;
-    display: inline-flex;
-    justify-content: space-around;
-
-    padding: 0.25rem env(safe-area-inset-left) calc(0.25rem + env(safe-area-inset-bottom)) env(safe-area-inset-right);
+    margin-bottom: 20px;
+    display: flex;
+    font-weight: bolder;
+    flex-wrap: wrap; /* enables multiple rows */
+    justify-content: center; /* center items horizontally */
+    padding: 0.5rem env(safe-area-inset-left) calc(0.5rem + env(safe-area-inset-bottom)) env(safe-area-inset-right);
   }
 
   .nav-item {
-    font-size: 0.5rem;
-    padding: 0.2rem;
+    font-size: 0.65rem;
+    padding: 0.4rem;
+    height: 30px;
     border-radius: 8px;
-    flex: 0 0 auto;
-    line-height: 0.9; 
+    flex: 1 0 30%; /* allow wrapping; 3 per row approximately */
+    min-width: 90px;
+    max-width: 100px;
+    line-height: 0.9;
     color: 0x0b0814;
-   } 
-} 
+    text-align: center; 
+    
+  }
+}
+
 
     
   </style>

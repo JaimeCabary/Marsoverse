@@ -515,7 +515,34 @@ botNameInput?.addEventListener('keyup', (e) => {
     botNameInput.dispatchEvent(new Event('change'));
   }
 });
+// const launchBtn = document.getElementById('launchBtn');
+
+// launchBtn?.addEventListener('click', () => {
+//   const requiredFields = [
+//     'playerName',
+//     'playerAge',
+//     'gender',
+//     'companionName',
+//     'cyborgName'
+//   ];
+
+//   const allComplete = requiredFields.every(key => localStorage.getItem(key));
+
+//   if (allComplete) {
+//     window.location.href = 'marzo.html'; // 🚀 Load your game
+//   } else {
+//     alert("Missing: " + requiredFields.filter(k => !localStorage.getItem(k)).join(", "));
+
+//   }
+// });
+
+// const launchBtn = document.getElementById('launchBtn');
+// const rewardPopup = document.getElementById('rewardPopup');
+// const acceptRewardBtn = document.getElementById('acceptReward');
+
 const launchBtn = document.getElementById('launchBtn');
+const rewardPopup = document.getElementById('rewardPopup');
+const acceptRewardBtn = document.getElementById('acceptReward');
 
 launchBtn?.addEventListener('click', () => {
   const requiredFields = [
@@ -528,13 +555,42 @@ launchBtn?.addEventListener('click', () => {
 
   const allComplete = requiredFields.every(key => localStorage.getItem(key));
 
-  if (allComplete) {
-    window.location.href = 'marzo.html'; // 🚀 Load your game
-  } else {
+  if (!allComplete) {
     alert("Missing: " + requiredFields.filter(k => !localStorage.getItem(k)).join(", "));
-
+    return;
   }
+
+  // 👇 Check if reward popup has been shown before
+  if (localStorage.getItem('rewardShown') === 'true') {
+    window.location.href = 'marzo.html';
+    return;
+  }
+
+  // Show reward popup
+  rewardPopup.classList.remove('hidden');
+
+  // Auto-redirect in 3 seconds
+  const autoRedirect = setTimeout(() => {
+    rewardPopup.classList.add('hidden');
+    localStorage.setItem('rewardShown', 'true'); // ✅ Mark as shown
+    window.location.href = 'marzo.html';
+  }, 3000);
+
+  acceptRewardBtn.addEventListener('click', () => {
+    clearTimeout(autoRedirect); // Cancel auto-redirect
+    rewardPopup.classList.add('hidden');
+
+    // ✅ Reward logic
+    const currentXP = parseInt(localStorage.getItem('xp') || '0', 10);
+    localStorage.setItem('xp', currentXP + 5);
+    localStorage.setItem('usdt', '1');
+    localStorage.setItem('rewardShown', 'true'); // ✅ Mark as shown
+
+    window.location.href = 'marzo.html';
+  }, { once: true });
 });
+
+
 
 });
 

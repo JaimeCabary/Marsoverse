@@ -1,0 +1,112 @@
+/* Base styles */
+body, html {
+  margin:0; padding:0; height:100%; width:100%;
+  font-family:'JetBrains Mono',monospace;
+  background:#000; color:#fff;
+  overflow:hidden;
+}
+
+.glassmorph {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+header#zeptabar {
+  height:60px; display:flex;
+  align-items:center; justify-content:space-between;
+  padding:0 1rem; position:relative;
+  z-index:2;
+}
+
+/* Theme toggle */
+.switch {
+  position: relative; display:inline-block;
+  width:50px; height:24px;
+}
+.switch input { display:none; }
+.slider {
+  position:absolute; inset:0;
+  background-color:#555;
+  border-radius:34px;
+  transition:.3s;
+}
+.slider::before {
+  content:""; position:absolute;
+  top:3px; left:3px;
+  height:18px; width:18px;
+  background:white; border-radius:50%;
+  transition:.3s;
+}
+input:checked + .slider {
+  background:#ff7f11;
+}
+input:checked + .slider::before {
+  transform:translateX(26px);
+}
+
+/* Log container */
+#zepta-container {
+  display:flex; flex-direction:column;
+  height:calc(100% - 60px);
+}
+#zepta-log {
+  flex:1; padding:1rem;
+  overflow-y:auto;
+}
+
+/* Lines */
+.zepta-line {
+  padding:.75rem 1rem;
+  margin:4px 0;
+  max-width:80%;
+  word-wrap:break-word;
+}
+.user-line { align-self:flex-end; background:rgba(255,123,0,0.15); }
+.zepta-reply { align-self:flex-start; background:rgba(255,255,255,0.06); }
+
+/* Input bar */
+#zepta-bar {
+  display:flex; align-items:center;
+  padding:.5rem 1rem;
+}
+#zepta-input {
+  flex:1; padding:.5rem;
+  background:transparent; border:none;
+  color:#fff; font-size:1rem;
+}
+#zepta-send {
+  margin-left:.5rem; padding:.5rem 1rem;
+  background:#ff7f11; border:none;
+  border-radius:8px; cursor:pointer;
+  transition:.2s;
+}
+#zepta-send:hover { background:#ffa733; }
+
+/* Suggestions box */
+.suggestion-box {
+  position:absolute; top:-200px;
+  left:1rem; right:1rem;
+  max-height:200px; overflow-y:auto;
+  display:none; flex-direction:column;
+  padding:0.5rem; z-index:3;
+}
+.suggestion-item {
+  padding:.4rem .75rem;
+  border-radius:6px;
+  cursor: pointer;
+  transition:background .2s;
+}
+.suggestion-item:hover {
+  background:rgba(255,255,255,0.15);
+}
+
+/* Video background */
+video.hud-bg {
+  position:fixed; top:0; left:0;
+  width:100vw; height:100vh;
+  object-fit:cover;
+  z-index:-1;
+  filter: brightness(0.3);
+}
