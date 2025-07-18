@@ -712,7 +712,7 @@ function toggleMars360(show) {
 
 // 8. Play Selected Video
 function playMars360(id) {
-  mars360Video.src = `videos/mars360${id}.webm`;
+  mars360Video.src = `./videos/mars360${id}.webm`;
   mars360Video.play().catch(console.error);
 }
 

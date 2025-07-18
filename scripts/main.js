@@ -581,9 +581,9 @@ launchBtn?.addEventListener('click', () => {
     rewardPopup.classList.add('hidden');
 
     // ✅ Reward logic
-    const currentXP = parseInt(localStorage.getItem('xp') || '0', 10);
-    localStorage.setItem('xp', currentXP + 5);
-    localStorage.setItem('usdt', '1');
+    const currentXP = parseInt(localStorage.getItem('playerXP') || '0', 5);
+    localStorage.setItem('playerXP', '5');
+    localStorage.setItem('walletBalance', '1');
     localStorage.setItem('rewardShown', 'true'); // ✅ Mark as shown
 
     window.location.href = 'marzo.html';

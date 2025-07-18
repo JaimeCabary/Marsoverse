@@ -18,7 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("youName").textContent = playerName;
   document.getElementById("youAge").textContent = playerAge;
   document.getElementById("youXP").textContent = playerXP;
+  document.getElementById("playerXP").textContent = `XP: ${playerXP}`;
   document.getElementById("walletAmount").textContent = walletBalance;
+  document.getElementById("walleta").textContent = walletBalance;
   
 
   // 🧭 Navigation Control

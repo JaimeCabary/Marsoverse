@@ -375,26 +375,55 @@ color: #ffd6b8;
     <button onclick="closeResult()">OK</button>
   </div>
 </div>
-  <!-- 🎵 Full Sound Stack -->
-  <audio id="introSound" src="sounds/intro.mp3" preload="auto" loop></audio>
-  <audio id="marsostory" src="sounds/marsostory.mp3" preload="auto" loop></audio>
-  <audio id="afterstorySound" src="sounds/afterstory.mp3" preload="auto"></audio>
-  <audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>
-  <audio id="sparkleSound" src="sounds/sparkle.mp3" preload="auto"></audio>
-  <audio id="levelupSound" src="sounds/levelup.mp3" preload="auto"></audio>
-  <audio id="xpSound" src="sounds/xp.mp3" preload="auto"></audio>
-  <audio id="popSound" src="sounds/pop.mp3" preload="auto"></audio>
-  <audio id="bondSound" src="sounds/bond.mp3" preload="auto"></audio>
-  <audio id="birthSound" src="sounds/birthsound.mp3" preload="auto"></audio>
-  <audio id="explosionSound" src="sounds/explosion.mp3" preload="auto"></audio>
-  <audio id="riserSound" src="sounds/riser-hit-sfx-001-289802.mp3" preload="auto"></audio>
-  <audio id="swooshSound" src="sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3" preload="auto"></audio>
-  <audio id="typingSound" src="sounds/typing.mp3" preload="auto"></audio>
-  <audio id="galaxySound" src="sounds/galaxy.mp3" preload="auto"></audio>
-  <audio id="astroSound" src="sounds/asteroid.mp3" preload="auto"></audio>
+   <!-- 🎵 Full Sound Stack -->
+  <audio id="introSound" src="/sounds/intro.mp3" preload="auto" loop></audio>
+  <audio id="marsostory" src="/sounds/marsostory.mp3" preload="auto" loop></audio>
+  <audio id="afterstorySound" src="/sounds/afterstory.mp3" preload="auto"></audio>
+  <audio id="clickSound" src="/sounds/click.mp3" preload="auto"></audio>
+  <audio id="sparkleSound" src="/sounds/sparkle.mp3" preload="auto"></audio>
+  <audio id="levelupSound" src="/sounds/levelup.mp3" preload="auto"></audio>
+  <audio id="xpSound" src="/sounds/xp.mp3" preload="auto"></audio>
+  <audio id="popSound" src="/sounds/pop.mp3" preload="auto"></audio>
+  <audio id="bondSound" src="/sounds/bond.mp3" preload="auto"></audio>
+  <audio id="birthSound" src="/sounds/birthsound.mp3" preload="auto"></audio>
+  <audio id="explosionSound" src="/sounds/explosion.mp3" preload="auto"></audio>
+  <audio id="riserSound" src="/sounds/riser-hit-sfx-001-289802.mp3" preload="auto"></audio>
+  <audio id="swooshSound" src="/sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3" preload="auto"></audio>
+  <audio id="typingSound" src="/sounds/typing.mp3" preload="auto"></audio>
+  <audio id="galaxySound" src="/sounds/galaxy.mp3" preload="auto"></audio>
+  <audio id="astroSound" src="/sounds/asteroid.mp3" preload="auto"></audio>
+  <!-- 🎶 Newly Added Sounds -->
+  <audio id="babyLaughSound" src="/sounds/babylaugh.mp3" preload="auto"></audio>
+  <audio id="babyTalkSound" src="/sounds/babytalk.mp3" preload="auto"></audio>
+  <audio id="cryingBabySound" src="/sounds/crying-baby-320170.mp3" preload="auto"></audio>
+  <audio id="casinoSound" src="/sounds/casino.wav" preload="auto"></audio>
+  <audio id="gameUnlockSound" src="/sounds/gameunlock.wav" preload="auto"></audio>
+  <audio id="healthHighSound" src="/sounds/healthhi.wav" preload="auto"></audio>
+  <audio id="historySound" src="/sounds/history.wav" preload="auto"></audio>
+  <audio id="levelCompSound" src="/sounds/levelcomp.wav" preload="auto"></audio>
+  <audio id="levelerSound" src="/sounds/leveler.wav" preload="auto"></audio>
+  <audio id="marsThemeSound" src="/sounds/mars_theme.mp3" preload="auto" loop></audio>
+  <audio id="arcadeRisingSound" src="/sounds/mixkit-arcade-rising-231.wav" preload="auto"></audio>
+  <audio id="arcadeAlertSound" src="/sounds/mixkit-arcade-video-game-machine-alert-2821.wav" preload="auto"></audio>
+  <audio id="xpIncreasedSound" src="/sounds/mixkit-game-experience-level-increased-2062.wav" preload="auto"></audio>
+  <audio id="pokerSound" src="/sounds/poker.wav" preload="auto"></audio>
+  <audio id="scifiSound" src="/sounds/scifi.wav" preload="auto"></audio>
+  <audio id="treasureSound" src="/sounds/treasure.wav" preload="auto"></audio>
+  <audio id="winSound" src="/sounds/win.wav" preload="auto"></audio>
+  <!-- 🎵 Game Sound Stack -->
+<audio id="ash" src="/sounds/ash.mp3" preload="auto" loop></audio>
+<audio id="beat" src="/sounds/beat.mp3" preload="auto" loop></audio>
+<audio id="faith" src="/sounds/faith.mp3" preload="auto" loop></audio>
+<audio id="gameboy" src="/sounds/gameboy.mp3" preload="auto" loop></audio>
+<audio id="lose" src="/sounds/lose.mp3" preload="auto"></audio> <!-- Not looping -->
+<audio id="mainsound" src="/sounds/mainsound.mp3" preload="auto" loop></audio>
+<audio id="moi" src="/sounds/moi.mp3" preload="auto"></audio> <!-- Not looping -->
+<audio id="there" src="/sounds/there.mp3" preload="auto" loop></audio>
+<audio id="word" src="/sounds/word.mp3" preload="auto" loop></audio>
 
 
   <script>
+    
     let playerCards = [], botCards = [], communityCards = [];
     let xp = parseInt(localStorage.getItem("marsXP") || 0);
     let usdt = parseFloat(localStorage.getItem("marsUSDT") || 0);
@@ -430,6 +459,14 @@ document.getElementById("highXP").textContent = highXP;
       document.getElementById("communityCards").innerHTML = renderCards(communityCards);
       document.getElementById("status").textContent = "";
     }
+function play(soundId) {
+  const audio = document.getElementById(soundId);
+  if (audio) {
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  }
+}
+
 
     function renderCards(cards) {
       return cards.map(c => `<div class="card" style="background-image: url('${c.image}')"></div>`).join("");
@@ -448,11 +485,14 @@ function reveal() {
     xp += 5;
     usdt += 0.01;
     resultMessage = `🎉 You won!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>+5 XP, +0.01 USDT`;
+    play("levelCompSound");
   } else if (playerScore < botScore) {
     resultMessage = `🤖 Cubeco won!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>Try again!`;
+    play("lose");
   } else {
     xp += 2;
     resultMessage = `⚖️ It's a draw!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>+2 XP`;
+    play("moi");
   }
   // Update high XP if current is greater
   let highXP = parseInt(localStorage.getItem("marsHighXP") || 0);
@@ -463,8 +503,8 @@ function reveal() {
   document.getElementById("highXP").textContent = highXP;
 
   // Update local storage and UI
-  localStorage.setItem("marsXP", xp);
-  localStorage.setItem("marsUSDT", usdt.toFixed(2));
+  localStorage.setItem("playerXP", xp);
+  localStorage.setItem("walletBalance", usdt.toFixed(2));
   document.getElementById("xpCount").textContent = xp;
   document.getElementById("walletCount").textContent = usdt.toFixed(2);
 
@@ -572,7 +612,108 @@ function restart() {
 function closeResult() {
   document.getElementById("resultModal").style.display = "none";
 }
+        // 🧠 Grab all audio elements
+    const allSounds = document.querySelectorAll("audio");
+    const volumeSlider = document.querySelector(".slider .level");
+
+    // 🎚 Set initial volume
+    volumeSlider.value = 1;
+    allSounds.forEach(sound => sound.volume = volumeSlider.value);
+
+    // 🎧 Live volume control
+    volumeSlider.addEventListener("input", function () {
+      const vol = parseFloat(this.value);
+      allSounds.forEach(sound => {
+        sound.volume = vol;
+      });
+    });
+</script>
+<script>
+  const sounds = {
+    click: document.getElementById('clickSound'),
+    win: document.getElementById('winSound'),
+    lose: document.getElementById('loseSound'),
+  };
+
+  // Helper to play sound safely
+  function playSound(soundName) {
+    const sound = sounds[soundName];
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch(() => {});
+    }
+  }
+
+document.addEventListener('click', (event) => {
+  const soundControl = document.getElementById('sound-control');
+  const clickSound = document.getElementById('clickSound');
+
+  if (soundControl && soundControl.contains(event.target)) {
+    // Don't play sound if clicking inside the sound-control
+    return;
+  }
+
+  if (clickSound) {
+    clickSound.currentTime = 0;
+    clickSound.play().catch(() => {});
+  }
+});
+
 
 </script>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const allSounds = document.querySelectorAll("audio");
+    const volumeSlider = document.querySelector(".slider .level");
+
+    // Set initial volume from localStorage or default to 1
+    const initialVolume = parseFloat(localStorage.getItem("marsVolume")) || 1;
+    if (volumeSlider) volumeSlider.value = initialVolume;
+    allSounds.forEach(sound => sound.volume = initialVolume);
+
+    // Volume change handler
+    if (volumeSlider) {
+      volumeSlider.addEventListener("input", function () {
+        const vol = parseFloat(this.value);
+        allSounds.forEach(sound => sound.volume = vol);
+        localStorage.setItem("marsVolume", vol);
+      });
+    }
+const afterstory = document.getElementById("afterstorySound");
+const mainsound= document.getElementById("mainsound");
+
+if (afterstory) {
+  afterstory.currentTime = 0;
+  afterstory.loop = false; // play once
+  afterstory.volume = initialVolume;
+
+  afterstory.play().catch(err => console.warn("Afterstory play error:", err));
+
+  setTimeout(() => {
+    afterstory.pause();
+    afterstory.currentTime = 0;mainsound
+
+    if (mainsound) {
+      mainsound.currentTime = 0;
+      mainsound.loop = true;
+      mainsound.volume = initialVolume;
+      mainsound.play().catch(err => console.warn("gameboy play error:", err));
+    }
+  }, 7000); // Stop after 4 seconds
+}
+
+  });
+</script>
+<div id="sound-control" style="position: fixed; bottom: 20px; left: 25px; z-index: 9999; width: 25px;">
+  <label class="slider">
+    <input type="range" class="level" min="0" max="1" step="0.01" value="1" />
+    <svg class="volume" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <g>
+        <path d="M18.36 19.36a1 1 0 0 1-.705-1.71C19.167 16.148 20 14.142 20 12s-.833-4.148-2.345-5.65a1 1 0 1 1 1.41-1.419C20.958 6.812 22 9.322 22 12s-1.042 5.188-2.935 7.069a.997.997 0 0 1-.705.291z" fill="currentColor"></path>
+        <path d="M15.53 16.53a.999.999 0 0 1-.703-1.711C15.572 14.082 16 13.054 16 12s-.428-2.082-1.173-2.819a1 1 0 1 1 1.406-1.422A6 6 0 0 1 18 12a6 6 0 0 1-1.767 4.241.996.996 0 0 1-.703.289zM12 22a1 1 0 0 1-.707-.293L6.586 17H4c-1.103 0-2-.897-2-2V9c0-1.103.897-2 2-2h2.586l4.707-4.707A.998.998 0 0 1 13 3v18a1 1 0 0 1-1 1z" fill="currentColor"></path>
+      </g>
+    </svg>
+  </label>
+</div>
 </body>
 </html>

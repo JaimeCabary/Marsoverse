@@ -189,7 +189,7 @@
       <p>🧠 Guess the 4-letter Mars word</p>
       <p>🟩 Correct letter & position</p>
       <p>🟨 Right letter, wrong position</p>
-      <p>⬛ Not in the word</p>
+      <p>🟥 Not in the word</p>
       <p>6 attempts. Gain XP. Beat the high score!</p>
       <div id="xpBar">XP: 0 | High Score: 0</div>
     </div>
@@ -215,7 +215,7 @@
     let targetWord = "";
     let currentRow = 0, currentCol = 0, grid = [];
     const maxAttempts = 6;
-    let score = parseInt(localStorage.getItem("xp") || "0");
+    let score = parseInt(localStorage.getItem("playerXP") || "0");
     let high = parseInt(localStorage.getItem("highscore") || "0");
     let keyListenerAdded = false;
 
@@ -336,7 +336,7 @@
       });
 
       if (guess === targetWord) {
-        score += 10;
+        score += 5;
         showPopup("🚀 Victory!", true);
       } else {
         score += 1;
@@ -351,7 +351,7 @@
         high = score;
         localStorage.setItem("highscore", high);
       }
-      localStorage.setItem("xp", score);
+      localStorage.setItem("playerXP", score);
       xpBar.textContent = `XP: ${score} | High Score: ${high}`;
     }
 
@@ -359,7 +359,7 @@
       popup.style.display = "flex";
       popupTitle.textContent = title;
       popupWord.textContent = `The word was: ${targetWord.toUpperCase()}`;
-      popupXP.textContent = win ? "+10 XP" : "+1 XP";
+      popupXP.textContent = win ? "+5 XP" : "+1 XP";
     }
   </script>
 
