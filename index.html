@@ -14,6 +14,11 @@
   <script src="https://unpkg.com/@solana/web3.js@1.95.1/lib/index.iife.js"></script>
   <link rel="icon" href="images\logo.png" type="image/x-icon">
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <!-- Add Solana Wallet Adapter -->
+  <script src="https://unpkg.com/@solana/web3.js@1.95.1/lib/index.iife.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-base@0.9.23/lib/index.iife.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-wallets@0.19.32/lib/index.iife.js"></script>
+  
 <style>
   /* HUD Background Video */
 .hud-bg {
@@ -126,6 +131,130 @@
   }
 }
 
+/* Wallet Selection Modal */
+    .wallet-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+    
+    .wallet-modal.hidden {
+      display: none;
+    }
+    
+    .wallet-selection {
+      background: rgba(20, 20, 20, 0.95);
+      border: 2px solid #00ffff;
+      border-radius: 15px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .wallet-selection h2 {
+      color: #00ffff;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-family: 'Orbitron', monospace;
+    }
+    
+    .wallet-option {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', monospace;
+    }
+    
+    .wallet-option:hover {
+      background: rgba(0, 255, 255, 0.1);
+      border-color: #00ffff;
+      transform: translateX(5px);
+    }
+    
+    .wallet-icon {
+      width: 40px;
+      height: 40px;
+      margin-right: 1rem;
+      border-radius: 8px;
+    }
+    
+    .wallet-info {
+      flex: 1;
+    }
+    
+    .wallet-name {
+      font-weight: bold;
+      color: white;
+      margin-bottom: 0.25rem;
+    }
+    
+    .wallet-description {
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: #00ffff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .close-modal:hover {
+      color: #ff5c33;
+    }
+    
+    .wallet-status {
+      text-align: center;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 10px;
+      font-family: 'Orbitron', monospace;
+    }
+    
+    .status-connecting {
+      background: rgba(255, 255, 0, 0.2);
+      border: 1px solid #ffff00;
+      color: #ffff00;
+    }
+    
+    .status-connected {
+      background: rgba(0, 255, 0, 0.2);
+      border: 1px solid #00ff00;
+      color: #00ff00;
+    }
+    
+    .status-error {
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid #ff0000;
+      color: #ff0000;
+    }
+
 </style>
 </head>
 <body>
@@ -203,7 +332,17 @@
   <p id="firstLink" style="margin-top:1rem; font-family: Orbitron; color: white; text-decoration: underline; cursor: pointer;">
     I'll do that later
   </p>
+  
 </section>
+<!-- Wallet Selection Modal -->
+<div id="walletModal" class="wallet-modal hidden">
+  <div class="wallet-selection">
+    <button class="close-modal" id="closeModal">&times;</button>
+    <h2>Select Wallet</h2>
+    <div id="walletStatus" class="wallet-status" style="display: none;"></div>
+    <div id="walletList"></div>
+  </div>
+</div>
 
 
   <section id="genderSection" class="section">
@@ -299,6 +438,306 @@
     <button id="acceptReward" class="mallo" style="margin-top: 1rem;">Accept</button>
   </div>
 </div>
+<script>
+class SolanaWalletManager {
+  constructor() {
+    this.wallets = [
+      {
+        name: 'Phantom',
+        icon: 'images/wallet/phantom.png',
+        description: 'Popular Solana wallet',
+        adapter: 'phantom',
+        downloadUrl: 'https://phantom.app/'
+      },
+      {
+        name: 'Solflare',
+        icon: 'images/wallet/solflare.png',
+        description: 'Full-featured Solana wallet',
+        adapter: 'solflare',
+        downloadUrl: 'https://solflare.com/'
+      },
+      {
+        name: 'Backpack',
+        icon: 'images/wallet/backpack.png',
+        description: 'Web3 wallet for everyone',
+        adapter: 'backpack',
+        downloadUrl: 'https://backpack.app/'
+      },
+      {
+        name: 'Glow',
+        icon: 'images/wallet/glow.png',
+        description: 'Solana validator wallet',
+        adapter: 'glow',
+        downloadUrl: 'https://glow.app/'
+      },
+      {
+        name: 'Slope',
+        icon: 'images/wallet/slope.png',
+        description: 'Mobile-first Solana wallet',
+        adapter: 'slope',
+        downloadUrl: 'https://slope.finance/'
+      },
+      {
+        name: 'Torus',
+        icon: 'images/wallet/torusi.png',
+        description: 'Social login wallet',
+        adapter: 'torus',
+        downloadUrl: 'https://tor.us/'
+      }
+    ];
+    
+    this.connectedWallet = null;
+    this.connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
+    
+    this.initializeElements();
+    this.setupEventListeners();
+    this.renderWalletList();
+  }
+  
+  initializeElements() {
+    this.connectWalletBtn = document.getElementById('connectWalletBtn');
+    this.walletPreview = document.getElementById('walletPreview');
+    this.skipLink = document.getElementById('firstLink');
+    this.walletModal = document.getElementById('walletModal');
+    this.closeModal = document.getElementById('closeModal');
+    this.walletList = document.getElementById('walletList');
+    this.walletStatus = document.getElementById('walletStatus');
+  }
+  
+  setupEventListeners() {
+    this.connectWalletBtn.addEventListener('click', () => this.showWalletModal());
+    this.closeModal.addEventListener('click', () => this.hideWalletModal());
+    this.skipLink.addEventListener('click', () => this.skipWallet());
+    
+    // Close modal when clicking outside
+    this.walletModal.addEventListener('click', (e) => {
+      if (e.target === this.walletModal) {
+        this.hideWalletModal();
+      }
+    });
+    
+    // Disconnect wallet when preview is clicked
+    this.walletPreview.addEventListener('click', () => {
+      if (this.connectedWallet && this.walletPreview.textContent.includes('...')) {
+        this.disconnectWallet();
+      }
+    });
+  }
+  
+  showWalletModal() {
+    this.walletModal.classList.remove('hidden');
+    this.renderWalletList();
+  }
+  
+  hideWalletModal() {
+    this.walletModal.classList.add('hidden');
+    this.hideStatus();
+  }
+  
+  renderWalletList() {
+    this.walletList.innerHTML = '';
+    
+    this.wallets.forEach(wallet => {
+      const walletElement = document.createElement('div');
+      walletElement.className = 'wallet-option';
+      walletElement.innerHTML = `
+        <img src="${wallet.icon}" alt="${wallet.name}" class="wallet-icon" onerror="this.style.display='none'">
+        <div class="wallet-info">
+          <div class="wallet-name">${wallet.name}</div>
+          <div class="wallet-description">${wallet.description}</div>
+        </div>
+      `;
+      
+      walletElement.addEventListener('click', () => this.connectWallet(wallet));
+      this.walletList.appendChild(walletElement);
+    });
+  }
+  
+  async connectWallet(walletInfo) {
+    this.showStatus('Connecting to ' + walletInfo.name + '...', 'connecting');
+    
+    try {
+      let walletAdapter = null;
+      
+      // Check for wallet availability and connect
+      switch (walletInfo.adapter) {
+        case 'phantom':
+          if (window.solana && window.solana.isPhantom) {
+            walletAdapter = window.solana;
+          }
+          break;
+          
+        case 'solflare':
+          if (window.solflare && window.solflare.isSolflare) {
+            walletAdapter = window.solflare;
+          }
+          break;
+          
+        case 'backpack':
+          if (window.backpack && window.backpack.isBackpack) {
+            walletAdapter = window.backpack;
+          }
+          break;
+          
+        case 'glow':
+          if (window.glow) {
+            walletAdapter = window.glow;
+          }
+          break;
+          
+        case 'slope':
+          if (window.Slope) {
+            walletAdapter = window.Slope;
+          }
+          break;
+          
+        case 'torus':
+          if (window.torus) {
+            walletAdapter = window.torus;
+          }
+          break;
+      }
+      
+      if (!walletAdapter) {
+        // Wallet not found, offer to install
+        this.showStatus(`${walletInfo.name} not found. Install it?`, 'error');
+        
+        setTimeout(() => {
+          if (confirm(`${walletInfo.name} wallet not found. Would you like to install it?`)) {
+            window.open(walletInfo.downloadUrl, '_blank');
+          }
+          this.hideStatus();
+        }, 2000);
+        return;
+      }
+      
+      // Connect to wallet
+      const response = await walletAdapter.connect();
+      const publicKey = response.publicKey || response.account?.address;
+      
+      if (!publicKey) {
+        throw new Error('No public key received');
+      }
+      
+      // Store connection info
+      this.connectedWallet = {
+        adapter: walletAdapter,
+        publicKey: typeof publicKey === 'string' ? publicKey : publicKey.toString(),
+        name: walletInfo.name
+      };
+      
+      // Update UI
+      this.showStatus('Connected successfully!', 'connected');
+      this.updateWalletPreview();
+      
+      // Store in localStorage
+      localStorage.setItem('walletAddress', this.connectedWallet.publicKey);
+      localStorage.setItem('walletName', walletInfo.name);
+      
+      // Hide modal and proceed after short delay
+      setTimeout(() => {
+        this.hideWalletModal();
+        this.proceedToNextSection();
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Wallet connection failed:', error);
+      this.showStatus('Connection failed: ' + error.message, 'error');
+      
+      setTimeout(() => {
+        this.hideStatus();
+      }, 3000);
+    }
+  }
+  
+  updateWalletPreview() {
+    if (this.connectedWallet) {
+      const shortAddress = this.connectedWallet.publicKey.slice(0, 4) + '...' + this.connectedWallet.publicKey.slice(-4);
+      this.walletPreview.textContent = `${this.connectedWallet.name}: ${shortAddress}`;
+      this.walletPreview.style.display = 'inline-block';
+      this.skipLink.style.display = 'none';
+    }
+  }
+  
+  async disconnectWallet() {
+    if (confirm('Do you want to disconnect your wallet?')) {
+      try {
+        if (this.connectedWallet?.adapter?.disconnect) {
+          await this.connectedWallet.adapter.disconnect();
+        }
+        
+        // Clear stored data
+        this.connectedWallet = null;
+        localStorage.removeItem('walletAddress');
+        localStorage.removeItem('walletName');
+        
+        // Update UI
+        this.walletPreview.style.display = 'none';
+        this.skipLink.style.display = 'inline-block';
+        
+        alert('Wallet disconnected successfully');
+        
+      } catch (error) {
+        console.error('Disconnect error:', error);
+        alert('Disconnect failed: ' + error.message);
+      }
+    }
+  }
+  
+  showStatus(message, type) {
+    this.walletStatus.textContent = message;
+    this.walletStatus.className = `wallet-status status-${type}`;
+    this.walletStatus.style.display = 'block';
+  }
+  
+  hideStatus() {
+    this.walletStatus.style.display = 'none';
+  }
+  
+  skipWallet() {
+    // Your existing skip logic
+    this.proceedToNextSection();
+  }
+  
+  proceedToNextSection() {
+    // Hide current section and show next section
+    // Replace 'genderSection' with your actual next section ID
+    document.getElementById('phasetwo').classList.remove('active');
+    document.getElementById('genderSection').classList.add('active');
+  }
+  
+  // Check if wallet was previously connected
+  checkPreviousConnection() {
+    const storedAddress = localStorage.getItem('walletAddress');
+    const storedName = localStorage.getItem('walletName');
+    
+    if (storedAddress && storedName) {
+      this.connectedWallet = {
+        publicKey: storedAddress,
+        name: storedName
+      };
+      this.updateWalletPreview();
+    }
+  }
+}
+
+// Initialize wallet manager when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  window.solanaWalletManager = new SolanaWalletManager();
+  window.solanaWalletManager.checkPreviousConnection();
+});
+
+// Helper function for your existing code
+function showSection(sectionId) {
+  // Hide all sections
+  document.querySelectorAll('.section').forEach(section => {
+    section.classList.remove('active');
+  });
+  
+  // Show target section
+  document.getElementById(sectionId).classList.add('active');
+}
+</script>
 
 </body>
 </html>

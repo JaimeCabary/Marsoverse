@@ -13,6 +13,9 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/loaders/GLTFLoader.js"></script>
   <!-- Cropper.js CSS -->
   <link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet" />
+  <!-- Add Solana Wallet Adapter -->
+  <script src="https://unpkg.com/@solana/web3.js@1.95.1/lib/index.iife.js"></script>
+  
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -384,6 +387,313 @@
     color: rgb(172, 255, 255);
     transform: scale(1.02);
   }
+  
+    /* Wallet-specific styles */
+    #walletIcon {
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    #walletIcon:hover {
+      color: #00ffff;
+      transform: scale(1.05);
+    }
+
+    #walletIcon.connected {
+      color: #00ff00;
+    }
+
+    #walletIcon.disconnected {
+      color: #ff4444;
+    }
+
+    
+/* Wallet Selection Modal */
+    .wallet-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+    
+    .wallet-modal.hidden {
+      display: none;
+    }
+    
+    .wallet-selection {
+      background: rgba(20, 20, 20, 0.95);
+      border: 2px solid #00ffff;
+      border-radius: 15px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .wallet-selection h2 {
+      color: #00ffff;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-family: 'Orbitron', monospace;
+    }
+    
+    .wallet-option {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', monospace;
+    }
+    
+    .wallet-option:hover {
+      background: rgba(0, 255, 255, 0.1);
+      border-color: #00ffff;
+      transform: translateX(5px);
+    }
+    
+    .wallet-icon {
+      width: 40px;
+      height: 40px;
+      margin-right: 1rem;
+      border-radius: 8px;
+    }
+    
+    .wallet-info {
+      flex: 1;
+    }
+    
+    .wallet-name {
+      font-weight: bold;
+      color: white;
+      margin-bottom: 0.25rem;
+    }
+    
+    .wallet-description {
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: #00ffff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .close-modal:hover {
+      color: #ff5c33;
+    }
+    
+    .wallet-status {
+      text-align: center;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 10px;
+      font-family: 'Orbitron', monospace;
+    }
+    
+    .status-connecting {
+      background: rgba(255, 255, 0, 0.2);
+      border: 1px solid #ffff00;
+      color: #ffff00;
+    }
+    
+    .status-connected {
+      background: rgba(0, 255, 0, 0.2);
+      border: 1px solid #00ff00;
+      color: #00ff00;
+    }
+    
+    .status-error {
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid #ff0000;
+      color: #ff0000;
+    }
+
+    /* Enhanced Connect Wallet Button */
+    /* #connectWalletBtn {
+      background: linear-gradient(45deg, #ff5c33, #00ffff);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      color: white;
+      font-family: 'Orbitron', monospace;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0.5rem 0;
+    } */
+
+    #connectWalletBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    }
+
+    #connectWalletBtn.connected {
+      background: linear-gradient(45deg, #00ff00, #00aa00);
+    }
+
+    #connectWalletBtn.connected:hover {
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    }
+
+    /* Wallet Balance Display */
+    .wallet-balance {
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid #00ffff;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      margin: 0.5rem 0;
+      font-family: 'Orbitron', monospace;
+      color: #00ffff;
+    }
+    /* Add to your existing CSS */
+.wallet-option.connected-wallet {
+  background: rgba(0, 255, 0, 0.1) !important;
+  border: 1px solid #00ff00 !important;
+}
+
+.dapp-section {
+  margin-top: 1.5rem;
+  border-top: 1px solid rgba(0,255,255,0.2);
+  padding-top: 1rem;
+}
+
+.dapp-section h3 {
+  color: #00ffff;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.dapp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.dapp-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: rgba(0,255,255,0.1);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: white;
+}
+
+.dapp-option:hover {
+  background: rgba(0,255,255,0.2);
+  transform: translateY(-3px);
+}
+
+.dapp-option img {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 0.5rem;
+  border-radius: 50%;
+}
+
+.dapp-option span {
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+#walletActions {
+  display: none;
+}
+
+#disconnectWalletBtn {
+  background: rgba(255, 0, 0, 0.2) !important;
+  border: 1px solid #ff4444 !important;
+  margin-bottom: 1rem;
+}
+
+#disconnectWalletBtn:hover {
+  background: rgba(255, 0, 0, 0.3) !important;
+}
+/* Desktop-specific wallet modal styles */
+@media (min-width: 768px) {
+  .wallet-modal {
+    align-items: flex-start; /* Align to top for desktop */
+    padding-bottom: 5%;
+  }
+
+  .wallet-selection {
+    width: 380px; /* Fixed compact width */
+    max-height: 80vh; /* Slightly shorter */
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-width: 1px;
+  }
+
+  .wallet-option {
+    padding: 0.7rem 1rem;
+    margin: 0.3rem 0;
+  }
+
+  .dapp-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .dapp-option {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .dapp-option img {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* More compact layout */
+  .wallet-info .wallet-name {
+    font-size: 0.95rem;
+  }
+  
+  .wallet-info .wallet-description {
+    font-size: 0.75rem;
+  }
+
+  /* Slimmer scrollbar */
+  .wallet-selection::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .wallet-selection::-webkit-scrollbar-thumb {
+    background: #00ffff;
+    border-radius: 3px;
+  }
+}
+
  </style>
 </head>
 <body class="night">
@@ -391,7 +701,7 @@
   <div class="stars"></div>
   <span id="playerNameHUD">Player</span>
   <span id="playerXP">XP: 0</span>
-  <span id="walletIcon"><i class="fas fa-wallet"></i> $<span id="walletAmount">0</span></span>
+  <span id="walletIcon" title="Click to connect wallet"><i class="fas fa-wallet"></i><span id="walletAmount">0</span>SOL</span>
 </header>
 
   <!-- 🚀 Pages -->
@@ -519,6 +829,7 @@
       <i class="fas fa-pen"></i>
     </button>
 
+
     <!-- 🔧 Editable Profile Section (initially hidden) -->
     <div id="editProfileSection" style="display: none; margin-top: 10px;">
       <p>Edit Name: <input type="text" id="editName" placeholder="Enter name..."></p>
@@ -615,8 +926,20 @@ Sign In with Apple</button>
   </span>
 </label>
 
-
+<h3>💰 Wallet Status</h3>
+<div id="walletStatusCard">
+  <div id="walletInfo" style="display:none;">
+    <div class="wallet-balance">
+      <strong>Connected:</strong> <span id="connectedWalletName">None</span><br>
+      <strong>Address:</strong> <span id="connectedWalletAddress">None</span><br>
+      <strong>Balance:</strong> <span id="solBalance">0</span> SOL
+      <hr style="border-color: rgba(0,255,255,.3)">
+      <strong>Game Reward:</strong>
+      <span id="rewardUsd">0.00</span> USD
+      (≈ <span id="rewardSol">0</span> SOL)
+    </div>
   </div>
+</div>
 
   <!-- 📦 App Info -->
   <div class="app-info">
@@ -658,11 +981,18 @@ Sign In with Apple</button>
       </div>
     </section> -->
   </main>
-
+  <div id="walletModal" class="wallet-modal hidden">
+  <div class="wallet-selection">
+    <button class="close-modal" id="closeModal">&times;</button>
+    <h2>Select Wallet</h2>
+    <div id="walletStatus" class="wallet-status" style="display: none;"></div>
+    <div id="walletList"></div>
+  </div>
+</div>
   <!-- 🔽 Bottom Nav -->
   <nav class="navbar">
     <button class="nav-item" data-target="homePage"><i class="fas fa-home"></i></button>
-    <button class="nav-item" onclick="playClickAndGo('hash.html')"><i class="fas fa-code"></i></button>
+    <button class="nav-item" onclick="playClickAndGo('me.html')"><i class="fas fa-code"></i></button>
     <button class="nav-item" data-target="leaderboardPage"><i class="fas fa-trophy"></i></button>
     <button class="nav-item" data-target="friendsPage"><i class="fas fa-users"></i></button>
     <button class="nav-item" data-target="settingsPage"><i class="fas fa-cog"></i></button>
@@ -882,6 +1212,394 @@ window.signInWithGoogle = () => {
       location.reload();
     }
   });
+</script>
+<script>
+/**
+ * SolanaWalletManager (Game Page)
+ * Mirrors your landing page structure + adds reward conversion.
+ * IDs expected in DOM (you already have them in your game page):
+ * - #walletIcon, #walletAmount, #connectWalletBtn
+ * - #walletModal, #closeModal, #walletList, #walletStatus
+ * - #walletInfo, #connectedWalletName, #connectedWalletAddress, #solBalance
+ * - #walleta (USD line you already show), #rewardUsd, #rewardSol
+ */
+
+class SolanaWalletManager {
+  constructor() {
+    this.wallets = [
+    { name: 'Phantom',  icon: 'images/wallet/phantom.png',   description: 'Popular Solana wallet',        adapter: 'phantom',  downloadUrl: 'https://phantom.app/' },
+    { name: 'Solflare', icon: 'images/wallet/solflare.png',  description: 'Full-featured Solana wallet',  adapter: 'solflare', downloadUrl: 'https://solflare.com/' },
+    { name: 'Backpack', icon: 'images/wallet/backpack.png',  description: 'Web3 wallet for everyone',     adapter: 'backpack', downloadUrl: 'https://backpack.app/' },
+    { name: 'Glow',     icon: 'images/wallet/glow.png',      description: 'Solana validator wallet',      adapter: 'glow',     downloadUrl: 'https://glow.app/' },
+    { name: 'Slope',    icon: 'images/wallet/slope.png',     description: 'Mobile-first Solana wallet',   adapter: 'slope',    downloadUrl: 'https://slope.finance/' },
+    { name: 'Torus',    icon: 'images/wallet/torusi.png',     description: 'Social login wallet',          adapter: 'torus',    downloadUrl: 'https://tor.us/' }
+  ];
+
+    this.dApps = [
+      { 
+        name: 'Jupiter', 
+        icon: 'https://jup.ag/favicon.ico', 
+        url: 'https://jup.ag',
+        description: 'Best swap aggregator on Solana'
+      },
+      { 
+        name: 'Raydium', 
+        icon: 'https://raydium.io/favicon.ico', 
+        url: 'https://raydium.io',
+        description: 'Leading Solana DEX'
+      },
+      { 
+        name: 'Solscan', 
+        icon: 'https://solscan.io/favicon.ico', 
+        url: 'https://solscan.io',
+        description: 'Solana block explorer'
+      },
+      { 
+        name: 'Tensor', 
+        icon: 'images/wallet/tensor.png', 
+        url: 'https://www.tensor.trade',
+        description: 'NFT marketplace'
+      },
+      { 
+        name: 'MarginFi', 
+        icon: 'https://app.marginfi.com/favicon.ico', 
+        url: 'https://app.marginfi.com',
+        description: 'Lending protocol'
+      },
+      { 
+        name: 'Drift', 
+        icon: 'https://app.drift.trade/favicon.ico', 
+        url: 'https://app.drift.trade',
+        description: 'Perpetuals trading'
+      }
+    ];
+
+    this.connectedWallet = null;
+    this.connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com', { commitment: 'confirmed' });
+
+    this.initializeElements();
+    this.setupEventListeners();
+    this.renderWalletList();
+    this.checkPreviousConnection();
+    this.updateRewardConversion();
+}
+  // ---------- Element refs ----------
+  initializeElements() {
+    // HUD / buttons
+    this.walletIcon = document.getElementById('walletIcon');       // optional
+    this.walletAmount = document.getElementById('walletAmount');   // optional HUD SOL
+    this.connectWalletBtn = document.getElementById('connectWalletBtn');
+
+    // Modal
+    this.walletModal = document.getElementById('walletModal');
+    this.closeModal = document.getElementById('closeModal');
+    this.walletList = document.getElementById('walletList');
+    this.walletStatus = document.getElementById('walletStatus');
+
+    // Status card
+    this.walletInfo = document.getElementById('walletInfo');
+    this.connectedWalletName = document.getElementById('connectedWalletName');
+    this.connectedWalletAddress = document.getElementById('connectedWalletAddress');
+    this.solBalanceEl = document.getElementById('solBalance');
+
+    // Reward
+    this.walletUsdEl = document.getElementById('walleta'); // you already show “USDT” number
+    this.rewardUsdEl = document.getElementById('rewardUsd');
+    this.rewardSolEl = document.getElementById('rewardSol');
+  }
+
+  // ---------- Events ----------
+  setupEventListeners() {
+    if (this.walletIcon) {
+      this.walletIcon.addEventListener('click', () => this.showWalletModal());
+    }
+    if (this.connectWalletBtn) {
+      this.connectWalletBtn.addEventListener('click', () => {
+        if (this.connectedWallet) this.disconnectWallet();
+        else this.showWalletModal();
+      });
+    }
+    if (this.closeModal) {
+      this.closeModal.addEventListener('click', () => this.hideWalletModal());
+    }
+    if (this.walletModal) {
+      this.walletModal.addEventListener('click', (e) => {
+        if (e.target === this.walletModal) this.hideWalletModal();
+      });
+    }
+  }
+
+  // ---------- Modal ----------
+  showWalletModal() {
+    if (!this.walletModal) return;
+    this.walletModal.classList.remove('hidden');
+    this.renderWalletList();
+  }
+  hideWalletModal() {
+    if (!this.walletModal) return;
+    this.walletModal.classList.add('hidden');
+    this.hideStatus();
+  }
+
+  renderWalletList() {
+  if (!this.walletList) return;
+  this.walletList.innerHTML = '';
+
+  // Always show wallet options
+  this.wallets.forEach((wallet) => {
+    const el = document.createElement('div');
+    el.className = 'wallet-option';
+    if (this.connectedWallet?.name === wallet.name) {
+      el.classList.add('connected-wallet');
+    }
+    el.innerHTML = `
+      <img src="${wallet.icon}" alt="${wallet.name}" class="wallet-icon" onerror="this.style.display='none'">
+      <div class="wallet-info">
+        <div class="wallet-name">${wallet.name}${this.connectedWallet?.name === wallet.name ? ' (Connected)' : ''}</div>
+        <div class="wallet-description">${wallet.description}</div>
+      </div>
+    `;
+    el.addEventListener('click', () => {
+      if (this.connectedWallet?.name === wallet.name) return;
+      this.connectWallet(wallet);
+    });
+    this.walletList.appendChild(el);
+  });
+
+  // Add disconnect button if wallet is connected
+  if (this.connectedWallet) {
+    const disconnectBtn = document.createElement('button');
+    disconnectBtn.id = 'disconnectWalletBtn';
+    disconnectBtn.className = 'wallet-option disconnect-btn';
+    disconnectBtn.innerHTML = `
+      <i class="fas fa-sign-out-alt wallet-icon"></i>
+      <div class="wallet-info">
+        <div class="wallet-name">Disconnect Wallet</div>
+        <div class="wallet-description">Remove current connection</div>
+      </div>
+    `;
+    disconnectBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.disconnectWallet();
+    });
+    this.walletList.appendChild(disconnectBtn);
+  }
+
+  // Always show dApps section
+  const dAppSection = document.createElement('div');
+  dAppSection.className = 'dapp-section';
+  dAppSection.innerHTML = `
+    <h3>Explore Solana dApps</h3>
+    <div class="dapp-grid">
+      ${this.dApps.map(dApp => `
+        <a href="${dApp.url}" class="dapp-option" target="_blank" title="${dApp.description}">
+          <img src="${dApp.icon}" alt="${dApp.name}" onerror="this.src='https://cryptologos.cc/logos/solana-sol-logo.png'">
+          <span>${dApp.name}</span>
+        </a>
+      `).join('')}
+    </div>
+  `;
+  this.walletList.appendChild(dAppSection);
+}
+
+  // ---------- Connect ----------
+  async connectWallet(walletInfo) {
+    this.showStatus('Connecting to ' + walletInfo.name + '...', 'connecting');
+
+    try {
+      let adapter = null;
+      switch (walletInfo.adapter) {
+        case 'phantom':  adapter = (window.solana && window.solana.isPhantom) ? window.solana : null; break;
+        case 'solflare': adapter = (window.solflare && window.solflare.isSolflare) ? window.solflare : null; break;
+        case 'backpack': adapter = (window.backpack && window.backpack.isBackpack) ? window.backpack : null; break;
+        case 'glow':     adapter = window.glow || null; break;
+        case 'slope':    adapter = window.Slope || null; break;
+        case 'torus':    adapter = window.torus || null; break;
+      }
+
+      if (!adapter) {
+        this.showStatus(`${walletInfo.name} not found. Install it?`, 'error');
+        setTimeout(() => {
+          if (confirm(`${walletInfo.name} wallet not found. Would you like to install it?`)) {
+            window.open(walletInfo.downloadUrl, '_blank');
+          }
+          this.hideStatus();
+        }, 1600);
+        return;
+      }
+
+      const res = await adapter.connect();
+      const pk = res?.publicKey ?? adapter.publicKey ?? res?.account?.address;
+      if (!pk) throw new Error('No public key received');
+
+      const base58 = typeof pk === 'string' ? pk : pk.toString();
+      this.connectedWallet = { adapter, name: walletInfo.name, publicKey: base58 };
+
+      // persist for game page reloads
+      localStorage.setItem('walletAddress', base58);
+      localStorage.setItem('walletName', walletInfo.name);
+
+      this.showStatus('Connected successfully!', 'connected');
+      await this.updateWalletDisplay();
+
+      setTimeout(() => this.hideWalletModal(), 1000);
+    } catch (err) {
+      console.error('Wallet connection failed:', err);
+      this.showStatus('Connection failed: ' + (err?.message || err), 'error');
+      setTimeout(() => this.hideStatus(), 2000);
+    }
+  }
+
+  // ---------- Local restore ----------
+  async checkPreviousConnection() {
+    const addr = localStorage.getItem('walletAddress');
+    const name = localStorage.getItem('walletName');
+    if (addr && name) {
+      this.connectedWallet = { publicKey: addr, name, adapter: null }; // adapter may be absent after reload
+      await this.updateWalletDisplay();
+    } else {
+      this.applyDisconnectedState();
+    }
+  }
+
+  // ---------- UI states ----------
+  applyDisconnectedState() {
+    if (this.walletIcon) this.walletIcon.className = 'disconnected';
+    if (this.walletAmount) this.walletAmount.textContent = '0';
+    if (this.connectWalletBtn) {
+      this.connectWalletBtn.textContent = 'Connect Solana Wallet';
+      this.connectWalletBtn.classList.remove('connected');
+    }
+    if (this.walletInfo) this.walletInfo.style.display = 'none';
+    if (this.solBalanceEl) this.solBalanceEl.textContent = '0';
+  }
+
+  async updateWalletDisplay() {
+    if (!this.connectedWallet) return this.applyDisconnectedState();
+
+    // show connected UI
+    if (this.connectedWalletName) this.connectedWalletName.textContent = this.connectedWallet.name;
+    if (this.connectedWalletAddress) {
+      const a = this.connectedWallet.publicKey;
+      this.connectedWalletAddress.textContent = a.slice(0, 8) + '...' + a.slice(-8);
+    }
+    if (this.walletIcon) this.walletIcon.className = 'connected';
+    if (this.connectWalletBtn) {
+      this.connectWalletBtn.textContent = `Disconnect ${this.connectedWallet.name}`;
+      this.connectWalletBtn.classList.add('connected');
+    }
+    if (this.walletInfo) this.walletInfo.style.display = 'block';
+
+    // on-chain SOL
+    try {
+      const lamports = await this.connection.getBalance(new solanaWeb3.PublicKey(this.connectedWallet.publicKey));
+      const sol = lamports / solanaWeb3.LAMPORTS_PER_SOL;
+      if (this.solBalanceEl) this.solBalanceEl.textContent = sol.toFixed(4);
+      if (this.walletAmount)  this.walletAmount.textContent  = sol.toFixed(4);
+    } catch (e) {
+      console.warn('getBalance failed:', e);
+      if (this.solBalanceEl) this.solBalanceEl.textContent = '0';
+      if (this.walletAmount) this.walletAmount.textContent = '0';
+    }
+
+    // off-chain reward conversion
+    this.updateRewardConversion();
+  }
+
+ async disconnectWallet() {
+  if (!confirm('Do you want to disconnect your wallet?')) return;
+
+  try {
+    if (this.connectedWallet?.adapter?.disconnect) {
+      await this.connectedWallet.adapter.disconnect();
+    }
+  } catch (e) {
+    console.warn('disconnect error:', e);
+  }
+
+  this.connectedWallet = null;
+  localStorage.removeItem('walletAddress');
+  localStorage.removeItem('walletName');
+  
+  // Immediately update all UI elements
+  this.applyDisconnectedState();
+  this.renderWalletList(); // Refresh the modal view
+  this.updateWalletDisplay();
+}
+
+  // ---------- Status banner ----------
+  showStatus(message, type) {
+    if (!this.walletStatus) return;
+    this.walletStatus.textContent = message;
+    this.walletStatus.className = `wallet-status status-${type}`;
+    this.walletStatus.style.display = 'block';
+  }
+  hideStatus() {
+    if (this.walletStatus) this.walletStatus.style.display = 'none';
+  }
+
+  // ---------- Reward (USD → ≈ SOL) ----------
+  // Use your existing key `walletBalance` (fallback to `rewardUSD` for compatibility)
+  getRewardUsd() {
+    const v = localStorage.getItem('walletBalance') ?? localStorage.getItem('rewardUSD');
+    const n = v ? Number(v) : 0;
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  async fetchSolUsdPrice() {
+    // USD per SOL
+    const url = 'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd';
+    const r = await fetch(url, { cache: 'no-store' });
+    if (!r.ok) throw new Error('Price fetch failed');
+    const j = await r.json();
+    const price = j?.solana?.usd;
+    if (!price || !Number.isFinite(price)) throw new Error('Bad price payload');
+    localStorage.setItem('lastSolUsd', String(price));
+    return price;
+  }
+
+  updateRewardDom(usd, sol) {
+    if (this.rewardUsdEl) this.rewardUsdEl.textContent = usd.toFixed(2);
+    if (this.walletUsdEl) this.walletUsdEl.textContent = usd.toFixed(2); // reuse your Settings “USDT” line
+    if (this.rewardSolEl) this.rewardSolEl.textContent = sol.toFixed(6);
+  }
+
+  async updateRewardConversion() {
+    const rewardUSD = this.getRewardUsd();
+    if (!rewardUSD) return this.updateRewardDom(0, 0);
+
+    try {
+      const priceUsdPerSol = await this.fetchSolUsdPrice();
+      const rewardSOL = rewardUSD / priceUsdPerSol;     // SOL = USD ÷ (USD/SOL)
+      this.updateRewardDom(rewardUSD, rewardSOL);
+      localStorage.setItem('rewardSOL', String(rewardSOL));
+    } catch (err) {
+      console.warn('Price fetch failed, using cached:', err);
+      const cached = Number(localStorage.getItem('lastSolUsd') || '0');
+      if (cached > 0) {
+        const rewardSOL = rewardUSD / cached;
+        this.updateRewardDom(rewardUSD, rewardSOL);
+        localStorage.setItem('rewardSOL', String(rewardSOL));
+      } else {
+        this.updateRewardDom(rewardUSD, 0);
+      }
+    }
+  }
+
+  // ---------- Periodic refresh ----------
+  startBalanceRefresh() {
+    setInterval(async () => {
+      if (this.connectedWallet) await this.updateWalletDisplay();
+      this.updateRewardConversion();
+    }, 30000);
+  }
+}
+
+// Boot
+document.addEventListener('DOMContentLoaded', () => {
+  window.solanaWalletManager = new SolanaWalletManager();
+  window.solanaWalletManager.startBalanceRefresh();
+});
 </script>
 <!-- <script>
 

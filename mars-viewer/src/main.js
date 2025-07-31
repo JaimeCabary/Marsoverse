@@ -624,7 +624,7 @@ mars360Btn.addEventListener('click', () => {
 });
 navContainer.appendChild(mars360Btn);
 
-// 2. Create Modal Container
+// 2. Create Modal Container with 360 Viewport
 const mars360Modal = document.createElement('div');
 mars360Modal.id = 'mars360Modal';
 mars360Modal.style.cssText = `
@@ -634,21 +634,41 @@ mars360Modal.style.cssText = `
   width: 100vw; height: 100vh;
   background: black;
   z-index: 1000;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  overflow: hidden;
 `;
 
-// 3. Video Element
+// Create viewport container
+const viewport = document.createElement('div');
+viewport.id = 'viewport';
+viewport.style.cssText = `
+  position: absolute;
+  width: 200%;  // Wider than viewport for panning
+  height: 200%; // Taller than viewport for panning
+  overflow: hidden;
+  cursor: grab;
+`;
+
+// Create video container with transform origin
+const videoContainer = document.createElement('div');
+videoContainer.id = 'videoContainer';
+videoContainer.style.cssText = `
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  will-change: transform;
+`;
+
+// Video Element
 const mars360Video = document.createElement('video');
-mars360Video.controls = true;
+mars360Video.controls = false;
 mars360Video.loop = true;
 mars360Video.muted = true;
+mars360Video.setAttribute('playsinline', '');
 mars360Video.style.cssText = `
   width: 100%;
   height: 100%;
   object-fit: cover;
-  pointer-events: auto;
 `;
 
 // 4. Close Button
@@ -695,16 +715,134 @@ controlBar.style.cssText = `
 });
 
 // 6. Append Everything
-mars360Modal.appendChild(mars360Video);
+videoContainer.appendChild(mars360Video);
+viewport.appendChild(videoContainer);
+mars360Modal.appendChild(viewport);
 mars360Modal.appendChild(closeBtn);
 mars360Modal.appendChild(controlBar);
 document.body.appendChild(mars360Modal);
 
+// 360 Control Variables
+let isDragging = false;
+let startX, startY;
+let panX = 0, panY = 0;
+let scale = 1;
+const maxPan = 50; // Maximum pan amount in pixels
+const sensitivity = 0.5;
+
+// Mouse/Touch Event Handlers
+viewport.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startX = e.clientX - panX;
+  startY = e.clientY - panY;
+  viewport.style.cursor = 'grabbing';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  
+  panX = e.clientX - startX;
+  panY = e.clientY - startY;
+  
+  // Constrain panning to reasonable limits
+  panX = Math.max(-maxPan, Math.min(panX, maxPan));
+  panY = Math.max(-maxPan, Math.min(panY, maxPan));
+  
+  updateView();
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  viewport.style.cursor = 'grab';
+});
+
+// Touch events
+viewport.addEventListener('touchstart', (e) => {
+  isDragging = true;
+  startX = e.touches[0].clientX - panX;
+  startY = e.touches[0].clientY - panY;
+  e.preventDefault();
+});
+
+document.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  
+  panX = e.touches[0].clientX - startX;
+  panY = e.touches[0].clientY - startY;
+  
+  // Constrain panning
+  panX = Math.max(-maxPan, Math.min(panX, maxPan));
+  panY = Math.max(-maxPan, Math.min(panY, maxPan));
+  
+  updateView();
+  e.preventDefault();
+});
+
+document.addEventListener('touchend', () => {
+  isDragging = false;
+});
+
+// Wheel zoom
+viewport.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const zoomDelta = e.deltaY * -0.001;
+  scale += zoomDelta;
+  scale = Math.max(0.8, Math.min(scale, 1.5)); // Limit zoom range
+  updateView();
+});
+
+// Keyboard controls
+document.addEventListener('keydown', (e) => {
+  if (mars360Modal.style.display !== 'flex') return;
+  
+  const panStep = 10;
+  
+  switch(e.key) {
+    case 'ArrowUp': panY -= panStep; break;
+    case 'ArrowDown': panY += panStep; break;
+    case 'ArrowLeft': panX -= panStep; break;
+    case 'ArrowRight': panX += panStep; break;
+    case '+': case '=': 
+      scale = Math.min(1.5, scale + 0.1); 
+      break;
+    case '-': 
+      scale = Math.max(0.8, scale - 0.1); 
+      break;
+    case 'Escape': toggleMars360(false); break;
+  }
+  
+  // Constrain values
+  panX = Math.max(-maxPan, Math.min(panX, maxPan));
+  panY = Math.max(-maxPan, Math.min(panY, maxPan));
+  
+  updateView();
+});
+
+// Update the view transform
+function updateView() {
+  // The magic happens here - we move the video container opposite to the pan direction
+  // and scale it to create the 360° effect
+  videoContainer.style.transform = `
+    translate(${-panX}px, ${-panY}px)
+    scale(${scale})
+  `;
+  
+  // Adjust viewport position to keep the video centered
+  viewport.style.left = `calc(50% + ${panX}px)`;
+  viewport.style.top = `calc(50% + ${panY}px)`;
+}
+
 // 7. Toggle Modal
 function toggleMars360(show) {
   mars360Modal.style.display = show ? 'flex' : 'none';
-  if (show) playMars360('a');
-  else {
+  if (show) {
+    playMars360('a');
+    // Reset view
+    panX = 0;
+    panY = 0;
+    scale = 1;
+    updateView();
+  } else {
     mars360Video.pause();
     mars360Video.src = '';
   }
@@ -714,7 +852,112 @@ function toggleMars360(show) {
 function playMars360(id) {
   mars360Video.src = `./videos/mars360${id}.webm`;
   mars360Video.play().catch(console.error);
+  // Reset view when changing videos
+  panX = 0;
+  panY = 0;
+  scale = 1;
+  updateView();
 }
+// // 1. Add Mars 360 Button to Navbar
+// const mars360Btn = document.createElement('button');
+// mars360Btn.textContent = 'Mars 360';
+// mars360Btn.className = 'nav-item';
+// mars360Btn.addEventListener('click', () => {
+//   toggleMars360(true);
+// });
+// navContainer.appendChild(mars360Btn);
+
+// // 2. Create Modal Container
+// const mars360Modal = document.createElement('div');
+// mars360Modal.id = 'mars360Modal';
+// mars360Modal.style.cssText = `
+//   display: none;
+//   position: fixed;
+//   top: 0; left: 0;
+//   width: 100vw; height: 100vh;
+//   background: black;
+//   z-index: 1000;
+//   justify-content: center;
+//   align-items: center;
+//   flex-direction: column;
+// `;
+
+// // 3. Video Element
+// const mars360Video = document.createElement('video');
+// mars360Video.controls = true;
+// mars360Video.loop = true;
+// mars360Video.muted = true;
+// mars360Video.style.cssText = `
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover;
+//   pointer-events: auto;
+// `;
+
+// // 4. Close Button
+// const closeBtn = document.createElement('button');
+// closeBtn.textContent = '✖';
+// closeBtn.style.cssText = `
+//   position: absolute;
+//   top: 10px;
+//   right: 10px;
+//   padding: 0.5rem 1rem;
+//   font-size: 1.2rem;
+//   z-index: 1001;
+//   background: rgba(0,0,0,0.7);
+//   color: white;
+//   border: none;
+//   cursor: pointer;
+//   pointer-events: auto;
+// `;
+// closeBtn.onclick = () => toggleMars360(false);
+
+// // 5. Control Buttons
+// const controlBar = document.createElement('div');
+// controlBar.style.cssText = `
+//   position: absolute;
+//   bottom: 20px;
+//   display: flex;
+//   gap: 10px;
+//   z-index: 1001;
+//   pointer-events: auto;
+// `;
+
+// ['a', 'b'].forEach(id => {
+//   const btn = document.createElement('button');
+//   btn.textContent = `Video ${id.toUpperCase()}`;
+//   btn.style.cssText = `
+//     padding: 0.5rem 1rem;
+//     background: rgba(255,255,255,0.1);
+//     color: white;
+//     border: 1px solid white;
+//     cursor: pointer;
+//   `;
+//   btn.onclick = () => playMars360(id);
+//   controlBar.appendChild(btn);
+// });
+
+// // 6. Append Everything
+// mars360Modal.appendChild(mars360Video);
+// mars360Modal.appendChild(closeBtn);
+// mars360Modal.appendChild(controlBar);
+// document.body.appendChild(mars360Modal);
+
+// // 7. Toggle Modal
+// function toggleMars360(show) {
+//   mars360Modal.style.display = show ? 'flex' : 'none';
+//   if (show) playMars360('a');
+//   else {
+//     mars360Video.pause();
+//     mars360Video.src = '';
+//   }
+// }
+
+// // 8. Play Selected Video
+// function playMars360(id) {
+//   mars360Video.src = `./videos/mars360${id}.webm`;
+//   mars360Video.play().catch(console.error);
+// }
 
 
 

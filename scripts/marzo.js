@@ -10,11 +10,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const playerEmail = localStorage.getItem("playerEmail");
   document.getElementById("youEmail").textContent = playerEmail || "xyz@example.com";
 
+    // Helper: derive first name from full name or email
+  function deriveFirstName(fullName, email) {
+    const first = (fullName || '').trim().split(/\s+/)[0];        // first token before space
+    if (first) return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
+    if (email) {
+      const left = email.split('@')[0];                           // before @
+      const guess = left.split(/[._-]+/)[0];                      // split common separators
+      if (guess) return guess.charAt(0).toUpperCase() + guess.slice(1).toLowerCase();
+    }
+    return 'Player';
+  }
+
+  // Compute or reuse a cached first name
+  let playerFirstName = localStorage.getItem("playerFirstName");
+  if (!playerFirstName) {
+    playerFirstName = deriveFirstName(playerName, playerEmail);
+    localStorage.setItem("playerFirstName", playerFirstName);
+  }
+
+
 
 
   // 🧠 Update UI Elements
-  document.getElementById("playerNameHUD").textContent = playerName;
-  document.getElementById("welcomeMessage").textContent = `Hello, ${playerName}`;
+  document.getElementById("playerNameHUD").textContent = playerFirstName;                 // was: playerName
+  document.getElementById("welcomeMessage").textContent = `Hello, ${playerFirstName}`; 
   document.getElementById("youName").textContent = playerName;
   document.getElementById("youAge").textContent = playerAge;
   document.getElementById("youXP").textContent = playerXP;
@@ -113,6 +133,13 @@ document.getElementById("saveProfileBtn").addEventListener("click", () => {
   localStorage.setItem("playerName", newName);
   localStorage.setItem("playerAge", newAge);
   localStorage.setItem("playerEmail", newEmail);
+  
+    // 🔽 ADD THIS: recompute & cache first name, update HUD/welcome
+  const newFirst = deriveFirstName(newName, newEmail);
+  localStorage.setItem("playerFirstName", newFirst);
+  document.getElementById("playerNameHUD").textContent = newFirst;
+  document.getElementById("welcomeMessage").textContent = `Hello, ${newFirst}`;
+
 
   document.getElementById("youName").textContent = newName;
   document.getElementById("youAge").textContent = newAge;

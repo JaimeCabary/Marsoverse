@@ -376,94 +376,94 @@ genderSelect?.addEventListener('change', () => {
   }
 });
 
-const connectWalletBtn = document.getElementById('connectWalletBtn');
-const skipLink = document.getElementById('firstLink');
-const walletPreview = document.getElementById('walletPreview');
+// const connectWalletBtn = document.getElementById('connectWalletBtn');
+// const skipLink = document.getElementById('firstLink');
+// const walletPreview = document.getElementById('walletPreview');
 
-// 📱 Detect Mobile
-function isMobile() {
-  return /android|iphone|ipad|ipod/i.test(navigator.userAgent);
-}
+// // 📱 Detect Mobile
+// function isMobile() {
+//   return /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+// }
 
-function stopSparkleSound() {
-  sparkleSound.pause();
-  sparkleSound.currentTime = 0;
-}
+// function stopSparkleSound() {
+//   sparkleSound.pause();
+//   sparkleSound.currentTime = 0;
+// }
 
-// ✅ Phantom deep link
-function redirectToPhantomMobile() {
-  const dappURL = encodeURIComponent(window.location.href);
-  window.location.href = `https://phantom.app/ul/browse/${dappURL}`;
-}
+// // ✅ Phantom deep link
+// function redirectToPhantomMobile() {
+//   const dappURL = encodeURIComponent(window.location.href);
+//   window.location.href = `https://phantom.app/ul/browse/${dappURL}`;
+// }
 
-// ✅ Connect wallet
-connectWalletBtn?.addEventListener('click', async () => {
-  if (sparkleSound) {
-    try {
-      await sparkleSound.play();
-    } catch (err) {
-      console.warn('Sparkle sound blocked:', err);
-    }
-  }
+// // ✅ Connect wallet
+// connectWalletBtn?.addEventListener('click', async () => {
+//   if (sparkleSound) {
+//     try {
+//       await sparkleSound.play();
+//     } catch (err) {
+//       console.warn('Sparkle sound blocked:', err);
+//     }
+//   }
 
-  walletPreview.style.display = 'inline-block';
-  walletPreview.textContent = "Connecting wallet...";
-  skipLink.style.display = 'none';
+//   walletPreview.style.display = 'inline-block';
+//   walletPreview.textContent = "Connecting wallet...";
+//   skipLink.style.display = 'none';
 
-  if ('solana' in window && window.solana?.isPhantom) {
-    try {
-      const res = await window.solana.connect();
-      const pubKey = res.publicKey.toString();
-      localStorage.setItem('walletAddress', pubKey);
+//   if ('solana' in window && window.solana?.isPhantom) {
+//     try {
+//       const res = await window.solana.connect();
+//       const pubKey = res.publicKey.toString();
+//       localStorage.setItem('walletAddress', pubKey);
 
-      setTimeout(() => {
-        walletPreview.textContent = `${pubKey.slice(0, 3)}...`;
+//       setTimeout(() => {
+//         walletPreview.textContent = `${pubKey.slice(0, 3)}...`;
 
-        setTimeout(() => {
-          stopSparkleSound();
-          showSection('genderSection');
-        }, 2000);
+//         setTimeout(() => {
+//           stopSparkleSound();
+//           showSection('genderSection');
+//         }, 2000);
 
-      }, 2000);
+//       }, 2000);
 
-    } catch (err) {
-      walletPreview.textContent = "Connection failed";
-      skipLink.style.display = 'inline-block';
-      console.warn('Wallet connection failed:', err);
-    }
+//     } catch (err) {
+//       walletPreview.textContent = "Connection failed";
+//       skipLink.style.display = 'inline-block';
+//       console.warn('Wallet connection failed:', err);
+//     }
 
-  } else if (isMobile()) {
-    setTimeout(() => {
-      walletPreview.textContent = "Redirecting to Phantom...";
-      redirectToPhantomMobile();
-    }, 1500);
+//   } else if (isMobile()) {
+//     setTimeout(() => {
+//       walletPreview.textContent = "Redirecting to Phantom...";
+//       redirectToPhantomMobile();
+//     }, 1500);
 
-  } else {
-    walletPreview.textContent = "Solana wallet not found";
-    alert("No Solana wallet found. Install Phantom from https://phantom.app");
-    skipLink.style.display = 'inline-block';
-  }
-});
+//   } else {
+//     walletPreview.textContent = "Solana wallet not found";
+//     alert("No Solana wallet found. Install Phantom from https://phantom.app");
+//     skipLink.style.display = 'inline-block';
+//   }
+// });
 
-// ⛔ Disconnect wallet if preview is clicked
-walletPreview?.addEventListener('click', () => {
-  if (walletPreview.textContent.includes('...')) {
-    const confirmDisconnect = confirm("Do you wish to disconnect your wallet?");
-    if (confirmDisconnect) {
-      localStorage.removeItem('walletAddress');
-      walletPreview.textContent = '';
-      skipLink.style.display = 'inline-block';
-      alert("Wallet disconnected.");
-    }
-  }
-});
+// // ⛔ Disconnect wallet if preview is clicked
+// walletPreview?.addEventListener('click', () => {
+//   if (walletPreview.textContent.includes('...')) {
+//     const confirmDisconnect = confirm("Do you wish to disconnect your wallet?");
+//     if (confirmDisconnect) {
+//       localStorage.removeItem('walletAddress');
+//       walletPreview.textContent = '';
+//       skipLink.style.display = 'inline-block';
+//       alert("Wallet disconnected.");
+//     }
+//   }
+// });
 
-// ⏭️ Skip manually
-skipLink?.addEventListener('click', (e) => {
-  e.preventDefault();
-  stopSparkleSound();
-  showSection('genderSection');
-});
+// // ⏭️ Skip manually
+// skipLink?.addEventListener('click', (e) => {
+//   e.preventDefault();
+//   stopSparkleSound();
+//   showSection('genderSection');
+// });
 
      // Store companion + bot for later
   // document.querySelectorAll('.choice').forEach(choice => {
