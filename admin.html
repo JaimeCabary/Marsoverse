@@ -6,7 +6,13 @@
   <title>MarsoVerse Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
+  <!-- Solana Web3.js -->
+  <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter-base@0.9.19/lib/index.iife.min.js"></script>
+
+  <!-- Honeycomb Edge Client -->
+  <script src="https://unpkg.com/@honeycomb-protocol/edge-client@latest/dist/index.umd.js"></script>
+    
   <style>
     * {
       margin: 0;
@@ -560,6 +566,7 @@
         this.initializeEventListeners();
         this.refreshData();
         this.startAutoRefresh();
+        this.honeycombSync();
       }
 
       initializeDefaultMissions() {

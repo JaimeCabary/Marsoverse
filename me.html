@@ -17,6 +17,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/javascript-hint.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.css">
+<!-- Solana Web3.js -->
+<script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+<script src="https://unpkg.com/@solana/wallet-adapter-base@0.9.19/lib/index.iife.min.js"></script>
+
+<!-- Honeycomb Edge Client -->
+<script src="https://unpkg.com/@honeycomb-protocol/edge-client@latest/dist/index.umd.js"></script>
    <style>
     * {
       margin: 0;
@@ -1528,7 +1534,48 @@ Data Crystals: ${resources.data_crystals}`, false);
         saveGame();
         printLine('⚠️ Game reset to default state.', false);
         logToX('Reset game in MarsoVerse');
+      },
+      // Add these to your existing commands object in me.html
+  '/honeycomb': (args) => {
+    if (args === 'status') {
+      printLine(`🍯 Honeycomb Protocol Status: ${window.honeycomb?.isConnected ? 'Connected' : 'Disconnected'}`, false);
+      printLine(`📊 Events tracked: ${JSON.parse(localStorage.getItem('honeycomb_events') || '[]').length}`, false);
+    } else if (args === 'sync') {
+      if (window.honeycomb) {
+        window.honeycomb.syncLocalData();
+        printLine('🍯 Honeycomb data synchronized!', false);
+        addXP(10);
       }
+    } else {
+      printLine('Usage: /honeycomb [status|sync]', false);
+    }
+  },
+
+'/leaderboard': (args) => {
+  if (args === 'update') {
+    if (window.honeycomb) {
+      const leaderboard = window.honeycomb.updateLeaderboard();
+      printLine('🏆 Leaderboard updated!', false);
+      leaderboard.slice(0, 5).forEach((player, index) => {
+        printLine(`${index + 1}. ${player.name} - ${player.xp} XP`, false);
+      });
+    }
+  } else {
+    printLine('Usage: /leaderboard update', false);
+  }
+},
+
+'/reward': (args) => {
+  const subCommands = args?.split(' ');
+  const xp = parseInt(subCommands?.[0]) || 50;
+  const usd = parseFloat(subCommands?.[1]) || 1.0;
+  
+  if (window.honeycomb) {
+    const result = window.honeycomb.completeMission('terminal_reward', xp, usd);
+    printLine(`🎉 Mission completed! +${xp} XP, +$${usd}`, false);
+    printLine(`💰 New totals: ${result.newXP} XP, $${result.newWallet.toFixed(2)}`, false);
+  }
+},
     };
 
     function showSuggestions(input) {

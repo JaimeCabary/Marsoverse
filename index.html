@@ -255,6 +255,58 @@
       color: #ff0000;
     }
 
+    .admin-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.admin-content {
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid #00ffff;
+  border-radius: 15px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  color: white;
+  font-family: 'Orbitron', monospace;
+}
+
+.admin-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.admin-buttons button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Orbitron', monospace;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-buttons button:first-child {
+  background: #00ffff;
+  color: #000;
+}
+
+.admin-buttons button:last-child {
+  background: #ff5c33;
+  color: #fff;
+}
+
 </style>
 </head>
 <body>
@@ -439,6 +491,9 @@
   </div>
 </div>
 <script>
+  function isMobileDevice() {
+  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 class SolanaWalletManager {
   constructor() {
     this.wallets = [
@@ -597,19 +652,40 @@ class SolanaWalletManager {
           }
           break;
       }
-      
       if (!walletAdapter) {
-        // Wallet not found, offer to install
-        this.showStatus(`${walletInfo.name} not found. Install it?`, 'error');
-        
+        this.showStatus(`${walletInfo.name} not found. Open it?`, 'error');
+
         setTimeout(() => {
-          if (confirm(`${walletInfo.name} wallet not found. Would you like to install it?`)) {
-            window.open(walletInfo.downloadUrl, '_blank');
+          let deepLinks = {
+            phantom: isMobileDevice() ? 'phantom://' : walletInfo.downloadUrl,
+            solflare: isMobileDevice() ? 'solflare://' : walletInfo.downloadUrl,
+            slope: isMobileDevice() ? 'slope://' : walletInfo.downloadUrl,
+            glow: walletInfo.downloadUrl,
+            backpack: walletInfo.downloadUrl,
+            torus: walletInfo.downloadUrl
+          };
+
+          if (confirm(`${walletInfo.name} not detected. Open wallet app?`)) {
+            window.location.href = deepLinks[walletInfo.adapter] || walletInfo.downloadUrl;
           }
           this.hideStatus();
         }, 2000);
+
         return;
       }
+
+      // if (!walletAdapter) {
+      //   // Wallet not found, offer to install
+      //   this.showStatus(`${walletInfo.name} not found. Install it?`, 'error');
+        
+      //   setTimeout(() => {
+      //     if (confirm(`${walletInfo.name} wallet not found. Would you like to install it?`)) {
+      //       window.open(walletInfo.downloadUrl, '_blank');
+      //     }
+      //     this.hideStatus();
+      //   }, 2000);
+      //   return;
+      // }
       
       // Connect to wallet
       const response = await walletAdapter.connect();
@@ -737,6 +813,66 @@ function showSection(sectionId) {
   // Show target section
   document.getElementById(sectionId).classList.add('active');
 }
+</script>
+<script>
+  // Add this to your existing script section
+function detectAdminInput(inputValue) {
+  const adminTriggers = ['admin', 'ADMIN', 'Admin', 'AdMiN', 'administrator', 'ADMINISTRATOR'];
+  
+  if (adminTriggers.some(trigger => inputValue.toLowerCase().includes(trigger.toLowerCase()))) {
+    showAdminModal();
+  }
+}
+
+function showAdminModal() {
+  const modal = document.createElement('div');
+  modal.id = 'adminModal';
+  modal.className = 'admin-modal';
+  modal.innerHTML = `
+    <div class="admin-content">
+      <h2><i class="fas fa-shield-alt"></i> Admin Access Detected</h2>
+      <p>Enter admin password or choose to play as regular player</p>
+      <input type="password" id="adminPassword" placeholder="Enter password..." />
+      <div class="admin-buttons">
+        <button onclick="validateAdmin()">Access Dashboard</button>
+        <button onclick="playAsPlayer()">Play as Player</button>
+      </div>
+      <div id="passwordError" style="color: #ff4444; margin-top: 10px; display: none;">
+        Invalid password. Try again.
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.style.display = 'flex';
+}
+
+function validateAdmin() {
+  const password = document.getElementById('adminPassword').value;
+  const correctPassword = 'admin@marsoverse';
+  
+  if (password === correctPassword) {
+    // Redirect to admin dashboard
+    window.location.href = 'admin.html';
+  } else {
+    document.getElementById('passwordError').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('passwordError').style.display = 'none';
+    }, 3000);
+  }
+}
+
+function playAsPlayer() {
+  document.getElementById('adminModal').remove();
+  // Continue with normal player flow
+  document.getElementById('playerName').value = '';
+  document.getElementById('inputNameDisplay').textContent = '';
+}
+
+// Add this to your existing name input event listener
+document.getElementById('playerName').addEventListener('input', function(e) {
+  // Your existing input logic here...
+  detectAdminInput(e.target.value);
+});
 </script>
 
 </body>

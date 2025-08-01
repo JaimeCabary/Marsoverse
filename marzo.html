@@ -15,6 +15,15 @@
   <link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet" />
   <!-- Add Solana Wallet Adapter -->
   <script src="https://unpkg.com/@solana/web3.js@1.95.1/lib/index.iife.js"></script>
+  <!-- Solana Web3.js -->
+<script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+<script src="https://unpkg.com/@solana/wallet-adapter-base@0.9.19/lib/index.iife.min.js"></script>
+
+<!-- Honeycomb Edge Client -->
+<script src="https://unpkg.com/@honeycomb-protocol/edge-client@latest/dist/index.umd.js"></script>
+<!-- Add to your head section -->
+<!-- <script src="https://unpkg.com/@honeycomb-protocol/edge-client@latest/dist/index.umd.js"></script> -->
+<script src="https://unpkg.com/bs58@5.0.0/dist/bs58.min.js"></script>
   
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2&display=swap" rel="stylesheet" />
@@ -1600,6 +1609,216 @@ document.addEventListener('DOMContentLoaded', () => {
   window.solanaWalletManager = new SolanaWalletManager();
   window.solanaWalletManager.startBalanceRefresh();
 });
+</script>
+<script>
+  // Honeycomb Protocol Integration for MarsoVerse
+class HoneycombProtocol {
+  constructor() {
+    this.apiUrl = 'https://api.honeycomb.xyz'; // Replace with actual Honeycomb API
+    this.gameId = 'marsoverse';
+    this.version = '1.0.0';
+    this.isConnected = false;
+    this.init();
+  }
+
+  async init() {
+    try {
+      await this.connect();
+      this.syncLocalData();
+      this.startPeriodicSync();
+    } catch (error) {
+      console.warn('Honeycomb connection failed, using local storage:', error);
+    }
+  }
+
+  async connect() {
+    // Simulate connection - replace with actual Honeycomb connection
+    this.isConnected = true;
+    console.log('✅ Honeycomb Protocol connected');
+    this.sendEvent('protocol_connected', { gameId: this.gameId });
+  }
+
+  sendEvent(eventType, data) {
+    const event = {
+      timestamp: new Date().toISOString(),
+      type: eventType,
+      data: data,
+      game: this.gameId,
+      version: this.version,
+      playerId: localStorage.getItem('playerName') || 'anonymous'
+    };
+
+    // Store locally for now (replace with actual API call)
+    const events = JSON.parse(localStorage.getItem('honeycomb_events') || '[]');
+    events.push(event);
+    localStorage.setItem('honeycomb_events', JSON.stringify(events.slice(-100))); // Keep last 100 events
+
+    // In real implementation, send to Honeycomb API
+    console.log('[Honeycomb Event]', event);
+  }
+
+  async syncLocalData() {
+    // Sync existing player data to Honeycomb
+    const playerData = {
+      name: localStorage.getItem('playerName'),
+      xp: parseInt(localStorage.getItem('playerXP') || '0'),
+      level: Math.floor(parseInt(localStorage.getItem('playerXP') || '0') / 100) + 1,
+      companion: localStorage.getItem('companionName'),
+      walletBalance: parseFloat(localStorage.getItem('walletBalance') || '0'),
+      lastActive: new Date().toISOString()
+    };
+
+    this.sendEvent('player_sync', playerData);
+  }
+
+  updateXP(newXP, source = 'game') {
+    const oldXP = parseInt(localStorage.getItem('playerXP') || '0');
+    const xpGained = newXP - oldXP;
+    
+    localStorage.setItem('playerXP', newXP.toString());
+    
+    this.sendEvent('xp_updated', {
+      oldXP,
+      newXP,
+      xpGained,
+      source
+    });
+
+    // Update leaderboard
+    this.updateLeaderboard();
+  }
+
+  completeMission(missionId, xpReward, usdReward = 0) {
+    const currentXP = parseInt(localStorage.getItem('playerXP') || '0');
+    const newXP = currentXP + xpReward;
+    const currentWallet = parseFloat(localStorage.getItem('walletBalance') || '0');
+    const newWallet = currentWallet + usdReward;
+
+    // Update local storage
+    localStorage.setItem('playerXP', newXP.toString());
+    localStorage.setItem('walletBalance', newWallet.toString());
+
+    // Send to Honeycomb
+    this.sendEvent('mission_completed', {
+      missionId,
+      xpReward,
+      usdReward,
+      newXP,
+      newWallet
+    });
+
+    // Update displays
+    this.updateGameDisplay();
+    this.updateLeaderboard();
+
+    return { newXP, newWallet };
+  }
+
+  updateLeaderboard() {
+    // Get all players from events
+    const events = JSON.parse(localStorage.getItem('honeycomb_events') || '[]');
+    const players = new Map();
+
+    events.forEach(event => {
+      if (event.type === 'xp_updated' || event.type === 'player_sync') {
+        const playerName = event.playerId;
+        const xp = event.data.newXP || event.data.xp || 0;
+        players.set(playerName, Math.max(players.get(playerName) || 0, xp));
+      }
+    });
+
+    // Convert to sorted array
+    const leaderboard = Array.from(players.entries())
+      .map(([name, xp]) => ({ name, xp }))
+      .sort((a, b) => b.xp - a.xp)
+      .slice(0, 10);
+
+    // Update leaderboard display
+    this.displayLeaderboard(leaderboard);
+    
+    return leaderboard;
+  }
+
+  displayLeaderboard(leaderboard) {
+    const leaderboardList = document.getElementById('leaderboardList');
+    if (!leaderboardList) return;
+
+    leaderboardList.innerHTML = '';
+    leaderboard.forEach((player, index) => {
+      const li = document.createElement('li');
+      const icon = index === 0 ? '👑' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🚀';
+      li.textContent = `${icon} ${player.name} - ${player.xp} XP`;
+      leaderboardList.appendChild(li);
+    });
+  }
+
+  updateGameDisplay() {
+    // Update HUD
+    const xpElement = document.getElementById('playerXP');
+    const walletElement = document.getElementById('walletAmount');
+    
+    if (xpElement) {
+      xpElement.textContent = `XP: ${localStorage.getItem('playerXP') || '0'}`;
+    }
+    
+    if (walletElement) {
+      walletElement.textContent = localStorage.getItem('walletBalance') || '0';
+    }
+  }
+
+  getFriendsList() {
+    // Get recent players from events
+    const events = JSON.parse(localStorage.getItem('honeycomb_events') || '[]');
+    const friends = new Set();
+    
+    events.forEach(event => {
+      if (event.playerId && event.playerId !== localStorage.getItem('playerName')) {
+        friends.add(event.playerId);
+      }
+    });
+
+    return Array.from(friends).slice(0, 10);
+  }
+
+  updateFriendsList() {
+    const friendsList = document.getElementById('friendsList');
+    if (!friendsList) return;
+
+    const friends = this.getFriendsList();
+    friendsList.innerHTML = '';
+
+    // Add companions first
+    const companions = [
+      { name: 'Elena', status: 'Companion' },
+      { name: 'Errin', status: 'Companion' }
+    ];
+
+    companions.forEach(companion => {
+      const li = document.createElement('li');
+      li.innerHTML = `${companion.name}: <span class="friendStatus">${companion.status}</span>`;
+      friendsList.appendChild(li);
+    });
+
+    // Add other players
+    friends.forEach(friend => {
+      const li = document.createElement('li');
+      li.innerHTML = `${friend}: <span class="friendStatus">Fellow Explorer</span>`;
+      friendsList.appendChild(li);
+    });
+  }
+
+  startPeriodicSync() {
+    setInterval(() => {
+      if (this.isConnected) {
+        this.updateLeaderboard();
+        this.updateFriendsList();
+      }
+    }, 30000); // Sync every 30 seconds
+  }
+}
+
+// Initialize Honeycomb
+window.honeycomb = new HoneycombProtocol();
 </script>
 <!-- <script>
 
