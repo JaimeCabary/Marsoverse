@@ -143,15 +143,26 @@ self.addEventListener("activate", event => {
 
 // Fetch event: serve cached files, else fetch from network and cache
 self.addEventListener("fetch", event => {
+  // if (event.request.mode === "navigate") {
+  //   // For navigation requests, try cache first fallback to network
+  //   event.respondWith(
+  //     caches.match("/index.html").then(cachedResponse => {
+  //       return cachedResponse || fetch(event.request);
+  //     })
+  //   );
+  //   return;
+  // }
   if (event.request.mode === "navigate") {
-    // For navigation requests, try cache first fallback to network
-    event.respondWith(
-      caches.match("/index.html").then(cachedResponse => {
-        return cachedResponse || fetch(event.request);
-      })
-    );
-    return;
-  }
+  event.respondWith(
+    caches.match(event.request).then(cachedPage => {
+      return cachedPage || caches.match("/index.html") || fetch(event.request);
+    }).catch(() => {
+      return caches.match("/index.html");
+    })
+  );
+  return;
+}
+
 
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
