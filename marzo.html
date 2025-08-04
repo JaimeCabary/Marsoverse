@@ -864,6 +864,12 @@
 .reward-box button:hover {
   background: #00aaff;
 }
+.game-grid{
+  margin-bottom: 80px;
+}
+#homePage{
+  margin-bottom: 100px;
+}
  </style>
 </head>
 <body class="night">
@@ -871,7 +877,7 @@
   <div class="stars"></div>
   <span id="playerNameHUD">Player</span>
   <span id="playerXP">XP: 0</span>
-  <span id="walletIcon" title="Click to connect wallet"><i class="fas fa-wallet"></i><span id="walletAmount">0</span>SOL</span>
+  <span id="walletIcon" title="Click to connect wallet"><i class="fas fa-wallet"></i><span id="walletAmount">0 SOL</span></span>
 </header>
 
   <!-- 🚀 Pages -->
@@ -894,7 +900,7 @@
       <!-- <section id="friendsPage" class="page"> -->
     <h2 class="section-heading">🕹️ Mini Games for XP</h2>
 
-    <div id="game-grid">
+    <div id="game-grid" class="game-grid">
   <a href="black\blacko.html" class="game-card">
     <img src="screens/blacko.png" alt="Blackjack">
     <p>Marsoverse Blackjack</p>
@@ -2289,7 +2295,438 @@ window.honeycomb = new HoneycombProtocol();
 document.addEventListener("DOMContentLoaded", () => {
   window.missionsManager = new MissionsManager(window.honeycomb);
 });
-</script> --><script>
+</script> -->
+
+<script>
+// 🎯 Missions Manager
+class MissionsManager {
+  constructor(honeycomb, solanaWalletManager) {
+    this.honeycomb = honeycomb;
+    this.solanaWalletManager = solanaWalletManager;
+    this.dailyCheckIns = [
+      { day: 1, rewards: { xp: 5, usdt: 0.01, nft: null } },
+      { day: 2, rewards: { xp: 5, usdt: 0.02, nft: null } },
+      { day: 3, rewards: { xp: 10, usdt: 0.03, nft: null } },
+      { day: 4, rewards: { xp: 10, usdt: 0.04, nft: null } },
+      { day: 5, rewards: { xp: 15, usdt: 0.05, nft: "Rover NFT" } },
+      { day: 6, rewards: { xp: 15, usdt: 0.06, nft: null } },
+      { day: 7, rewards: { xp: 20, usdt: 0.07, nft: null } },
+      { day: 8, rewards: { xp: 20, usdt: 0.08, nft: null } },
+      { day: 9, rewards: { xp: 20, usdt: 0.09, nft: null } },
+      { day: 10, rewards: { xp: 20, usdt: 0.10, nft: "Rare NFT" } }
+    ];
+    this.tasks = [
+      {
+        id: "share_marsoverse",
+        name: "Share MarsoVerse",
+        description: "Share MarsoVerse on social media",
+        rewards: { xp: 5, usdt: 0.01 },
+        action: () => this.shareMarsoVerse()
+      },
+      {
+        id: "visit_github",
+        name: "Check Out GitHub",
+        description: "Visit the MarsoVerse GitHub",
+        rewards: { xp: 5, usdt: 0.01 },
+        action: () => window.open("https://github.com/JaimeCabary", "_blank")
+      },
+      {
+        id: "visit_zepta",
+        name: "Visit Zepta Terminal",
+        description: "Explore the Zepta Terminal",
+        rewards: { xp: 5, usdt: 0.01 },
+        action: () => window.location.href = "zeep.html"
+      },
+      {
+        id: "visit_mars",
+        name: "Visit Mars Viewer",
+        description: "View the Martian landscape",
+        rewards: { xp: 5, usdt: 0.01 },
+        action: () => window.location.href = "mars-viewer/dist/index.html"
+      },
+      {
+        id: "follow_twitter",
+        name: "Follow on Twitter",
+        description: "Follow MarsoVerse on Twitter",
+        rewards: { xp: 5, usdt: 0.01 },
+        action: () => window.open("https://twitter.com/intent/follow?screen_name=MarsoVerse", "_blank")
+      },
+      {
+        id: "star_github",
+        name: "Star GitHub Repo",
+        description: "Star the MarsoVerse repo on GitHub",
+        rewards: { xp: 5, usdt: 0.01 },
+        action: () => window.open("https://github.com/JaimeCabary/MarsoVerse", "_blank")
+      },
+      {
+        id: "follow_github",
+        name: "Follow on GitHub",
+        description: "Follow JaimeCabary on GitHub",
+        rewards: { xp: 5, usdt: 0.01 },
+        action: () => window.open("https://github.com/JaimeCabary", "_blank")
+      },
+      {
+        id: "earn_xp",
+        name: "Earn 50 XP",
+        description: "Complete a mini-game to earn 50 XP",
+        rewards: { xp: 10, usdt: 0.01 },
+        action: () => window.location.href = "black/blacko.html"
+      },
+      {
+        id: "stake_usdt",
+        name: "Stake USDT",
+        description: "Stake USDT via Honeycomb",
+        rewards: { xp: 10, usdt: 0.01 },
+        action: () => this.stakeUSDT()
+      },
+      {
+        id: "explore_dapp",
+        name: "Explore Solana dApp",
+        description: "Visit a Solana dApp from the wallet modal",
+        rewards: { xp: 5, usdt: 0.01 },
+        action: () => document.getElementById("walletIcon").click()
+      }
+    ];
+    this.initialize();
+  }
+
+  initialize() {
+    this.loadProgress();
+    this.loadAdminMissions();
+    this.renderDailyCheckIns();
+    this.renderTasks();
+    this.renderAdminMissions();
+    this.setupEventListeners();
+    this.checkDailyEligibility();
+  }
+
+  loadProgress() {
+    this.checkInProgress = JSON.parse(localStorage.getItem("checkInProgress") || "{}");
+    this.taskProgress = JSON.parse(localStorage.getItem("taskProgress") || "{}");
+    this.adminMissionProgress = JSON.parse(localStorage.getItem("adminMissionProgress") || "{}");
+    this.lastCheckIn = localStorage.getItem("lastCheckIn") || null;
+  }
+
+  loadAdminMissions() {
+    this.adminMissions = JSON.parse(localStorage.getItem("marsoverse_missions") || "[]");
+    this.adminMissions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
+  saveProgress() {
+    localStorage.setItem("checkInProgress", JSON.stringify(this.checkInProgress));
+    localStorage.setItem("taskProgress", JSON.stringify(this.taskProgress));
+    localStorage.setItem("adminMissionProgress", JSON.stringify(this.adminMissionProgress));
+    localStorage.setItem("lastCheckIn", this.lastCheckIn || new Date().toISOString().split("T")[0]);
+  }
+
+  checkDailyEligibility() {
+    const today = new Date().toISOString().split("T")[0];
+    const claimBtn = document.getElementById("claimDailyBtn");
+    if (this.lastCheckIn !== today && this.getCurrentDay() <= this.dailyCheckIns.length) {
+      claimBtn.disabled = false;
+    } else {
+      claimBtn.disabled = true;
+    }
+  }
+
+  getCurrentDay() {
+    return Object.keys(this.checkInProgress).length + 1;
+  }
+
+  claimDailyCheckIn() {
+    const today = new Date().toISOString().split("T")[0];
+    const currentDay = this.getCurrentDay();
+    if (currentDay > this.dailyCheckIns.length || this.lastCheckIn === today) return;
+
+    const dayData = this.dailyCheckIns[currentDay - 1];
+    this.checkInProgress[currentDay] = { completed: true, date: today };
+    this.lastCheckIn = today;
+
+    const currentXP = parseInt(localStorage.getItem("playerXP") || "0");
+    const currentUSDT = parseFloat(localStorage.getItem("walletBalance") || "0");
+    const newXP = currentXP + dayData.rewards.xp;
+    const newUSDT = Math.min(currentUSDT + dayData.rewards.usdt, 2.0);
+
+    localStorage.setItem("playerXP", newXP.toString());
+    localStorage.setItem("walletBalance", newUSDT.toFixed(2));
+
+    this.solanaWalletManager.updateRewardConversion();
+    this.honeycomb.completeMission(
+      `daily_checkin_day_${currentDay}`,
+      dayData.rewards.xp,
+      dayData.rewards.usdt
+    );
+    
+    if (dayData.rewards.nft) {
+      this.honeycomb.sendEvent("nft_earned", {
+        nft: dayData.rewards.nft,
+        day: currentDay
+      });
+      alert(`🎉 You earned a ${dayData.rewards.nft}!`);
+    }
+
+    this.saveProgress();
+    this.renderDailyCheckIns();
+    this.checkDailyEligibility();
+    this.updateGameDisplay();
+    document.getElementById("xpSound")?.play();
+  }
+
+  completeTask(taskId) {
+    if (this.taskProgress[taskId]?.completed) return;
+    const task = this.tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    this.taskProgress[taskId] = { completed: true, date: new Date().toISOString() };
+    const currentXP = parseInt(localStorage.getItem("playerXP") || "0");
+    const currentUSDT = parseFloat(localStorage.getItem("walletBalance") || "0");
+    const newXP = currentXP + task.rewards.xp;
+    const newUSDT = Math.min(currentUSDT + task.rewards.usdt, 2.0);
+
+    localStorage.setItem("playerXP", newXP.toString());
+    localStorage.setItem("walletBalance", newUSDT.toFixed(2));
+
+    this.solanaWalletManager.updateRewardConversion();
+    this.honeycomb.completeMission(taskId, task.rewards.xp, task.rewards.usdt);
+    this.saveProgress();
+    this.renderTasks();
+    this.updateGameDisplay();
+    document.getElementById("xpSound")?.play();
+  }
+
+  completeAdminMission(missionId) {
+    if (this.adminMissionProgress[missionId]?.completed) return;
+    const mission = this.adminMissions.find(m => m.id === missionId);
+    if (!mission) return;
+
+    this.adminMissionProgress[missionId] = { completed: true, date: new Date().toISOString() };
+    const currentXP = parseInt(localStorage.getItem("playerXP") || "0");
+    const currentUSDT = parseFloat(localStorage.getItem("walletBalance") || "0");
+    const newXP = currentXP + mission.xpReward;
+    const newUSDT = Math.min(currentUSDT + (mission.usdReward || 0), 2.0);
+
+    localStorage.setItem("playerXP", newXP.toString());
+    localStorage.setItem("walletBalance", newUSDT.toFixed(2));
+
+    this.solanaWalletManager.updateRewardConversion();
+    this.honeycomb.completeMission(missionId, mission.xpReward, mission.usdReward || 0);
+    this.showMissionPopup(mission);
+    this.saveProgress();
+    this.renderAdminMissions();
+    this.updateGameDisplay();
+    document.getElementById("xpSound")?.play();
+  }
+
+  shareMarsoVerse() {
+    const shareData = {
+      title: "Join MarsoVerse!",
+      text: "Explore, build, and survive on Mars in this immersive Web3 game! 🚀",
+      url: window.location.origin
+    };
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      navigator.share(shareData)
+        .then(() => this.completeTask("share_marsoverse"))
+        .catch(err => console.warn("Share failed:", err));
+    } else {
+      navigator.clipboard.writeText(shareData.url).then(() => {
+        alert("🔗 Link copied to clipboard! Share it to complete the task.");
+        this.completeTask("share_marsoverse");
+      });
+    }
+  }
+
+  async stakeUSDT() {
+    if (!this.solanaWalletManager.connectedWallet) {
+      alert("⚠️ Please connect your wallet first!");
+      document.getElementById("walletIcon").click();
+      return;
+    }
+    try {
+      this.honeycomb.sendEvent("stake_usdt", {
+        amount: 0.5,
+        wallet: this.solanaWalletManager.connectedWallet.publicKey
+      });
+      this.completeTask("stake_usdt");
+      alert("🚀 Successfully staked 0.5 USDT!");
+    } catch (error) {
+      console.error("Staking failed:", error);
+      alert("❌ Staking failed. Try again later.");
+    }
+  }
+
+  showMissionPopup(mission) {
+    const popup = document.createElement("div");
+    popup.className = "reward-overlay";
+    popup.innerHTML = `
+      <div class="reward-box choice">
+        <h5>Mission Completed: ${mission.title}</h5>
+        <p>Rewards: ${mission.xpReward} XP${mission.usdReward ? `, $${mission.usdReward} USDT` : ""}</p>
+        <button onclick="this.parentElement.parentElement.remove()">Close</button>
+      </div>
+    `;
+    document.body.appendChild(popup);
+    setTimeout(() => {
+      popup.classList.add("hidden");
+      setTimeout(() => popup.remove(), 300);
+    }, 3000);
+  }
+
+  updateGameDisplay() {
+    const xp = localStorage.getItem("playerXP") || "0";
+    const usdt = localStorage.getItem("walletBalance") || "0";
+    
+    document.getElementById("playerXP").textContent = `XP: ${xp}`;
+    document.getElementById("youXP").textContent = xp;
+    document.getElementById("walleta").textContent = parseFloat(usdt).toFixed(2);
+    
+    const walletAmountEl = document.getElementById("walletAmount");
+    if (walletAmountEl) {
+      walletAmountEl.textContent = parseFloat(usdt).toFixed(2);
+    }
+    
+    this.solanaWalletManager.updateRewardConversion();
+  }
+
+  renderDailyCheckIns() {
+    const grid = document.getElementById("dailyCheckInGrid");
+    grid.innerHTML = "";
+    const currentDay = this.getCurrentDay();
+    this.dailyCheckIns.forEach((day, index) => {
+      const dayEl = document.createElement("div");
+      dayEl.className = `check-in-day ${this.checkInProgress[index + 1]?.completed ? "completed" : ""} ${
+        currentDay === index + 1 && this.lastCheckIn !== new Date().toISOString().split("T")[0] ? "active" : ""
+      }`;
+      dayEl.innerHTML = `
+        <p>Day ${day.day}</p>
+        <p class="reward-text">${day.rewards.xp} XP, ${day.rewards.usdt} USDT${day.rewards.nft ? `, ${day.rewards.nft}` : ""}</p>
+        ${this.checkInProgress[index + 1]?.completed ? '<i class="fas fa-check"></i>' : ""}
+      `;
+      grid.appendChild(dayEl);
+    });
+  }
+
+  renderTasks() {
+    const taskList = document.getElementById("taskList");
+    taskList.innerHTML = "";
+    this.tasks.forEach(task => {
+      const li = document.createElement("li");
+      li.className = `task-item ${this.taskProgress[task.id]?.completed ? "completed" : ""}`;
+      li.innerHTML = `
+        <div>
+          <strong>${task.name}</strong>
+          <p class="task-reward">${task.description} - ${task.rewards.xp} XP, ${task.rewards.usdt} USDT</p>
+        </div>
+        <button ${this.taskProgress[task.id]?.completed ? "disabled" : ""}>${this.taskProgress[task.id]?.completed ? "Completed" : "Go"}</button>
+      `;
+      if (!this.taskProgress[task.id]?.completed) {
+        li.querySelector("button").addEventListener("click", () => {
+          task.action();
+          if (task.id !== "share_marsoverse" && task.id !== "stake_usdt") {
+            this.completeTask(task.id);
+          }
+        });
+      }
+      taskList.appendChild(li);
+    });
+  }
+
+  renderAdminMissions() {
+    const adminMissionList = document.getElementById("adminMissionList");
+    adminMissionList.innerHTML = "";
+    this.adminMissions.forEach(mission => {
+      const li = document.createElement("li");
+      li.className = `task-item ${this.adminMissionProgress[mission.id]?.completed ? "completed" : ""}`;
+      li.innerHTML = `
+        <div>
+          <strong>${mission.title}</strong>
+          <p class="task-reward">${mission.description} - ${mission.xpReward} XP${mission.usdReward ? `, $${mission.usdReward} USDT` : ""}</p>
+        </div>
+        <button ${this.adminMissionProgress[mission.id]?.completed ? "disabled" : ""}>${this.adminMissionProgress[mission.id]?.completed ? "Completed" : "Complete"}</button>
+      `;
+      if (!this.adminMissionProgress[mission.id]?.completed) {
+        li.querySelector("button").addEventListener("click", () => {
+          this.completeAdminMission(mission.id);
+        });
+      }
+      adminMissionList.appendChild(li);
+    });
+  }
+
+  setupEventListeners() {
+    document.getElementById("claimDailyBtn").addEventListener("click", () => this.claimDailyCheckIn());
+    setInterval(() => this.checkDailyEligibility(), 60000);
+    window.addEventListener("storage", (e) => {
+      if (e.key === "marsoverse_missions") {
+        this.loadAdminMissions();
+        this.renderAdminMissions();
+      }
+    });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  window.missionsManager = new MissionsManager(window.honeycomb, window.solanaWalletManager);
+});
+</script>
+<script>
+// USDT to SOL Balance Display Plugin
+class BalanceDisplay {
+  constructor(walletManager) {
+    this.walletManager = walletManager;
+    this.init();
+  }
+
+  init() {
+    // First show USDT balance
+    this.showUSDT();
+    
+    // Then try to load SOL balance
+    this.loadSOLBalance();
+  }
+
+  showUSDT() {
+    const usdt = parseFloat(localStorage.getItem('walletBalance') || 0).toFixed(2);
+    document.getElementById('walletAmount').textContent = `${usdt} USDT`;
+    
+    // Optional: Update other USDT display elements
+    const usdtElements = document.querySelectorAll('[data-currency="usdt"]');
+    usdtElements.forEach(el => {
+      el.textContent = usdt;
+    });
+  }
+
+  async loadSOLBalance() {
+    if (!this.walletManager) return;
+    
+    try {
+      // Wait for wallet connection if needed
+      await this.walletManager.updateRewardConversion();
+      
+      // Update display with SOL balance
+      const solBalance = document.getElementById('solBalance')?.textContent || '0';
+      document.getElementById('walletAmount').textContent = `${solBalance} SOL`;
+      
+      // Optional: Update other SOL display elements
+      const solElements = document.querySelectorAll('[data-currency="sol"]');
+      solElements.forEach(el => {
+        el.textContent = solBalance;
+      });
+    } catch (error) {
+      console.error('Failed to load SOL balance:', error);
+      // Keep showing USDT if SOL load fails
+    }
+  }
+}
+
+// Initialize after DOM and wallet manager are ready
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    new BalanceDisplay(window.solanaWalletManager);
+  }, 300);
+});
+</script>
+
+<!-- <script>
 // 🎯 Missions Manager
 class MissionsManager {
   constructor(honeycomb, solanaWalletManager) {
@@ -2653,7 +3090,8 @@ class MissionsManager {
 document.addEventListener("DOMContentLoaded", () => {
   window.missionsManager = new MissionsManager(window.honeycomb, window.solanaWalletManager);
 });
-</script><!-- <script>
+</script> -->
+<!-- <script>
 
   const toggle = document.getElementById("themeToggle");
   const body = document.body;
