@@ -1,12 +1,17 @@
 {
   "name": "marsoverse",
   "version": "1.0.0",
-  "main": "config.js",
+  "description": "MarsoVerse Node backend using Honeycomb and Solana",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "dependencies": {
+    "@honeycomb-protocol/edge-client": "^0.0.7-beta.15",
+    "@solana/web3.js": "^1.91.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
 }

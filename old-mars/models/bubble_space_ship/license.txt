@@ -1,0 +1,11 @@
+Model Information:
+* title:	Bubble Space Ship
+* source:	https://sketchfab.com/3d-models/bubble-space-ship-7aedf8b6ec24414c86b62486a7f02852
+* author:	VertaScan (https://sketchfab.com/VertaScan)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Bubble Space Ship" (https://sketchfab.com/3d-models/bubble-space-ship-7aedf8b6ec24414c86b62486a7f02852) by VertaScan (https://sketchfab.com/VertaScan) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

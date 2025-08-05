@@ -4,7 +4,7 @@ const { Connection, PublicKey, Transaction } = require('@solana/web3.js');
 const { createEdgeClient, sendClientTransactions } = require('@honeycomb-protocol/edge-client');
 
 const app = express();
-app.use(cors({ origin: ['https://marsoverse.netlify.app', 'http://localhost:3000'] }));
+app.use(cors({ origin: ['https://marsoverse.netlify.app', 'https://marsoverse.onrender.com'] }));
 app.use(express.json());
 
 const connection = new Connection('https://rpc.main.honeycombprotocol.com', 'confirmed');

@@ -13,6 +13,7 @@
 
   <!-- Orbitron font for your UI -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
+  <!-- <link rel="stylesheet"  href="mars-viewer\src\style.css"> -->
    <style>
     /* body { margin: 0; overflow: hidden; font-family: Orbitron, sans-serif; } */
     
@@ -144,14 +145,14 @@ html, body {
 }
 
 .nav-item {
-  background: rgba(255,255,255,0.05);
+  background: transparent;
   color: white;
   font-family: 'Orbitron', sans-serif;
-    font-size: 1rem;
+    font-size: 0.7rem;
     padding: 0.4rem 0.4rem;
     border-radius: 8px;
     flex: 0 0 auto;
-    line-height: 1; 
+    line-height: 0.5; 
     font-weight: bolder;
     color: 0x0b0814;
   }
@@ -166,10 +167,11 @@ html, body {
 @media (max-width: 768px) {
   .navbar {
     align-self: center;
-    gap: 8px;
-    height: auto; /* allow height to grow with rows */
+    gap: 4px;
+    height: auto;
     align-items: center;
     width: 100vw;
+
     border-radius: 2rem;
     margin-bottom: 20px;
     display: flex;
@@ -180,22 +182,36 @@ html, body {
   }
 
   .nav-item {
-    font-size: 0.65rem;
-    padding: 0.4rem;
-    height: 30px;
+    /* font-size: 0.65rem; */
+    padding:4px;
+    height: 9px;
     border-radius: 8px;
     flex: 1 0 30%; /* allow wrapping; 3 per row approximately */
-    min-width: 90px;
-    max-width: 100px;
-    line-height: 0.9;
+    min-width: 15px;
+    max-width: 20px;
+    line-height: 0.5;
     color: 0x0b0814;
     text-align: center; 
+    font-size: clamp(0.6rem, 2vw, 0.7rem);
     
   }
 }
-
-
-    
+#viewport:active {
+  cursor: grabbing;
+}
+@media (max-width: 600px) {
+  .nav-item{
+      padding: 8px 6px;
+      min-width: 50px;
+      height: 50px;
+      font-size: clamp(0.6rem, 2vw, 0.7rem);
+}
+}    
+@media (min-width: 769px) {
+  #joystick-container {
+    display: none !important;
+  }
+}
   </style>
 
   <!-- You can also add any global CSS here if you want -->
