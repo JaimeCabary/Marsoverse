@@ -933,6 +933,342 @@
     height: 80px;
   }
 }
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .chat-container {
+    height: calc(100vh - 100px); /* Adjust for smaller header/status bar */
+    margin-bottom: 60px; /* Reduced margin */
+  }
+  
+  .terminal-log {
+    max-height: calc(100vh - 160px); /* Adjust for input area */
+    padding: 0.5rem;
+  }
+  
+  .input-area {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .terminal-line {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    max-width: 100%; /* Ensure full width for readability */
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-container {
+    height: calc(100vh - 90px);
+    margin-bottom: 50px;
+  }
+  
+  .terminal-log {
+    max-height: calc(100vh - 140px);
+  }
+  
+  .input-area {
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .terminal-input {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .send-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+.popup-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 100, 0, 0.5);
+  margin-bottom: 1rem;
+  animation: neonPulse 2s ease infinite;
+}
+
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 100, 0, 0.8); }
+}
+
+@media (max-width: 480px) {
+  .popup-image {
+    width: 80px;
+    height: 80px;
+  }
+}
+#companionSection, #cyborg {
+  display: none; /* Hidden by default until needed */
+  position: relative;
+  z-index: 10;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  margin: 1rem auto;
+  max-width: 600px;
+  text-align: center;
+}
+
+.choices {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.choice {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.choice img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 100, 0, 0.5);
+}
+
+.choice:hover img {
+  border-color: #ff6400;
+  box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
+}
+
+.or-text {
+  color: #ff6400;
+  font-family: 'Russo One', sans-serif;
+}
+
+.mallo {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 100, 0, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+@media (max-width: 480px) {
+  #companionSection, #cyborg {
+    padding: 1rem;
+  }
+  .choices {
+    flex-direction: column;
+  }
+  .choice img {
+    width: 80px;
+    height: 80px;
+  }
+}
+/* In your existing CSS, modify the mobile media queries */
+@media (max-width: 768px) {
+  .input-area {
+    padding: 1rem 0.75rem; /* Increased padding for larger appearance */
+    bottom: 15px; /* Raise by 15px */
+  }
+  
+  .input-container {
+    gap: 0.5rem;
+  }
+  
+  .terminal-input {
+    font-size: 1rem; /* Slightly larger font */
+    padding: 1rem 1.5rem; /* Increased padding for larger input */
+    border-radius: 30px; /* Slightly larger border-radius for better appearance */
+  }
+  
+  .send-btn {
+    padding: 1rem 1.2rem; /* Larger button */
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .input-area {
+    padding: 0.8rem 0.6rem;
+    bottom: 15px; /* Consistent 15px raise */
+  }
+  
+  .terminal-input {
+    font-size: 0.95rem;
+    padding: 0.8rem 1.2rem;
+  }
+  
+  .send-btn {
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+  }
+}
+/* Add to your CSS */
+@media (max-width: 768px) {
+  .run-btn {
+    padding: 2px; /* Reduced padding to fit icon */
+    width: 30px; /* Fixed width for icon-only */
+    height: 30px; /* Fixed height for icon-only */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .terminal-command-input{
+    width: 60px;
+  }
+  .new-chat-btn{
+      padding: 2px; /* Reduced padding to fit icon */
+    width: 30px; /* Fixed width for icon-only */
+    height: 30px; /* Fixed height for icon-only */
+  }
+  
+  .run-btn i {
+    margin: 0; /* Remove any default margins */
+  }
+  
+  .run-btn span {
+    display: none; /* Hide text in mobile view */
+  }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .input-area {
+    padding: 1rem 0.75rem; /* Increased padding for larger appearance */
+    bottom: 15px; /* Consistent 15px raise */
+  }
+  
+  .input-container {
+    gap: 0.5rem;
+  }
+  
+  .terminal-input {
+
+    font-size: 1rem; /* Slightly larger font */
+    padding: 1rem 1.5rem; /* Increased padding for larger input */
+    border-radius: 30px; /* Slightly larger border-radius */
+  }
+  
+  .send-btn {
+    padding: 1rem 1.2rem; /* Larger button */
+    font-size: 1.1rem;
+  }
+  
+  .chat-container {
+    height: calc(100vh - 100px); /* Adjust for smaller header/status bar */
+  }
+ .editor-section{
+    height: 200px; /* Adjust for smaller header/status bar */
+
+ } 
+  
+  .terminal-log {
+    max-height: calc(100vh - 160px); /* Adjust for input area */
+    padding: 0.5rem;
+    padding-bottom: 140px; /* Increased to prevent overlap on mobile */
+  }
+  
+  .terminal-line {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    max-width: 100%; /* Ensure full width for readability */
+  }
+}
+
+@media (max-width: 480px) {
+  .input-area {
+    padding: 0.8rem 0.6rem;
+    bottom: 15px; /* Consistent 15px raise */
+  }
+  
+  .input-container {
+    gap: 0.3rem;
+  }
+  
+  .terminal-input {
+    font-size: 0.95rem;
+    padding: 0.8rem 1.2rem;
+  }
+  
+  .send-btn {
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+  }
+  
+  .chat-container {
+    height: calc(100vh - 90px);
+  }
+  
+  .terminal-log {
+    max-height: calc(100vh - 140px);
+    padding-bottom: 120px; /* Adjusted for smaller screens */
+  }
+  .console-output{
+    padding-bottom: 80px; /* Adjusted for smaller screens */
+
+  }
+  .console-section{
+    padding-bottom: 20px;
+  }
+  .terminal-line {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.7rem;
+  }
+}
+ .console-output{
+    padding-bottom: 60px; /* Adjusted for smaller screens */
+
+  }
+  /* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .editor-toolbar {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  
+  .run-btn {
+    padding: 6px;
+    min-width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+    .new-chat-btn{
+      padding: 2px; /* Reduced padding to fit icon */
+    width: 40px; /* Fixed width for icon-only */
+    height: 40px; /* Fixed height for icon-only */
+  }
+  
+  .run-btn span {
+    display: none; /* Hide text on mobile */
+  }
+  
+  .run-btn i {
+    margin: 0; /* Center icon */
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .editor-toolbar {
+    padding: 6px 6px;
+    gap: 3px;
+  }
+  
+  .run-btn {
+    padding: 2px;
+    min-width: 25px;
+    height: 26px;
+  }
+  
+  .run-btn i {
+    font-size: 0.85rem;
+  }
+}
   </style>
 </head>
 <body class="chat-mode">
@@ -998,10 +1334,10 @@
           <input type="text" class="terminal-command-input" id="terminalCommandInput" 
                  placeholder="Type commands starting with / (e.g., /help)" autocomplete="off">
           <button class="run-btn" id="runBtn" title="Execute Command (Enter)">
-            <i class="fas fa-play"></i> Execute
+            <i class="fas fa-play"></i> 
           </button>
           <button class="new-chat-btn" id="newChatBtn" title="Start New Session">
-            <i class="fas fa-plus"></i> New Chat
+            <i class="fas fa-plus"></i> 
           </button>
         </div>
       </div>
@@ -1184,7 +1520,7 @@
       
       // Set initial theme
       toggleTheme(false); // Don't save on init
-      setupCyborgInput();
+      // setupCyborgInput();
       setupCompanionSelection();
     });
 
@@ -1505,10 +1841,10 @@ function addXP(amount) {
     gameState.level = newLevel;
     addToHistory(`🎉 Level Up! You are now level ${gameState.level}!`, false, 'system');
   }
-  // Check for cyborg popup trigger
-  if (gameState.xp >= 100 && !gameState.relationships['Jeremy']) {
-    triggerCyborgPopup();
-  }
+  // // Check for cyborg popup trigger
+  // if (gameState.xp >= 100 && !gameState.relationships['Jeremy']) {
+  //   triggerCyborgPopup();
+  // }
 
   // Check for companion popup trigger (example: trigger at 50 XP)
   if (gameState.xp >= 50 && !gameState.companionName) {
