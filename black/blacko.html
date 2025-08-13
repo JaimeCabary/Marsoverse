@@ -2,27 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MarsOverse Blackjack</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="icon" href="screens\blacko.png" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Blackjack | MarsOverse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="icon" href="screens/blacko.png" type="image/x-icon">
   <style>
+    :root {
+      --neon-blue: #00f3ff;
+      --neon-pink: #ff00f3;
+      --neon-purple: #9d00ff;
+      --neon-green: #00ff9d;
+      --dark-bg: #0a0a1a;
+      --darker-bg: #050510;
+      --card-bg: #111126;
+      --text-glow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+    }
+
+    @keyframes neon-glow {
+      0% { text-shadow: 0 0 5px var(--neon-blue); }
+      50% { text-shadow: 0 0 20px var(--neon-blue), 0 0 30px var(--neon-pink); }
+      100% { text-shadow: 0 0 5px var(--neon-blue); }
+    }
+
+    @keyframes card-deal {
+      0% { transform: translateY(-50px) rotate(-10deg); opacity: 0; }
+      100% { transform: translateY(0) rotate(0); opacity: 1; }
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
     body {
       margin: 0;
       padding: 0;
       font-family: 'Orbitron', sans-serif;
-      background: url('black.png') center center / cover no-repeat fixed;
-      color: #fff;
-    }
-
-    section {
+      background: var(--dark-bg);
+      color: white;
+      overflow-x: hidden;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-sizing: border-box;
-      padding: 20px;
-      overflow: auto;
     }
 
     #overlay {
@@ -31,82 +51,95 @@
       left: 0;
       width: 100%;
       height: 100%;
-       background: linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95));/* You can go higher: 0.85 for darker */
-  z-index: -1;
-      pointer-events: none;
+      background: radial-gradient(circle, var(--dark-bg) 0%, var(--darker-bg) 100%);
+      z-index: -1;
     }
 
-    #rules-slide {
-      position: relative;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 50px 20px;
-      text-align: center;
-      color: #ffd6b8;
-    }
-
-    #slide-box {
-      background: rgba(24, 8, 2, 0.75);
-      border: 1px solid #ff6600;
-      border-radius: 12px;
-      padding: 30px 25px;
-      max-width: 650px;
-      width: 100%;
-      box-shadow: 0 0 18px #ff440088;
-      backdrop-filter: blur(3px);
-    }
-
-    #slide-title {
-      color: #FFA94A;
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-    }
-
-    #slide-text {
-      font-size: 1.1rem;
-      line-height: 1.8;
-      color: #ffdbb2;
-      margin-bottom: 25px;
-    }
-
-    .slide-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .slide-actions button {
-      background-color: #FF4B00;
-      color: white;
-      border: none;
-      padding: 12px 22px;
-      font-size: 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      box-shadow: 0 0 12px #FF4B00bb;
-    }
-
-    .slide-actions button:hover {
-      background-color: #FF6B20;
-    }
-
-    #game {
+    #game-container {
       display: none;
       flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      z-index: 10;
       min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
-    h1 {
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: rgba(10, 10, 26, 0.7);
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid var(--neon-purple);
+      box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+    }
+
+    #game-title {
+      font-size: 1.8rem;
+      color: var(--neon-blue);
+      animation: neon-glow 3s infinite;
+      margin: 0;
+    }
+
+    #player-stats {
+      display: flex;
+      gap: 15px;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--neon-green);
+      margin-bottom: 3px;
+    }
+
+    .stat-value {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    #xp-bar-container {
+      width: 150px;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    #xp-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+      transition: width 0.5s ease;
+    }
+
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex-grow: 1;
+    }
+
+    .hand-container {
+      background: rgba(17, 17, 38, 0.7);
+      border-radius: 10px;
+      padding: 15px;
+      border: 1px solid var(--neon-purple);
+      box-shadow: 0 0 10px rgba(157, 0, 255, 0.2);
+    }
+
+    .hand-title {
+      font-size: 1.2rem;
+      color: var(--neon-pink);
       margin-bottom: 10px;
-    }
-
-    #dealer-area, #player-area {
       text-align: center;
-      margin: 10px 0;
     }
 
     .cards {
@@ -114,558 +147,720 @@
       justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
+      min-height: 120px;
     }
 
     .card {
-      width: 80px;
-      height: 120px;
+      width: 70px;
+      height: 100px;
       background-size: cover;
       border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      animation: card-deal 0.5s ease-out;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
     }
 
     #controls {
       display: flex;
-      gap: 15px;
-      margin: 20px 0;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
     }
 
-    button {
-      padding: 10px 18px;
+    .game-btn {
+      padding: 12px 20px;
       font-size: 1rem;
-      /* background-color: #FF4B00; */
-      background: linear-gradient(45deg, #FF6200, #ff9d00 25%, #d0ff00 75%);
-      border: none;
-      font-weight: bolder;
-      border-radius: 6px;
-      /* color: white;
-       */color: rgb(26, 6, 0);
-      cursor: pointer;
-    }
-    #next-btn{
-      padding: 10px 18px;
-      font-size: 1rem;
-      font-weight: bolder;
-      background: linear-gradient(45deg, #FF6200, #FFD700 25%, #00A3FF 75%);
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(45deg, var(--neon-purple), var(--neon-blue));
       border: none;
       border-radius: 6px;
-      color: rgb(26, 6, 0);
+      color: white;
       cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
     }
-    #next-btn:hover{
-      /* background: linear-gradient(45deg, #7e3000, #5b6f01 25%, #5b6f01 25%, #01446b 75%); */
-    opacity: 0.8;
-    /* text-decoration: underline; */
-    }
-    button:hover{
-      /* background: linear-gradient(45deg, #7e3000, #5b6f01 25%, #5b6f01 25%, #01446b 75%); */
-    opacity: 0.8;
-    color: rgb(65, 15, 0);
-    /* text-decoration: underline; */
-  }
 
+    .game-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+    }
+
+    .game-btn:disabled {
+      opacity: 0.5;
+      transform: none !important;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
 
     #status {
       font-size: 1.2rem;
-      margin-top: 10px;
+      text-align: center;
+      margin: 15px 0;
+      min-height: 30px;
+      color: var(--neon-green);
+      text-shadow: var(--text-glow);
     }
 
-    #balance {
-      font-size: 1.1rem;
-      margin-top: 5px;
+    #footer {
+      text-align: center;
+      margin-top: auto;
+      padding: 15px;
     }
-    .back-btn {
-  color: #ffcc99;
-  text-decoration: none;
-  font-size: 0.95rem;
-  text-shadow: 0 0 3px #ff7f50;
-}
 
+    .back-home {
+      color: var(--neon-blue);
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .back-home:hover {
+      text-shadow: var(--text-glow);
+    }
+
+    /* Rules Slide */
+    #rules-slide {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, var(--dark-bg) 0%, var(--darker-bg) 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #slide-box {
+      background: rgba(17, 17, 38, 0.9);
+      border: 1px solid var(--neon-purple);
+      border-radius: 10px;
+      padding: 30px 20px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(157, 0, 255, 0.3);
+    }
+
+    #slide-title {
+      color: var(--neon-blue);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      animation: neon-glow 3s infinite;
+    }
+
+    #slide-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #ccc;
+      margin-bottom: 25px;
+    }
+
+    .slide-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .slide-actions button {
+      background: linear-gradient(45deg, var(--neon-purple), var(--neon-blue));
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .slide-actions button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+    }
+
+    /* Result Modal */
     #resultModal {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      display: flex;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
       justify-content: center;
       align-items: center;
-      z-index: 999;
+      z-index: 2000;
     }
 
     #resultBox {
-      background: rgba(24, 8, 2, 0.8);
-      border: 1px solid #ff6600;
-      border-radius: 12px;
+      background: rgba(17, 17, 38, 0.95);
+      border: 1px solid var(--neon-blue);
+      border-radius: 10px;
       padding: 30px 25px;
       max-width: 400px;
       width: 90%;
       text-align: center;
-      box-shadow: 0 0 20px #ff5500aa;
-      backdrop-filter: blur(4px);
-      color: #ffdbb2;
-      font-family: 'Orbitron', sans-serif;
+      box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
     }
-    .back-home {
-      font-weight: bold;
-      font-size: 1.2rem;
-      background: linear-gradient(45deg, #FF6200, #FFD700 25%, #00A3FF 50%, #FFFFFF 75%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text; /* for Firefox */
-      color: transparent;
-      text-decoration: none;
-    }
-      .back-home:hover {
-    opacity: 0.8;
-    /* text-decoration: underline; */
-  }
 
+    #resultTitle {
+      color: var(--neon-blue);
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    #resultMessage {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    /* XP Gain Animation */
+    .xp-gain {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      color: var(--neon-green);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+      animation: xp-float 1.5s ease-out;
+    }
+
+    @keyframes xp-float {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      50% { opacity: 1; transform: translate(-50%, -100%) scale(1.2); }
+      100% { opacity: 0; transform: translate(-50%, -150%) scale(0.8); }
+    }
+
+    /* Sound Control */
+    #sound-control {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(17, 17, 38, 0.7);
+      padding: 10px 15px;
+      border-radius: 30px;
+      border: 1px solid var(--neon-purple);
+    }
+
+    #sound-control input[type="range"] {
+      width: 80px;
+      -webkit-appearance: none;
+      height: 5px;
+      background: var(--darker-bg);
+      border-radius: 5px;
+      outline: none;
+    }
+
+    #sound-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: var(--neon-blue);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+      #header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      #player-stats {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .card {
+        width: 60px;
+        height: 85px;
+      }
+
+      #controls {
+        flex-direction: column;
+      }
+
+      .game-btn {
+        width: 100%;
+      }
+
+      #xp-bar-container {
+        width: 100%;
+      }
+
+      #sound-control {
+        bottom: 10px;
+        left: 10px;
+        padding: 8px 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        width: 80px;
+        height: 130px;
+      }
+
+      #game-title {
+        font-size: 1.5rem;
+      }
+
+      .hand-title {
+        font-size: 1rem;
+      }
+
+      #slide-box {
+        padding: 20px 15px;
+      }
+
+      #slide-title {
+        font-size: 1.3rem;
+      }
+
+      #slide-text {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Disable hover effects on touch devices */
+    @media (hover: none) {
+      .game-btn:hover, .card:hover {
+        transform: none !important;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="overlay"></div>
-
+  
+  <!-- XP Gain Animation Container -->
+  <div id="xp-animations"></div>
+  
+  <!-- Rules Slide -->
   <section id="rules-slide">
     <div id="slide-box">
-      <h2 id="slide-title">🪐 Welcome to MarsOverse Blackjack</h2>
+      <h2 id="slide-title">🪐 MARS BLACKJACK</h2>
       <p id="slide-text">
-        Welcome, Commander. In MarsOverse, Blackjack isn’t just a game — it’s a battle of wits.<br><br>
-        Your goal? Get as close to <strong>21</strong> without going over... and beat the dealer.
+        Welcome to the high-stakes tables of MarsOverse. <br><br>
+        Beat the dealer to earn XP and credits in this futuristic twist on classic Blackjack.
       </p>
       <div class="slide-actions">
-        <button id="next-btn" onclick="nextSlide()">Next</button>
-        <a href="#" class="back-home" onclick="showGame(); return false;">➱ Skip Rules</a>
+        <button id="next-btn" onclick="nextSlide()">NEXT</button>
+        <a href="#" class="back-home" onclick="showGame(); return false;">SKIP RULES</a>
       </div>
     </div>
   </section>
-
-  <section id="game">
-    <h1>🪐 MarsOverse Blackjack</h1>
-    <div id="balance">XP: 0 | Balance: 0.00 USDT</div>
-    <div id="dealer-area">
-      <h2>Dealer</h2>
-      <div id="dealer-cards" class="cards"></div>
-    </div>
-    <div id="player-area">
-      <h2>You</h2>
-      <div id="player-cards" class="cards"></div>
-    </div>
-    <div id="controls">
-      <button onclick="startGame()">Start Game</button>
-      <button onclick="hit()">Hit</button>
-      <button onclick="stand()">Stand</button>
-    </div>
-    <div id="status"></div>
-    <a href="/marzo.html" class="back-home">⇦ Return to Mars</a>
-  </section>
-
-  <div id="resultModal" style="display: none;">
+  
+  <!-- Main Game Container -->
+  <div id="game-container">
+    <header id="header">
+      <h1 id="game-title">MARS BLACKJACK</h1>
+      <div id="player-stats">
+        <div class="stat">
+          <span class="stat-label">XP</span>
+          <span class="stat-value" id="xp-count">0</span>
+          <div id="xp-bar-container">
+            <div id="xp-bar"></div>
+          </div>
+        </div>
+        <div class="stat">
+          <span class="stat-label">CREDITS</span>
+          <span class="stat-value" id="credit-count">0.00</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">HIGH SCORE</span>
+          <span class="stat-value" id="high-xp">0</span>
+        </div>
+      </div>
+    </header>
+    
+    <main class="game-area">
+      <div class="hand-container">
+        <h2 class="hand-title">DEALER</h2>
+        <div id="dealer-cards" class="cards"></div>
+      </div>
+      
+      <div id="status">Tap START to begin</div>
+      
+      <div class="hand-container">
+        <h2 class="hand-title">YOUR HAND</h2>
+        <div id="player-cards" class="cards"></div>
+      </div>
+      
+      <div id="controls">
+        <button class="game-btn" onclick="startGame()">START</button>
+        <button class="game-btn" onclick="hit()" id="hit-btn" disabled>HIT</button>
+        <button class="game-btn" onclick="stand()" id="stand-btn" disabled>STAND</button>
+      </div>
+    </main>
+    
+    <footer id="footer">
+      <a href="/marzo.html" class="back-home">← RETURN TO MARSOVERSE</a>
+    </footer>
+  </div>
+  
+  <!-- Result Modal -->
+  <div id="resultModal">
     <div id="resultBox">
-      <h2 id="resultTitle">Result</h2>
+      <h2 id="resultTitle">RESULT</h2>
       <p id="resultMessage">You win!</p>
-      <button onclick="closeResult()">OK</button>
+      <button class="game-btn" onclick="closeResult()">CONTINUE</button>
     </div>
   </div>
-    <!-- 🎵 Full Sound Stack -->
-  <audio id="introSound" src="/sounds/intro.mp3" preload="auto" loop></audio>
-  <audio id="marsostory" src="/sounds/marsostory.mp3" preload="auto" loop></audio>
-  <audio id="afterstorySound" src="/sounds/afterstory.mp3" preload="auto"></audio>
-  <audio id="clickSound" src="/sounds/click.mp3" preload="auto"></audio>
-  <audio id="sparkleSound" src="/sounds/sparkle.mp3" preload="auto"></audio>
-  <audio id="levelupSound" src="/sounds/levelup.mp3" preload="auto"></audio>
-  <audio id="xpSound" src="/sounds/xp.mp3" preload="auto"></audio>
-  <audio id="popSound" src="/sounds/pop.mp3" preload="auto"></audio>
-  <audio id="bondSound" src="/sounds/bond.mp3" preload="auto"></audio>
-  <audio id="birthSound" src="/sounds/birthsound.mp3" preload="auto"></audio>
-  <audio id="explosionSound" src="/sounds/explosion.mp3" preload="auto"></audio>
-  <audio id="riserSound" src="/sounds/riser-hit-sfx-001-289802.mp3" preload="auto"></audio>
-  <audio id="swooshSound" src="/sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3" preload="auto"></audio>
-  <audio id="typingSound" src="/sounds/typing.mp3" preload="auto"></audio>
-  <audio id="galaxySound" src="/sounds/galaxy.mp3" preload="auto"></audio>
-  <audio id="astroSound" src="/sounds/asteroid.mp3" preload="auto"></audio>
-  <!-- 🎶 Newly Added Sounds -->
-  <audio id="babyLaughSound" src="/sounds/babylaugh.mp3" preload="auto"></audio>
-  <audio id="babyTalkSound" src="/sounds/babytalk.mp3" preload="auto"></audio>
-  <audio id="cryingBabySound" src="/sounds/crying-baby-320170.mp3" preload="auto"></audio>
-  <audio id="casinoSound" src="/sounds/casino.wav" preload="auto"></audio>
-  <audio id="gameUnlockSound" src="/sounds/gameunlock.wav" preload="auto"></audio>
-  <audio id="healthHighSound" src="/sounds/healthhi.wav" preload="auto"></audio>
-  <audio id="historySound" src="/sounds/history.wav" preload="auto"></audio>
-  <audio id="levelCompSound" src="/sounds/levelcomp.wav" preload="auto"></audio>
-  <audio id="levelerSound" src="/sounds/leveler.wav" preload="auto"></audio>
-  <audio id="marsThemeSound" src="/sounds/mars_theme.mp3" preload="auto" loop></audio>
-  <audio id="arcadeRisingSound" src="/sounds/mixkit-arcade-rising-231.wav" preload="auto"></audio>
-  <audio id="arcadeAlertSound" src="/sounds/mixkit-arcade-video-game-machine-alert-2821.wav" preload="auto"></audio>
-  <audio id="xpIncreasedSound" src="/sounds/mixkit-game-experience-level-increased-2062.wav" preload="auto"></audio>
-  <audio id="pokerSound" src="/sounds/poker.wav" preload="auto"></audio>
-  <audio id="scifiSound" src="/sounds/scifi.wav" preload="auto"></audio>
-  <audio id="treasureSound" src="/sounds/treasure.wav" preload="auto"></audio>
+  
+  <!-- Sound Control -->
+  <div id="sound-control">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-blue)" stroke-width="2">
+      <path d="M3 15a6 6 0 1 0 12 0 6 6 0 1 0-12 0"></path>
+      <path d="M9 15a2 2 0 1 0 4 0 2 2 0 1 0-4 0"></path>
+      <path d="M9 15v-2a4 4 0 0 1 4-4h4"></path>
+    </svg>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+  </div>
+  
+  <!-- Audio Elements -->
+  <audio id="cardDealSound" src="/sounds/pop.mp3" preload="auto"></audio>
   <audio id="winSound" src="/sounds/win.wav" preload="auto"></audio>
-  <!-- 🎵 Game Sound Stack -->
-<audio id="ash" src="/sounds/ash.mp3" preload="auto" loop></audio>
-<audio id="beat" src="/sounds/beat.mp3" preload="auto" loop></audio>
-<audio id="faith" src="/sounds/faith.mp3" preload="auto" loop></audio>
-<audio id="gameboy" src="/sounds/gameboy.mp3" preload="auto" loop></audio>
-<audio id="lose" src="/sounds/lose.mp3" preload="auto"></audio> <!-- Not looping -->
-<audio id="mainsound" src="/sounds/mainsound.mp3" preload="auto" loop></audio>
-<audio id="moi" src="/sounds/moi.mp3" preload="auto"></audio> <!-- Not looping -->
-<audio id="there" src="/sounds/there.mp3" preload="auto" loop></audio>
-<audio id="word" src="/sounds/word.mp3" preload="auto" loop></audio>
+  <audio id="loseSound" src="/sounds/lose.mp3" preload="auto"></audio>
+  <audio id="xpSound" src="/sounds/xp.mp3" preload="auto"></audio>
+  <audio id="levelUpSound" src="/sounds/levelup.mp3" preload="auto"></audio>
+  <audio id="clickSound" src="/sounds/click.mp3" preload="auto"></audio>
+  <audio id="backgroundMusic" src="/sounds/mars_theme.mp3" preload="auto" loop></audio>
 
-    <script>
-    function play(id) {
-  const audio = document.getElementById(id);
-  if (audio) {
-    audio.currentTime = 0; // rewind to start
-    audio.play().catch(err => console.log("Play error:", err));
-  } else {
-    console.warn(`Audio with id "${id}" not found`);
-  }
-}
-
-    //   // document.getElementById("introSound").loop = true;
-    //   document.getElementById("introSound").currentTime = 0;
-    //   document.getElementById("introSound").play().catch(() => {});
-     const slides = [
-      {
-        title: "🪐 Welcome to MarsOverse Blackjack",
-        text: `Welcome, Commander. In MarsOverse, Blackjack isn’t just a game — it’s a battle of wits.<br><br>Your goal? Get as close to <strong>21</strong> without going over... and beat the dealer.`
-      },
-      {
-        title: "🎴 Understand the Cards",
-        text: `Each player (you and the dealer) is dealt <strong>2 cards</strong>.<br><br>• Number cards = face value<br>• Face cards (J, Q, K) = <strong>10</strong><br>• Ace = <strong>1 or 11</strong>`
-      },
-      {
-        title: "🎮 How to Play",
-        text: `Tap <strong>\"Hit\"</strong> to draw another card.<br>Tap <strong>\"Stand\"</strong> when you're done.<br><br>The dealer draws until they reach 17.`
-      },
-      {
-        title: "🏆 Rewards on Mars",
-        text: `• Win = +10 XP & 0.01 USDT<br>• Draw = 0 XP<br>• Lose = nothing 😞` }
-    ];
-
-    let currentSlide = 0;
-    function nextSlide() {
-      currentSlide++;
-      if (currentSlide < slides.length) {
-        document.getElementById("slide-title").innerHTML = slides[currentSlide].title;
-        document.getElementById("slide-text").innerHTML = slides[currentSlide].text;
-        if (currentSlide === slides.length - 1) {
-          document.getElementById("next-btn").textContent = "🎮 Play Now";
-          document.getElementById("next-btn").onclick = () => showGame();
-        }
+  <script>
+    // Game State
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    let gameActive = false;
+    
+    // Player Stats
+    let xp = 0;
+    let credits = 0;
+    let highXP = parseInt(localStorage.getItem("blackjackHighXP")) || 0;
+    const betAmount = 0.01;
+    const xpPerLevel = 100;
+    
+    // Initialize game
+    function initGame() {
+      // Load saved stats
+      const savedXP = parseInt(localStorage.getItem("playerXP")) || 0;
+      const savedCredits = parseFloat(localStorage.getItem("walletBalance")) || 0;
+      
+      document.getElementById("xp-count").textContent = savedXP;
+      document.getElementById("credit-count").textContent = savedCredits.toFixed(2);
+      document.getElementById("high-xp").textContent = highXP;
+      
+      // Set up volume control
+      const savedVolume = parseFloat(localStorage.getItem("musicVolume")) || 1;
+      document.getElementById("volume-slider").value = savedVolume;
+      setVolume(savedVolume);
+      
+      document.getElementById("volume-slider").addEventListener("input", function() {
+        const vol = parseFloat(this.value);
+        setVolume(vol);
+        localStorage.setItem("musicVolume", vol);
+      });
+      
+      // Start background music
+      playSound("backgroundMusic");
+    }
+    
+    // Set volume for all audio
+    function setVolume(vol) {
+      const allAudio = document.querySelectorAll("audio");
+      allAudio.forEach(audio => audio.volume = vol);
+    }
+    
+    // Play sound effect
+    function playSound(id) {
+      const audio = document.getElementById(id);
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
       }
     }
-
-    function showGame() {
-      document.getElementById("rules-slide").style.display = "none";
-      document.getElementById("game").style.display = "flex";
+    
+    // Show XP gain animation
+    function showXPGain(amount) {
+      const xpAnim = document.createElement("div");
+      xpAnim.className = "xp-gain";
+      xpAnim.textContent = `+${amount} XP`;
+      document.getElementById("xp-animations").appendChild(xpAnim);
+      
+      setTimeout(() => {
+        xpAnim.remove();
+      }, 1500);
     }
-
-    const deck = [], suits = ['S','H','D','C'], ranks = ['A','2','3','4','5','6','7','8','9','0','J','Q','K'];
-    let playerHand = [], dealerHand = [], xp = 0, balance = 0.00;
-    const betAmount = 0.01;
-
-    function getCardImage(code) {
-      return `https://deckofcardsapi.com/static/img/${code}.png`;
+    
+    // Add XP and check for level up
+    function addXP(amount) {
+      playSound("xpSound");
+      showXPGain(amount);
+      
+      // Get current XP from localStorage
+      let currentXP = parseInt(localStorage.getItem("playerXP")) || 0;
+      currentXP += amount;
+      
+      // Update high score if needed
+      if (currentXP > highXP) {
+        highXP = currentXP;
+        localStorage.setItem("blackjackHighXP", highXP);
+        document.getElementById("high-xp").textContent = highXP;
+      }
+      
+      // Save to localStorage
+      localStorage.setItem("playerXP", currentXP);
+      
+      // Update display
+      document.getElementById("xp-count").textContent = currentXP;
+      
+      // Check for level up
+      const oldLevel = Math.floor((currentXP - amount) / xpPerLevel);
+      const newLevel = Math.floor(currentXP / xpPerLevel);
+      
+      if (newLevel > oldLevel) {
+        playSound("levelUpSound");
+        // You could add a level up animation here
+      }
     }
-
+    
+    // Add credits to wallet
+    function addCredits(amount) {
+      let currentCredits = parseFloat(localStorage.getItem("walletBalance")) || 0;
+      currentCredits += amount;
+      localStorage.setItem("walletBalance", currentCredits.toFixed(2));
+      document.getElementById("credit-count").textContent = currentCredits.toFixed(2);
+    }
+    
+    // Shuffle deck
     function shuffleDeck() {
-      deck.length = 0;
-      for (let suit of suits) for (let rank of ranks) deck.push(rank + suit);
+      deck = [];
+      const suits = ['S', 'H', 'D', 'C'];
+      const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'J', 'Q', 'K'];
+      
+      for (let suit of suits) {
+        for (let rank of ranks) {
+          deck.push(rank + suit);
+        }
+      }
+      
+      // Fisher-Yates shuffle
       for (let i = deck.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [deck[i], deck[j]] = [deck[j], deck[i]];
       }
     }
-
+    
+    // Deal a card
     function dealCard(hand, containerId) {
-      // document.getElementById("clickSound").play();
+      playSound("cardDealSound");
       const card = deck.pop();
       hand.push(card);
-      const img = document.createElement("img");
-      img.src = getCardImage(card);
-      img.className = "card";
-      document.getElementById(containerId).appendChild(img);
+      
+      const cardImg = document.createElement("img");
+      cardImg.src = `https://deckofcardsapi.com/static/img/${card}.png`;
+      cardImg.className = "card";
+      document.getElementById(containerId).appendChild(cardImg);
     }
-
+    
+    // Calculate hand value
     function handValue(hand) {
-      let sum = 0, aces = 0;
+      let value = 0;
+      let aces = 0;
+      
       for (let card of hand) {
-        let rank = card[0];
-        if (rank === 'A') { sum += 11; aces++; }
-        else if (['K','Q','J','0'].includes(rank)) sum += 10;
-        else sum += parseInt(rank);
+        const rank = card[0];
+        if (rank === 'A') {
+          value += 11;
+          aces++;
+        } else if (['K', 'Q', 'J', '0'].includes(rank)) {
+          value += 10;
+        } else {
+          value += parseInt(rank);
+        }
       }
-      while (sum > 21 && aces > 0) { sum -= 10; aces--; }
-      return sum;
+      
+      // Adjust for aces if over 21
+      while (value > 21 && aces > 0) {
+        value -= 10;
+        aces--;
+      }
+      
+      return value;
     }
-
-    // function startGame() {
-    //   shuffleDeck();
-    //   playerHand = [], dealerHand = [];
-    //   document.getElementById("dealer-cards").innerHTML = "";
-    //   document.getElementById("player-cards").innerHTML = "";
-    //   document.getElementById("status").textContent = "";
-    //   dealCard(playerHand, "player-cards");
-    //   dealCard(dealerHand, "dealer-cards");
-    //   dealCard(playerHand, "player-cards");
-    //   dealCard(dealerHand, "dealer-cards");
-    //   updateStatus();
-    // }
-      function startGame() {
-    // Reset hands and deck
-    shuffleDeck();
-    playerHand = [];
-    dealerHand = [];
-
-    // Reset XP and balance display
-    xp = 0;
-    balance = 0;
-
-    // Reset display elements
-    document.getElementById("dealer-cards").innerHTML = "";
-    document.getElementById("player-cards").innerHTML = "";
-    document.getElementById("status").textContent = "";
-    document.getElementById("balance").textContent = "XP: 0 | Balance: 0.00 USDT";
-
-    // Deal cards
-    dealCard(playerHand, "player-cards");
-    dealCard(dealerHand, "dealer-cards");
-    dealCard(playerHand, "player-cards");
-    dealCard(dealerHand, "dealer-cards");
-
-    // Reset start button text (optional, just to be neat)
-    const startBtn = document.querySelector("#controls button:first-child");
-    startBtn.textContent = "Start Game";
-
-    updateStatus();
-  }
-
-
-    function hit() {
-      if (playerHand.length === 0) return;
+    
+    // Start a new game
+    function startGame() {
+      playSound("clickSound");
+      
+      // Reset hands and UI
+      playerHand = [];
+      dealerHand = [];
+      document.getElementById("player-cards").innerHTML = "";
+      document.getElementById("dealer-cards").innerHTML = "";
+      document.getElementById("status").textContent = "";
+      
+      // Shuffle and deal
+      shuffleDeck();
       dealCard(playerHand, "player-cards");
-      const val = handValue(playerHand);
-      if (val > 21) {
-      endGame("Bust! You lose.");
-      play("lose");
-    } else {
+      dealCard(dealerHand, "dealer-cards");
+      dealCard(playerHand, "player-cards");
+      dealCard(dealerHand, "dealer-cards");
+      
+      // Enable buttons
+      document.getElementById("hit-btn").disabled = false;
+      document.getElementById("stand-btn").disabled = false;
+      
+      // Update status
       updateStatus();
+      gameActive = true;
+      
+      // Change button text
+      document.querySelector("#controls button:first-child").textContent = "NEW GAME";
     }
-
-    }
-
-    function stand() {
-      if (playerHand.length === 0) return;
-      while (handValue(dealerHand) < 17) dealCard(dealerHand, "dealer-cards");
-      const playerVal = handValue(playerHand);
-      const dealerVal = handValue(dealerHand);
-      if (dealerVal > 21 || playerVal > dealerVal) {
-        // play("levelCompSound")
-        // document.getElementById("levelupSound").play();
-        xp += 5;
-        balance += betAmount;
-        
-        endGame(`You win! 🏆 +5 XP +$${betAmount.toFixed(2)} USDT`);
-        play("levelCompSound")
-      }  else if (playerVal === dealerVal) {
-        endGame("It's a draw!");
-        play("moi");
+    
+    // Player hits
+    function hit() {
+      playSound("clickSound");
+      if (!gameActive) return;
+      
+      dealCard(playerHand, "player-cards");
+      const value = handValue(playerHand);
+      
+      if (value > 21) {
+        endGame("BUST! You lose.");
+        playSound("loseSound");
       } else {
-        endGame("Dealer wins. 😞");
-        play("lose");
+        updateStatus();
       }
     }
-
+    
+    // Player stands
+    function stand() {
+      playSound("clickSound");
+      if (!gameActive) return;
+      
+      // Dealer draws until 17 or higher
+      while (handValue(dealerHand) < 17) {
+        dealCard(dealerHand, "dealer-cards");
+      }
+      
+      const playerValue = handValue(playerHand);
+      const dealerValue = handValue(dealerHand);
+      
+      if (dealerValue > 21 || playerValue > dealerValue) {
+        addXP(10);
+        addCredits(betAmount);
+        endGame(`YOU WIN! +10 XP +${betAmount.toFixed(2)} CREDITS`);
+        playSound("winSound");
+      } else if (playerValue === dealerValue) {
+        endGame("PUSH! It's a tie.");
+      } else {
+        endGame("DEALER WINS!");
+        playSound("loseSound");
+      }
+    }
+    
+    // Update game status
+    function updateStatus() {
+      const value = handValue(playerHand);
+      document.getElementById("status").textContent = `Your hand: ${value}`;
+    }
+    
+    // End the game
     function endGame(message) {
+      gameActive = false;
+      document.getElementById("hit-btn").disabled = true;
+      document.getElementById("stand-btn").disabled = true;
       document.getElementById("status").textContent = message;
-      updateBalance();
-      xp = 0;
-      balance = 0;
-
-      // Change button text to "Play Again"
-      const startBtn = document.querySelector("#controls button:first-child");
-      startBtn.textContent = "Play Again";
       showResultDialog(message);
     }
-
-    function updateStatus() {
-      const val = handValue(playerHand);
-      document.getElementById("status").textContent = `Your Hand: ${val}`;
-    }
-
-    // function updateBalance() {
-    //   document.getElementById("balance").textContent = `XP: ${xp} | Balance: ${balance.toFixed(2)} USDT`;
-    // }
-
-    function updateBalance() {
-    // Update display of the game-specific balance
-    document.getElementById("balance").textContent = `XP: ${xp} | Balance: ${balance.toFixed(2)} USDT`;
-
-    // Get existing wallet and XP from localStorage
-    let walletBalance = parseFloat(localStorage.getItem("walletBalance")) || 0;
-    let playerXP = parseInt(localStorage.getItem("playerXP")) || 0;
-
-    // Add the current game values to the stored wallet
-    walletBalance += balance;
-    playerXP += xp;
-
-    // Save the new totals
-    localStorage.setItem("walletBalance", walletBalance.toFixed(2));
-    localStorage.setItem("playerXP", playerXP);
-  }
-
+    
+    // Show result dialog
     function showResultDialog(message) {
-      document.getElementById("resultMessage").innerHTML = message;
+      document.getElementById("resultMessage").textContent = message;
       document.getElementById("resultModal").style.display = "flex";
     }
-
+    
+    // Close result dialog
     function closeResult() {
+      playSound("clickSound");
       document.getElementById("resultModal").style.display = "none";
     }
-
-
-  // document.addEventListener('click', (event) => {
-  //   const excludedTags = ['AUDIO', 'VIDEO', 'INPUT', 'TEXTAREA', 'BUTTON'];
-  //   if (excludedTags.includes(event.target.tagName)) return;
-
-  //   const clickSound = document.getElementById('clickSound');
-  //   if (clickSound) {
-  //     clickSound.currentTime = 0;
-  //     clickSound.play();
-  //   }
-  // });
-
-  </script>
-  <script>
-  const sounds = {
-    click: document.getElementById('clickSound'),
-    win: document.getElementById('winSound'),
-    lose: document.getElementById('loseSound'),
-  };
-
-  // Helper to play sound safely
-  function playSound(soundName) {
-    const sound = sounds[soundName];
-    if (sound) {
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
+    
+    // Rules Slides
+    const slides = [
+      {
+        title: "🪐 NEON BLACKJACK",
+        text: "Welcome to the high-stakes tables of MarsOverse. Beat the dealer to earn XP and credits in this futuristic twist on classic Blackjack."
+      },
+      {
+        title: "🎴 CARD VALUES",
+        text: "Number cards = face value\nFace cards (J, Q, K) = 10\nAce = 1 or 11\n\nGet as close to 21 as possible without going over."
+      },
+      {
+        title: "🎮 HOW TO PLAY",
+        text: "HIT = Take another card\nSTAND = Keep your current hand\n\nDealer must draw to 17 or higher."
+      },
+      {
+        title: "🏆 REWARDS",
+        text: "WIN = +10 XP & 0.01 CREDITS\nPUSH = No reward\nLOSE = Try again!\n\nXP carries over across games."
+      }
+    ];
+    
+    let currentSlide = 0;
+    
+    function nextSlide() {
+      playSound("clickSound");
+      currentSlide++;
+      
+      if (currentSlide < slides.length) {
+        document.getElementById("slide-title").textContent = slides[currentSlide].title;
+        document.getElementById("slide-text").textContent = slides[currentSlide].text;
+        
+        if (currentSlide === slides.length - 1) {
+          document.getElementById("next-btn").textContent = "PLAY NOW";
+        }
+      } else {
+        showGame();
+      }
     }
-  }
-
-document.addEventListener('click', (event) => {
-  const soundControl = document.getElementById('sound-control');
-  const clickSound = document.getElementById('clickSound');
-
-  if (soundControl && soundControl.contains(event.target)) {
-    // Don't play sound if clicking inside the sound-control
-    return;
-  }
-
-  if (clickSound) {
-    clickSound.currentTime = 0;
-    clickSound.play().catch(() => {});
-  }
-});
-
-
-</script>
-<script>
-  window.addEventListener("DOMContentLoaded", () => {
-    const allSounds = document.querySelectorAll("audio");
-    const volumeSlider = document.querySelector(".slider .level");
-
-    // Set initial volume from localStorage or default to 1
-    const initialVolume = parseFloat(localStorage.getItem("marsVolume")) || 1;
-    if (volumeSlider) volumeSlider.value = initialVolume;
-    allSounds.forEach(sound => sound.volume = initialVolume);
-
-    // Volume change handler
-    if (volumeSlider) {
-      volumeSlider.addEventListener("input", function () {
-        const vol = parseFloat(this.value);
-        allSounds.forEach(sound => sound.volume = vol);
-        localStorage.setItem("marsVolume", vol);
+    
+    function showGame() {
+      playSound("clickSound");
+      document.getElementById("rules-slide").style.display = "none";
+      document.getElementById("game-container").style.display = "flex";
+      initGame();
+    }
+    
+    // Initialize when loaded
+    window.addEventListener("DOMContentLoaded", () => {
+      // Set up click sounds for all buttons
+      document.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => playSound("clickSound"));
       });
-    }
-const afterstory = document.getElementById("afterstorySound");
-const mainsound= document.getElementById("mainsound");
-
-if (afterstory) {
-  afterstory.currentTime = 0;
-  afterstory.loop = false; // play once
-  afterstory.volume = initialVolume;
-
-  afterstory.play().catch(err => console.warn("Afterstory play error:", err));
-
-  setTimeout(() => {
-    afterstory.pause();
-    afterstory.currentTime = 0;mainsound
-
-    if (mainsound) {
-      mainsound.currentTime = 0;
-      mainsound.loop = true;
-      mainsound.volume = initialVolume;
-      mainsound.play().catch(err => console.warn("gameboy play error:", err));
-    }
-  }, 7000); // Stop after 4 seconds
-}
-
-  });
-</script>
-
-<!-- <script>
-  window.addEventListener("DOMContentLoaded", () => {
-    const allSounds = document.querySelectorAll("audio");
-    const volumeSlider = document.querySelector(".slider .level");
-
-    if (!volumeSlider) {
-      console.warn("Volume slider not found.");
-      return;
-    }
-
-    // Set initial volume from localStorage or default to 1
-    const initialVolume = parseFloat(localStorage.getItem("marsVolume")) || 1;
-    volumeSlider.value = initialVolume;
-    allSounds.forEach(sound => sound.volume = initialVolume);
-
-    // Update volume live and persist
-    volumeSlider.addEventListener("input", function () {
-      const vol = parseFloat(this.value);
-      allSounds.forEach(sound => sound.volume = vol);
-      localStorage.setItem("marsVolume", vol);
     });
-    // // 🔊 Start ambient loop sound (afterstorySound)
-    // const ambient = document.getElementById("afterstorySound");
-    // if (ambient) {
-    //   ambient.currentTime = 0;
-    //   ambient.loop = true;
-    //   ambient.volume = initialVolume;
-    //   ambient.play().catch(() => {});
-    // }
-    const intro = document.getElementById("afterstory");
-    intro.play();
-    intro.addEventListener("ended", () => {
-      // When intro ends, start marsostory
-      const story = document.getElementById("marsostory");
-      story.play();
-    });
-  });
-</script> -->
-
-
-  <div id="sound-control" style="position: fixed; bottom: 20px; left: 27px; z-index: 9999; width: 25px;">
-  <label class="slider">
-    <input type="range" class="level" min="0" max="1" step="0.01" value="1" />
-    <svg class="volume" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" >
-      <g>
-        <path d="M18.36 19.36a1 1 0 0 1-.705-1.71C19.167 16.148 20 14.142 20 12s-.833-4.148-2.345-5.65a1 1 0 1 1 1.41-1.419C20.958 6.812 22 9.322 22 12s-1.042 5.188-2.935 7.069a.997.997 0 0 1-.705.291z" fill="currentColor"></path>
-        <path d="M15.53 16.53a.999.999 0 0 1-.703-1.711C15.572 14.082 16 13.054 16 12s-.428-2.082-1.173-2.819a1 1 0 1 1 1.406-1.422A6 6 0 0 1 18 12a6 6 0 0 1-1.767 4.241.996.996 0 0 1-.703.289zM12 22a1 1 0 0 1-.707-.293L6.586 17H4c-1.103 0-2-.897-2-2V9c0-1.103.897-2 2-2h2.586l4.707-4.707A.998.998 0 0 1 13 3v18a1 1 0 0 1-1 1z" fill="currentColor"></path>
-      </g>
-    </svg>
-  </label>
-</div>
+  </script>
 </body>
 </html>

@@ -886,6 +886,7 @@ let scale = 1;
 
 // Update toggleMars360 function for better video handling
 function toggleMars360(show) {
+  
   mars360Modal.style.display = show ? 'flex' : 'none';
   if (show) {
     // Primary local video source
@@ -1007,6 +1008,7 @@ animate();
 
 console.log('Mars Viewer initialized! 🚀');
 console.log('Controls: WASD to move, mouse to look around, Shift for speed boost');
+
 
 
 

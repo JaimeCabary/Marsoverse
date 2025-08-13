@@ -2,48 +2,137 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Snake on Mars</title>
-  <link rel="icon" href="screens\snak.png" type="image/x-icon" />
+  <link rel="icon" href="screens/snak.png" type="image/x-icon" />
   <link rel="stylesheet" href="snake.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
-  
-  
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Marsoverse Snake🐍</h1>
-  <div class="status">
-    <p>XP: <span id="xpDisplay">0</span></p>
+  <div class="game-container">
+    <!-- Tutorial Overlay -->
+    <div id="tutorial" class="tutorial-overlay">
+      <div class="tutorial-content">
+        <h2>MARS SNAKE MISSION</h2>
+        <div class="tutorial-slide active" data-slide="1">
+          <p>Welcome to Mars, explorer!</p>
+          <p>Collect Martian crystals to grow your snake and earn XP.</p>
+          <img src="assets/food-icon.png" alt="Crystal" class="tutorial-img">
+        </div>
+        <div class="tutorial-slide" data-slide="2">
+          <p>CONTROLS:</p>
+          <p>Use arrow keys or swipe to change direction</p>
+          <div class="dpad-tutorial">
+            <div class="dpad-row">
+              <div class="dpad-center"></div>
+              <button class="dpad-btn-tut up">↑</button>
+              <div class="dpad-center"></div>
+            </div>
+            <div class="dpad-row">
+              <button class="dpad-btn-tut left">←</button>
+              <div class="dpad-center"></div>
+              <button class="dpad-btn-tut right">→</button>
+            </div>
+            <div class="dpad-row">
+              <div class="dpad-center"></div>
+              <button class="dpad-btn-tut down">↓</button>
+              <div class="dpad-center"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tutorial-slide" data-slide="3">
+          <p>FEATURES:</p>
+          <ul class="tutorial-features">
+            <li>• Earn XP that saves to your profile</li>
+            <li>• Unlock new levels with barriers</li>
+            <li>• Compete for high scores</li>
+            <li>• Customize your snake</li>
+          </ul>
+        </div>
+        <div class="tutorial-nav">
+          <button id="prevBtn" class="tutorial-nav-btn">BACK</button>
+          <span id="slideCounter">1/3</span>
+          <button id="nextBtn" class="tutorial-nav-btn">NEXT</button>
+        </div>
+        <button id="skipTutorial" class="skip-btn">SKIP TUTORIAL</button>
+      </div>
+    </div>
+
+    <!-- Game HUD -->
+    <div class="hud">
+      <div class="hud-item">
+        <span class="hud-label">XP:</span>
+        <span id="xpDisplay" class="hud-value">0</span>
+        <div class="xp-bar">
+          <div id="xpProgress" class="xp-progress"></div>
+        </div>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">HIGH SCORE:</span>
+        <span id="highScoreDisplay" class="hud-value">0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">LENGTH:</span>
+        <span id="lengthDisplay" class="hud-value">2</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">LEVEL:</span>
+        <span id="levelDisplay" class="hud-value">1</span>
+      </div>
+    </div>
+
+    <h1 class="game-title">MARS<span class="neon">SNAKE</span></h1>
+    
+    <div class="game-board">
+      <canvas id="gameCanvas" width="400" height="400"></canvas>
+      <div id="gameOverlay" class="game-overlay hidden">
+        <div class="overlay-content">
+          <h2>MISSION FAILED</h2>
+          <p id="finalScore">XP Earned: <span id="finalXP">0</span></p>
+          <p id="newHighScore" class="hidden">NEW HIGH SCORE!</p>
+          <div class="overlay-buttons">
+            <button id="restartBtn" class="glow-btn">TRY AGAIN</button>
+            <a href="/marzo.html" class="back-home glow-btn">RETURN TO BASE</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="dpad">
+        <button id="upBtn" class="dpad-btn">↑</button>
+        <div class="dpad-row">
+          <button id="leftBtn" class="dpad-btn">←</button>
+          <button id="rightBtn" class="dpad-btn">→</button>
+        </div>
+        <button id="downBtn" class="dpad-btn">↓</button>
+      </div>
+      <button id="pauseBtn" class="action-btn">PAUSE</button>
+    </div>
+
+    <!-- Sound System -->
+    <div class="sound-controls">
+      <button id="muteBtn" class="sound-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+      </button>
+      <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+    </div>
   </div>
 
-  <canvas id="gameCanvas" width="400" height="400"></canvas>
+  <!-- Audio Elements -->
+  <audio id="bgMusic" src="sounds/marsostory.mp3" loop></audio>
+  <audio id="eatSound" src="sounds/xp.mp3"></audio>
+  <audio id="gameOverSound" src="sounds/explosion.mp3"></audio>
+  <audio id="levelUpSound" src="sounds/levelup.mp3"></audio>
+  <audio id="clickSound" src="sounds/click.mp3"></audio>
+  <audio id="swipeSound" src="sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3"></audio>
 
-  <div class="controls">
-    <button onclick="restart()">Restart</button>
-    <a href="/marzo.html" class="back-home">← Return to Mars</a>
-    <br>
-    <span>High Score: <span id="highScoreDisplay">0</span></span>
-  </div>
-  <!-- <div style="text-align:center; margin-bottom: 10px;">
-  
-</div> -->
-    <!-- 🎵 Full Sound Stack -->
-  <audio id="introSound" src="sounds/intro.mp3" preload="auto" loop></audio>
-  <audio id="marsostory" src="sounds/marsostory.mp3" preload="auto" loop></audio>
-  <audio id="afterstorySound" src="sounds/afterstory.mp3" preload="auto"></audio>
-  <audio id="clickSound" src="sounds/click.mp3" preload="auto"></audio>
-  <audio id="sparkleSound" src="sounds/sparkle.mp3" preload="auto"></audio>
-  <audio id="levelupSound" src="sounds/levelup.mp3" preload="auto"></audio>
-  <audio id="xpSound" src="sounds/xp.mp3" preload="auto"></audio>
-  <audio id="popSound" src="sounds/pop.mp3" preload="auto"></audio>
-  <audio id="bondSound" src="sounds/bond.mp3" preload="auto"></audio>
-  <audio id="birthSound" src="sounds/birthsound.mp3" preload="auto"></audio>
-  <audio id="explosionSound" src="sounds/explosion.mp3" preload="auto"></audio>
-  <audio id="riserSound" src="sounds/riser-hit-sfx-001-289802.mp3" preload="auto"></audio>
-  <audio id="swooshSound" src="sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3" preload="auto"></audio>
-  <audio id="typingSound" src="sounds/typing.mp3" preload="auto"></audio>
-  <audio id="galaxySound" src="sounds/galaxy.mp3" preload="auto"></audio>
-  <audio id="astroSound" src="sounds/asteroid.mp3" preload="auto"></audio>
   <script src="snake.js"></script>
 </body>
 </html>

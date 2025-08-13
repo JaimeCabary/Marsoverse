@@ -5,377 +5,1070 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Mars Poker ♠️</title>
   <link rel="icon" href="screens/poke.png" type="image/x-icon" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
   <style>
-      body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Orbitron', sans-serif;
-  background-image: url('pokertable.png');
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-attachment: fixed;
-  color: #fff;
-}
-/* html, body {
-  height: 100%;
-  overflow: hidden; /* prevent scroll on all platforms */
-/* }  */
-
-
-
-section {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  padding: 20px;
-  overflow: auto; /* important for mobile and long content */
-}
-
-    #game {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
-  min-height: 100vh;
-}
-    h1 {
-      margin-bottom: 10px;
-      color: #FFF4F0;
-      font-size: 2rem;
-      text-shadow: 0 0 10px #000000AA;
+    :root {
+      --mars-red: #ff3c00;
+      --mars-orange: #ff6a00;
+      --mars-yellow: #ffd700;
+      --mars-dark: #1a0a03;
+      --mars-darker: #0f0501;
+      --neon-blue: #00f3ff;
+      --neon-pink: #ff00f3;
     }
-
-    #dealer-area, #player-area, #table-area {
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    @keyframes glow {
+      0% { text-shadow: 0 0 5px var(--mars-yellow); }
+      50% { text-shadow: 0 0 20px var(--mars-yellow); }
+      100% { text-shadow: 0 0 5px var(--mars-yellow); }
+    }
+    
+    @keyframes cardDeal {
+      0% { transform: rotateY(0deg) scale(0.5); opacity: 0; }
+      100% { transform: rotateY(360deg) scale(1); opacity: 1; }
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    
+    #game-container {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(26,10,3,0.9) 0%, rgba(15,5,1,0.95) 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    #header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: rgba(26, 10, 3, 0.7);
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 60, 0, 0.5);
+      margin-bottom: 20px;
+      z-index: 10;
+    }
+    
+    #game-title {
+      font-size: 2.5rem;
+      color: var(--mars-yellow);
+      text-shadow: 0 0 10px var(--mars-orange), 0 0 20px var(--mars-red);
+      margin: 0;
+      animation: glow 3s infinite;
+    }
+    
+    #player-stats {
+      display: flex;
+      gap: 20px;
+      background: rgba(26, 10, 3, 0.7);
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 60, 0, 0.3);
+    }
+    
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--neon-blue);
+      margin-bottom: 5px;
+    }
+    
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+    }
+    
+    #xp-bar-container {
+      width: 200px;
+      height: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 5px;
+      border: 1px solid var(--mars-orange);
+    }
+    
+    #xp-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--mars-red), var(--mars-yellow));
+      transition: width 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    #xp-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, 
+        rgba(255,255,255,0.1) 0%, 
+        rgba(255,255,255,0.3) 50%, 
+        rgba(255,255,255,0.1) 100%);
+      animation: xpShine 2s infinite;
+    }
+    
+    @keyframes xpShine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    #game-area {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      z-index: 10;
+      margin-bottom: 20px;
+    }
+    
+    .hand-area {
+      width: 90%;
+      max-width: 800px;
+      background: rgba(26, 10, 3, 0.7);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(255, 60, 0, 0.3);
+      border: 1px solid var(--mars-orange);
       text-align: center;
-      margin: 10px 0;
     }
-
+    
+    .hand-title {
+      font-size: 1.5rem;
+      color: white;
+      margin-bottom: 15px;
+      text-shadow: 0 0 5px var(--mars-red);
+    }
+    
     .cards {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 15px;
       flex-wrap: wrap;
     }
-
+    
     .card {
-      width: 90px;
-      height: 125px;
+      width: 100px;
+      height: 140px;
       background-size: cover;
-      border-radius: 8px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: cardDeal 0.5s ease-out;
+      transform-style: preserve-3d;
     }
-
+    
+    .card:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(255, 60, 0, 0.5);
+    }
+    
+    #community-area {
+      width: 90%;
+      max-width: 800px;
+      background: rgba(26, 10, 3, 0.5);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 30px rgba(255, 106, 0, 0.4);
+      border: 1px solid var(--mars-yellow);
+      text-align: center;
+      position: relative;
+    }
+    
+    #community-area::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      border-radius: 20px;
+      background: linear-gradient(45deg, var(--mars-red), var(--mars-yellow), var(--mars-red));
+      z-index: -1;
+      opacity: 0.5;
+      animation: borderPulse 3s infinite;
+    }
+    
+    @keyframes borderPulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+      100% { opacity: 0.3; }
+    }
+    
     #controls {
       display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin: 20px 0;
-      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      z-index: 10;
     }
-
-    button {
-      padding: 10px 18px;
-      font-size: 1rem;
-      background-color: #FF4B00;
+    
+    .game-btn {
+      padding: 12px 25px;
+      font-size: 1.1rem;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(to bottom, var(--mars-red), var(--mars-dark));
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       color: white;
       cursor: pointer;
-      box-shadow: 0 0 8px #FF4B00aa;
+      box-shadow: 0 5px 15px rgba(255, 60, 0, 0.4);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-
+    
+    .game-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .game-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 60, 0, 0.6);
+    }
+    
+    .game-btn:hover::before {
+      left: 100%;
+    }
+    
+    .game-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(255, 60, 0, 0.4);
+    }
+    
+    .game-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
     #status {
-      font-size: 1.1rem;
-      margin-top: 10px;
-      color: #ffd;
-      text-shadow: 0 0 4px #ffa;
+      font-size: 1.3rem;
+      margin-top: 20px;
+      color: white;
+      text-align: center;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(26, 10, 3, 0.7);
+      padding: 15px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 60, 0, 0.3);
+      border: 1px solid var(--mars-orange);
     }
-
-    #balance {
-      font-size: 1rem;
-      margin-top: 5px;
+    
+    #footer {
+      width: 100%;
+      text-align: center;
+      padding: 15px;
+      margin-top: auto;
+      z-index: 10;
     }
-
-    a.back-home {
-      color: #ffb;
+    
+    .back-home {
+      color: var(--neon-blue);
       text-decoration: none;
-      font-size: 0.9rem;
-      margin-top: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: inline-block;
+      padding: 8px 15px;
+      border-radius: 6px;
+      background: rgba(26, 10, 3, 0.5);
+      border: 1px solid var(--neon-blue);
     }
-    #overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75); /* You can go higher: 0.85 for darker */
-  z-index: 0;
-  pointer-events: none;
-}
-#rules-scroll {
-  position: relative;
-  z-index: 10; /* Make it higher than overlay */
-  background: url('mars-scroll-bg.png') no-repeat center center;
-  background-size: cover;
-  background-color: #150505;
-  padding: 50px 20px 30px;
-  text-align: center;
-  color: #ffd6b8;
-  font-family: 'Orbitron', sans-serif;
-  box-shadow: inset 0 0 20px #FF4B00aa;
-}
-.scroll-container {
-  max-width: 680px;
-  margin: auto;
-  background: rgba(24, 8, 2, 0.75);
-  border: 1px solid #ff6600;
-  border-radius: 12px;
-  padding: 25px 20px;
-  box-shadow: 0 0 18px #ff440088, 0 0 12px #ff660044 inset;
-  backdrop-filter: blur(3px);
+    
+    .back-home:hover {
+      color: white;
+      background: rgba(0, 243, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+    }
+    
+    /* Rules Slide Styles */
+    #rules-slide {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(26,10,3,0.95) 0%, rgba(15,5,1,0.98) 100%);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ffd6b8;
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    #slide-box {
+      background: rgba(24, 8, 2, 0.9);
+      border: 1px solid var(--mars-orange);
+      border-radius: 15px;
+      padding: 40px 30px;
+      max-width: 700px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(255, 60, 0, 0.6);
+      backdrop-filter: blur(5px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    #slide-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/starfield.png');
+      opacity: 0.1;
+      pointer-events: none;
+    }
+    
+    #slide-title {
+      color: var(--mars-yellow);
+      font-size: 2rem;
+      margin-bottom: 25px;
+      text-shadow: 0 0 10px var(--mars-red);
+    }
+    
+    #slide-text {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      color: #ffdbb2;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+    
+    .slide-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .slide-actions button {
+      background: linear-gradient(to bottom, var(--mars-red), var(--mars-dark));
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(255, 75, 0, 0.7);
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .slide-actions button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 20px rgba(255, 75, 0, 0.9);
+    }
+    
+    .slide-actions button:active {
+      transform: translateY(1px);
+    }
+    
+    .back-btn {
+      color: var(--neon-blue);
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+      color: white;
+      text-shadow: 0 0 10px var(--neon-blue);
+    }
+    
+    /* Result Modal Styles */
+    #resultModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    
+    #resultBox {
+      background: rgba(24, 8, 2, 0.95);
+      border: 1px solid var(--mars-orange);
+      border-radius: 15px;
+      padding: 40px 30px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(255, 60, 0, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    #resultBox::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 25px;
+      background: linear-gradient(45deg, var(--mars-red), var(--mars-yellow), var(--mars-red));
+      z-index: -1;
+      opacity: 0.3;
+      animation: borderPulse 3s infinite;
+    }
+    
+    #resultBox h2 {
+      color: var(--mars-yellow);
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px var(--mars-red);
+    }
+    
+    #resultMessage {
+      font-size: 1.3rem;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      color: white;
+    }
+    
+    #resultBox button {
+      background: linear-gradient(to bottom, var(--mars-red), var(--mars-dark));
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(255, 75, 0, 0.7);
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    #resultBox button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 20px rgba(255, 75, 0, 0.9);
+    }
+    
+    /* XP Gain Animation */
+    .xp-gain {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      color: var(--mars-yellow);
+      text-shadow: 0 0 10px var(--mars-red);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+      animation: xpFloat 1.5s ease-out;
+    }
+    
+    @keyframes xpFloat {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      20% { opacity: 1; transform: translate(-50%, -60%) scale(1.2); }
+      100% { opacity: 0; transform: translate(-50%, -120%) scale(0.8); }
+    }
+    
+    /* Sound Control */
+    #sound-control {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(151, 52, 9, 0.7);
+      padding: 10px 15px;
+      border-radius: 30px;
+      box-shadow: 0 0 15px rgba(255, 60, 0, 0.3);
+      border: 1px solid var(--mars-orange);
+    }
+    
+    #sound-control label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+      font-size: 0.9rem;
+    }
+    
+    #sound-control input[type="range"] {
+      width: 100px;
+      -webkit-appearance: none;
+      height: 5px;
+      background: var(--mars-dark);
+      border-radius: 5px;
+      outline: none;
+    }
+    
+    #sound-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: var(--mars-yellow);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+    
+    /* Achievement Toast */
+    .achievement-toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: rgba(26, 10, 3, 0.9);
+      border-left: 5px solid var(--mars-yellow);
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transform: translateX(120%);
+      transition: transform 0.5s ease;
+      z-index: 1000;
+      max-width: 350px;
+    }
+    
+    .achievement-toast.show {
+      transform: translateX(0);
+    }
+    
+    .achievement-icon {
+      font-size: 2rem;
+      color: var(--mars-yellow);
+    }
+    
+    .achievement-content h3 {
+      margin: 0 0 5px 0;
+      color: white;
+    }
+    
+    .achievement-content p {
+      margin: 0;
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      #header {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      #player-stats {
+        width: 100%;
+        justify-content: space-around;
+      }
+      
+      .hand-area, #community-area {
+        width: 95%;
+        padding: 15px;
+      }
+      
+      .card {
+        width: 80px;
+        height: 112px;
+      }
+      
+      #controls {
+        flex-wrap: wrap;
+      }
+      
+      .game-btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+      }
+    }
+    
+    /* Special Effects */
+    .particle {
+      position: absolute;
+      background: var(--mars-yellow);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 5;
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: var(--mars-yellow);
+      opacity: 0;
+      z-index: 100;
+      animation: confettiFall 3s linear forwards;
+    }
+    
+    @keyframes confettiFall {
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+    
+    /* Level Up Animation */
+    .level-up {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255,215,0,0.2) 0%, rgba(255,60,0,0.3) 100%);
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .level-up.show {
+      opacity: 1;
+    }
+    
+    .level-up-content {
+      background: rgba(26, 10, 3, 0.9);
+      padding: 30px 40px;
+      border-radius: 15px;
+      border: 2px solid var(--mars-yellow);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+      text-align: center;
+      transform: scale(0.5);
+      animation: levelUpScale 1s ease-out forwards;
+    }
+    
+    @keyframes levelUpScale {
+      0% { transform: scale(0.5); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .level-up-content h2 {
+      color: var(--mars-yellow);
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px var(--mars-red);
+    }
+    
+    .level-up-content p {
+      color: white;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+    }
+    
+    .level-up-stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .level-up-star {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: white;
+      border-radius: 50%;
+      animation: starPulse 1s infinite alternate;
+    }
+    
+    @keyframes starPulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+
+    /* Mobile-Specific Enhancements */
+@media (max-width: 768px) {
+  /* General Layout Adjustments */
+  body {
+    overflow-x: hidden;
+    background-attachment: scroll;
+  }
+  
+  #game-container {
+    padding: 10px;
+    min-height: 100vh;
+    height: auto;
+  }
+  
+  /* Header & Stats Stacking */
+  #header {
+    flex-direction: column;
+    padding: 10px;
+    gap: 15px;
+    border-radius: 8px;
+  }
+  
+  #game-title {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+  
+  #player-stats {
+    width: 100%;
+    justify-content: space-between;
+    padding: 8px 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .stat {
+    min-width: 30%;
+    flex-grow: 1;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .stat-value {
+    font-size: 1rem;
+  }
+  
+  #xp-bar-container {
+    width: 100%;
+    height: 15px;
+  }
+  
+  /* Card Area Optimizations */
+  .hand-area, #community-area {
+    width: 95%;
+    padding: 12px;
+    margin: 5px 0;
+  }
+  
+  .hand-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .cards {
+    gap: 8px;
+  }
+  
+  .card {
+    width: 70px;
+    height: 98px; /* Maintain 1.4 aspect ratio */
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  }
+  
+  /* Button Group Stacking */
+  #controls {
+    flex-direction: column;
+    gap: 10px;
+    width: 90%;
+    margin: 15px 0;
+  }
+  
+  .game-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
+  
+  /* Status Message */
+  #status {
+    font-size: 1rem;
+    padding: 10px 15px;
+    margin: 10px 0;
+    width: 90%;
+  }
+  
+  /* Footer Link */
+  #footer {
+    padding: 10px;
+  }
+  
+  .back-home {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+  
+  /* Rules Slide Adjustments */
+  #slide-box {
+    padding: 30px 15px;
+    width: 95%;
+  }
+  
+  #slide-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  #slide-text {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  .slide-actions button {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+  
+  /* Result Modal */
+  #resultBox {
+    padding: 30px 15px;
+    width: 95%;
+  }
+  
+  #resultTitle {
+    font-size: 1.5rem;
+  }
+  
+  #resultMessage {
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+  
+  /* Sound Control Positioning */
+  #sound-control {
+    bottom: 10px;
+    left: 15px;
+    padding: 8px 12px;
+  }
+  
+  #sound-control input[type="range"] {
+    width: 80px;
+  }
+  
+  /* Achievement Toast */
+  .achievement-toast {
+    bottom: 15px;
+    right: 15px;
+    max-width: 90%;
+    padding: 12px;
+  }
+  
+  /* Disable hover effects on touch devices */
+  @media (hover: none) {
+    .game-btn:hover, .back-home:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    
+    .card:hover {
+      transform: none !important;
+    }
+  }
+  
+  /* Performance optimizations */
+  .card {
+    will-change: transform;
+  }
+  
+  /* Prevent zoom on input focus */
+  input, select, textarea {
+    font-size: 16px;
+  }
 }
 
-#rules-scroll h2 {
-  font-size: 1.7rem;
-  margin-bottom: 16px;
-  color: #FFA94A;
-  text-shadow: 0 0 4px #FF7F50, 0 0 10px #ff6600aa;
+/* Extra Small Devices (phones < 400px) */
+@media (max-width: 400px) {
+  .card {
+    width: 60px;
+    height: 84px;
+  }
+  
+  #game-title {
+    font-size: 1.5rem;
+  }
+  
+  .stat {
+    min-width: 45%;
+  }
+  
+  #controls {
+    gap: 8px;
+  }
+  
+  .game-btn {
+    padding: 10px;
+  }
 }
-
-#rules-scroll p {
-  font-size: 1rem;
-  line-height: 1.8;
-  color: #ffdbb2;
-  text-shadow: 0 0 6px #441a00;
-}
-
-.scroll-actions {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-}
-
-.scroll-actions button {
-  background-color: #FF4B00;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  box-shadow: 0 0 12px #FF4B00bb;
-  transition: background 0.3s ease;
-}
-
-.scroll-actions button:hover {
-  background-color: #FF6B20;
-}
-
-.back-btn {
-  color: #ffcc99;
-  text-decoration: none;
-  font-size: 0.95rem;
-  text-shadow: 0 0 3px #ff7f50;
-}
-#rules-slide {
-  position: relative;
-  z-index: 15;
-  background: rgba(1, 0, 0, 0.391); /* semi-transparent black over pokertable */
-color: #ffd6b8;
-  padding: 40px 20px;
-  font-family: 'Orbitron', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#slide-box {
-  background: rgba(24, 8, 2, 0.54);
-  border: 1px solid #ff6600;
-  border-radius: 12px;
-  padding: 30px 25px;
-  max-width: 650px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 0 20px #ff5500aa;
-  backdrop-filter: blur(4px);
-}
-
-#slide-title {
-  color: #FFA94A;
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-}
-
-#slide-text {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: #ffdbb2;
-  margin-bottom: 25px;
-}
-
-.slide-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-}
-
-.slide-actions button {
-  background-color: #FF4B00;
-  color: white;
-  border: none;
-  padding: 12px 22px;
-  font-size: 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  box-shadow: 0 0 12px #FF4B00bb;
-}
-
-.slide-actions button:hover {
-  background-color: #FF6B20;
-}
-#overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85); /* Darker overlay */
-  z-index: 0;
-  pointer-events: none;
-}
-
-
-.back-btn {
-  color: #ffcc99;
-  text-decoration: none;
-  font-size: 0.95rem;
-  text-shadow: 0 0 3px #ff7f50;
-}
-#resultModal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(15, 5, 5, 0.95));
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-#resultBox {
-  background: rgba(24, 8, 2, 0.8);
-  border: 1px solid #ff6600;
-  border-radius: 12px;
-  padding: 30px 25px;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 0 20px #ff5500aa;
-  backdrop-filter: blur(4px);
-  color: #ffdbb2;
-  font-family: 'Orbitron', sans-serif;
-}
-
-#resultBox h2 {
-  color: #FFA94A;
-  margin-bottom: 15px;
-}
-
-#resultBox p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-#resultBox button {
-  background-color: #FF4B00;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  font-size: 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  box-shadow: 0 0 12px #FF4B00bb;
-}
-
-#resultBox button:hover {
-  background-color: #FF6B20;
-}
-
   </style>
 </head>
 <body>
-  <div id="overlay"></div> <!-- Keep it here -->
-<section id="rules-slide" class="slide-container">
+  <div id="overlay"></div>
   
-  <div id="slide-box">
-    <h2 id="slide-title">📜 Welcome to Mars Poker</h2>
-    <p id="slide-text">
-      You’ve landed on a hostile world, but one tradition keeps everyone sharp: <strong>Mars Poker</strong>.<br><br>
-      It’s you vs Cubeco — and every card you play earns you power on Mars.
-    </p>
-    <div class="slide-actions">
-      <button id="next-btn" onclick="nextSlide()">Next</button>
-      <a href="#" class="back-btn" onclick="showGame(); return false;">← Skip Rules</a>
+  <!-- Level Up Animation -->
+  <div id="levelUp" class="level-up">
+    <div class="level-up-stars" id="levelUpStars"></div>
+    <div class="level-up-content">
+      <h2>LEVEL UP!</h2>
+      <p>Your skills are improving, Commander</p>
     </div>
   </div>
-</section>
- <section id="game" style="display: none;">
-    <h1>🪐Marsoverse Poker ♠️</h1>
-
-   <div id="balance">
-  XP: <span id="xpCount">0</span> |
-  Wallet: <span id="walletCount">0.00</span> USDT |
-  Highest XP: <span id="highXP">0</span>
-</div>
-
-
-    <div id="player-area">
-      <h3>Your Hand</h3>
-      <div id="playerHand" class="cards"></div>
+  
+  <!-- XP Gain Animation Container -->
+  <div id="xpAnimations"></div>
+  
+  <!-- Rules Slide -->
+  <section id="rules-slide" class="slide-container">
+    <div id="slide-box">
+      <h2 id="slide-title">📜 Welcome to Mars Poker</h2>
+      <p id="slide-text">
+        You've landed on a hostile world, but one tradition keeps everyone sharp: <strong>Mars Poker</strong>.<br><br>
+        It's you vs Cubeco — and every card you play earns you power on Mars.
+      </p>
+      <div class="slide-actions">
+        <button id="next-btn" onclick="nextSlide()">Next</button>
+        <a href="#" class="back-btn" onclick="showGame(); return false;">← Skip Rules</a>
+      </div>
     </div>
-
-    <div id="table-area">
-      <h3>Community Cards</h3>
-      <div id="communityCards" class="cards"></div>
-    </div>
-
-    <div id="dealer-area">
-      <h3>Cubeco's Hand</h3>
-      <div id="botHand" class="cards"></div>
-    </div>
-
-    <div id="status"></div>
-
-    <div id="controls">
-      <button onclick="dealCards()">Deal</button>
-      <button onclick="reveal()">Reveal</button>
-      <button onclick="restart()">Restart</button>
-    </div>
-
-    <a href="/marzo.html" class="back-home">← Return to Mars</a>
- </section>
- <div id="resultModal" style="display: none;">
-  <div id="resultBox">
-    <h2 id="resultTitle">Result</h2>
-    <p id="resultMessage">You win!</p>
-    <button onclick="closeResult()">OK</button>
+  </section>
+  
+  <!-- Main Game Container -->
+  <div id="game-container" style="display: none;">
+    <header id="header">
+      <h1 id="game-title">🪐 MARS POKER ♠️</h1>
+      <div id="player-stats">
+        <div class="stat">
+          <span class="stat-label">XP</span>
+          <span class="stat-value" id="xpCount">0</span>
+          <div id="xp-bar-container">
+            <div id="xp-bar"></div>
+          </div>
+        </div>
+        <div class="stat">
+          <span class="stat-label">USDT</span>
+          <span class="stat-value" id="walletCount">0.00</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">HIGH SCORE</span>
+          <span class="stat-value" id="highXP">0</span>
+        </div>
+      </div>
+    </header>
+    
+    <main id="game-area">
+      <div class="hand-area" id="dealer-area">
+        <h2 class="hand-title">🤖 CUBECO'S HAND</h2>
+        <div id="botHand" class="cards"></div>
+      </div>
+      
+      <div class="hand-area" id="community-area">
+        <h2 class="hand-title">🛸 COMMUNITY CARDS</h2>
+        <div id="communityCards" class="cards"></div>
+      </div>
+      
+      <div class="hand-area" id="player-area">
+        <h2 class="hand-title">👨‍🚀 YOUR HAND</h2>
+        <div id="playerHand" class="cards"></div>
+      </div>
+      
+      <div id="status">Ready to play! Click DEAL to start.</div>
+      
+      <div id="controls">
+        <button class="game-btn" onclick="dealCards()">DEAL</button>
+        <button class="game-btn" onclick="reveal()" id="revealBtn" disabled>REVEAL</button>
+        <button class="game-btn" onclick="restart()">RESTART</button>
+      </div>
+    </main>
+    
+    <footer id="footer">
+      <a href="/marzo.html" class="back-home">← RETURN TO MARS</a>
+    </footer>
   </div>
-</div>
-   <!-- 🎵 Full Sound Stack -->
+  
+  <!-- Result Modal -->
+  <div id="resultModal" style="display: none;">
+    <div id="resultBox">
+      <h2 id="resultTitle">RESULT</h2>
+      <p id="resultMessage">You win!</p>
+      <button onclick="closeResult()">CONTINUE</button>
+    </div>
+  </div>
+  
+  <!-- Achievement Toast -->
+  <div id="achievementToast" class="achievement-toast">
+    <div class="achievement-icon">🏆</div>
+    <div class="achievement-content">
+      <h3 id="achievementTitle">New Achievement!</h3>
+      <p id="achievementDesc">You've unlocked a new achievement</p>
+    </div>
+  </div>
+  
+  <!-- Sound Control -->
+  <div id="sound-control">
+    <label>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+      </svg>
+      <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+    </label>
+  </div>
+  
+  <!-- All Audio Elements -->
   <audio id="introSound" src="/sounds/intro.mp3" preload="auto" loop></audio>
   <audio id="marsostory" src="/sounds/marsostory.mp3" preload="auto" loop></audio>
   <audio id="afterstorySound" src="/sounds/afterstory.mp3" preload="auto"></audio>
@@ -392,7 +1085,6 @@ color: #ffd6b8;
   <audio id="typingSound" src="/sounds/typing.mp3" preload="auto"></audio>
   <audio id="galaxySound" src="/sounds/galaxy.mp3" preload="auto"></audio>
   <audio id="astroSound" src="/sounds/asteroid.mp3" preload="auto"></audio>
-  <!-- 🎶 Newly Added Sounds -->
   <audio id="babyLaughSound" src="/sounds/babylaugh.mp3" preload="auto"></audio>
   <audio id="babyTalkSound" src="/sounds/babytalk.mp3" preload="auto"></audio>
   <audio id="cryingBabySound" src="/sounds/crying-baby-320170.mp3" preload="auto"></audio>
@@ -410,108 +1102,348 @@ color: #ffd6b8;
   <audio id="scifiSound" src="/sounds/scifi.wav" preload="auto"></audio>
   <audio id="treasureSound" src="/sounds/treasure.wav" preload="auto"></audio>
   <audio id="winSound" src="/sounds/win.wav" preload="auto"></audio>
-  <!-- 🎵 Game Sound Stack -->
-<audio id="ash" src="/sounds/ash.mp3" preload="auto" loop></audio>
-<audio id="beat" src="/sounds/beat.mp3" preload="auto" loop></audio>
-<audio id="faith" src="/sounds/faith.mp3" preload="auto" loop></audio>
-<audio id="gameboy" src="/sounds/gameboy.mp3" preload="auto" loop></audio>
-<audio id="lose" src="/sounds/lose.mp3" preload="auto"></audio> <!-- Not looping -->
-<audio id="mainsound" src="/sounds/mainsound.mp3" preload="auto" loop></audio>
-<audio id="moi" src="/sounds/moi.mp3" preload="auto"></audio> <!-- Not looping -->
-<audio id="there" src="/sounds/there.mp3" preload="auto" loop></audio>
-<audio id="word" src="/sounds/word.mp3" preload="auto" loop></audio>
-
+  <audio id="ash" src="/sounds/ash.mp3" preload="auto" loop></audio>
+  <audio id="beat" src="/sounds/beat.mp3" preload="auto" loop></audio>
+  <audio id="faith" src="/sounds/faith.mp3" preload="auto" loop></audio>
+  <audio id="gameboy" src="/sounds/gameboy.mp3" preload="auto" loop></audio>
+  <audio id="lose" src="/sounds/lose.mp3" preload="auto"></audio>
+  <audio id="mainsound" src="/sounds/mainsound.mp3" preload="auto" loop></audio>
+  <audio id="moi" src="/sounds/moi.mp3" preload="auto"></audio>
+  <audio id="there" src="/sounds/there.mp3" preload="auto" loop></audio>
+  <audio id="word" src="/sounds/word.mp3" preload="auto" loop></audio>
 
   <script>
-    
+    // Game State
     let playerCards = [], botCards = [], communityCards = [];
-    let xp = parseInt(localStorage.getItem("marsXP") || 0);
-    let usdt = parseFloat(localStorage.getItem("marsUSDT") || 0);
     let deckID = "";
+    let gameInProgress = false;
+    
+    // Player Stats
+    let xp = parseInt(localStorage.getItem("playerXP") || 0);
+    let usdt = parseFloat(localStorage.getItem("walletBalance") || 0);
     let highXP = parseInt(localStorage.getItem("marsHighXP") || 0);
-document.getElementById("highXP").textContent = highXP;
-
-
-    document.getElementById("xpCount").textContent = xp;
-    document.getElementById("walletCount").textContent = usdt.toFixed(2);
-
+    let totalGamesPlayed = parseInt(localStorage.getItem("totalGamesPlayed") || 0);
+    let totalWins = parseInt(localStorage.getItem("totalWins") || 0);
+    
+    // XP System
+    const xpToNextLevel = 100;
+    let currentLevel = Math.floor(xp / xpToNextLevel);
+    let currentLevelXP = xp % xpToNextLevel;
+    
+    // Initialize UI
+    function initUI() {
+      document.getElementById("xpCount").textContent = xp;
+      document.getElementById("walletCount").textContent = usdt.toFixed(2);
+      document.getElementById("highXP").textContent = highXP;
+      updateXPBar();
+      
+      // Set up volume control
+      const volumeSlider = document.getElementById("volumeSlider");
+      const savedVolume = parseFloat(localStorage.getItem("musicVolume")) || 1;
+      volumeSlider.value = savedVolume;
+      setVolume(savedVolume);
+      
+      volumeSlider.addEventListener("input", () => {
+        const vol = parseFloat(volumeSlider.value);
+        setVolume(vol);
+        localStorage.setItem("musicVolume", vol);
+      });
+      
+      // Play background music
+      play("marsThemeSound");
+    }
+    
+    // Set volume for all audio elements
+    function setVolume(vol) {
+      const allAudio = document.querySelectorAll("audio");
+      allAudio.forEach(audio => {
+        audio.volume = vol;
+      });
+    }
+    
+    // Play sound effect
+    function play(soundId) {
+      const audio = document.getElementById(soundId);
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+      }
+    }
+    
+    // Update XP bar visualization
+    function updateXPBar() {
+      const xpPercentage = (currentLevelXP / xpToNextLevel) * 100;
+      document.getElementById("xp-bar").style.width = `${xpPercentage}%`;
+    }
+    
+    // Add XP with animation
+    function addXP(amount) {
+      play("xpIncreasedSound");
+      
+      // Create XP gain animation
+      const xpAnim = document.createElement("div");
+      xpAnim.className = "xp-gain";
+      xpAnim.textContent = `+${amount} XP`;
+      document.getElementById("xpAnimations").appendChild(xpAnim);
+      
+      // Remove animation after it completes
+      setTimeout(() => {
+        xpAnim.remove();
+      }, 1500);
+      
+      // Update XP values
+      const oldLevel = currentLevel;
+      xp += amount;
+      currentLevelXP += amount;
+      
+      // Check for level up
+      while (currentLevelXP >= xpToNextLevel) {
+        currentLevelXP -= xpToNextLevel;
+        currentLevel++;
+        showLevelUp();
+      }
+      
+      // Update high score if needed
+      if (xp > highXP) {
+        highXP = xp;
+        document.getElementById("highXP").textContent = highXP;
+        localStorage.setItem("marsHighXP", highXP);
+      }
+      
+      // Save XP and update UI
+      localStorage.setItem("playerXP", xp);
+      document.getElementById("xpCount").textContent = xp;
+      updateXPBar();
+      
+      // Check for achievements
+      checkAchievements(oldLevel, currentLevel);
+    }
+    
+    // Show level up animation
+    function showLevelUp() {
+      play("levelupSound");
+      
+      // Create stars for level up animation
+      const starsContainer = document.getElementById("levelUpStars");
+      starsContainer.innerHTML = "";
+      
+      for (let i = 0; i < 20; i++) {
+        const star = document.createElement("div");
+        star.className = "level-up-star";
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.animationDelay = `${Math.random() * 0.5}s`;
+        starsContainer.appendChild(star);
+      }
+      
+      // Show level up modal
+      document.getElementById("levelUp").classList.add("show");
+      
+      // Hide after animation
+      setTimeout(() => {
+        document.getElementById("levelUp").classList.remove("show");
+      }, 3000);
+    }
+    
+    // Check for unlocked achievements
+    function checkAchievements(oldLevel, newLevel) {
+      const achievements = [
+        { level: 1, title: "Novice Gambler", desc: "Reached Level 1" },
+        { level: 3, title: "Seasoned Player", desc: "Reached Level 3" },
+        { level: 5, title: "Mars High Roller", desc: "Reached Level 5" },
+        { level: 10, title: "Poker Legend", desc: "Reached Level 10" }
+      ];
+      
+      achievements.forEach(ach => {
+        if (oldLevel < ach.level && newLevel >= ach.level) {
+          showAchievement(ach.title, ach.desc);
+        }
+      });
+    }
+    
+    // Show achievement toast
+    function showAchievement(title, desc) {
+      play("gameUnlockSound");
+      
+      document.getElementById("achievementTitle").textContent = title;
+      document.getElementById("achievementDesc").textContent = desc;
+      
+      const toast = document.getElementById("achievementToast");
+      toast.classList.add("show");
+      
+      // Hide after 5 seconds
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 5000);
+    }
+    
+    // Deal cards
+    async function dealCards() {
+      play("clickSound");
+      
+      if (gameInProgress) {
+        showResultDialog("Finish the current game first!");
+        return;
+      }
+      
+      gameInProgress = true;
+      document.getElementById("revealBtn").disabled = false;
+      document.getElementById("status").textContent = "Game in progress...";
+      
+      if (!deckID) {
+        await fetchDeck();
+      }
+      
+      const draw = await fetch(`https://deckofcardsapi.com/api/deck/${deckID}/draw/?count=7`);
+      const data = await draw.json();
+      const cards = data.cards;
+      
+      playerCards = cards.slice(0, 2);
+      botCards = cards.slice(2, 4);
+      communityCards = cards.slice(4, 7);
+      
+      // Animate card dealing
+      animateCardDeal();
+      
+      // Update game stats
+      totalGamesPlayed++;
+      localStorage.setItem("totalGamesPlayed", totalGamesPlayed);
+    }
+    
+    // Animate card dealing
+    function animateCardDeal() {
+      // Clear previous cards
+      document.getElementById("playerHand").innerHTML = "";
+      document.getElementById("botHand").innerHTML = "";
+      document.getElementById("communityCards").innerHTML = "";
+      
+      // Player cards
+      setTimeout(() => {
+        playerCards.forEach((card, index) => {
+          setTimeout(() => {
+            const cardEl = document.createElement("div");
+            cardEl.className = "card";
+            cardEl.style.backgroundImage = `url('${card.image}')`;
+            cardEl.style.animationDelay = `${index * 0.2}s`;
+            document.getElementById("playerHand").appendChild(cardEl);
+            play("popSound");
+          }, index * 200);
+        });
+      }, 300);
+      
+      // Bot cards (face down)
+      setTimeout(() => {
+        botCards.forEach((card, index) => {
+          setTimeout(() => {
+            const cardEl = document.createElement("div");
+            cardEl.className = "card";
+            cardEl.style.backgroundImage = "url('https://deckofcardsapi.com/static/img/back.png')";
+            cardEl.style.animationDelay = `${index * 0.2}s`;
+            document.getElementById("botHand").appendChild(cardEl);
+            play("popSound");
+          }, index * 200);
+        });
+      }, 600);
+      
+      // Community cards
+      setTimeout(() => {
+        communityCards.forEach((card, index) => {
+          setTimeout(() => {
+            const cardEl = document.createElement("div");
+            cardEl.className = "card";
+            cardEl.style.backgroundImage = `url('${card.image}')`;
+            cardEl.style.animationDelay = `${index * 0.2}s`;
+            document.getElementById("communityCards").appendChild(cardEl);
+            play("popSound");
+          }, index * 200);
+        });
+      }, 900);
+    }
+    
+    // Fetch new deck
     async function fetchDeck() {
       const res = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1");
       const data = await res.json();
       deckID = data.deck_id;
     }
-
-    async function dealCards() {
-      if (!deckID) await fetchDeck();
-      const draw = await fetch(`https://deckofcardsapi.com/api/deck/${deckID}/draw/?count=7`);
-      const data = await draw.json();
-      const cards = data.cards;
-
-      playerCards = cards.slice(0, 2);
-      botCards = cards.slice(2, 4);
-      communityCards = cards.slice(4, 7);
-
-      document.getElementById("playerHand").innerHTML = renderCards(playerCards);
-      document.getElementById("botHand").innerHTML = `
-        <div class="card" style="background-image: url('https://deckofcardsapi.com/static/img/back.png')"></div>
-        <div class="card" style="background-image: url('https://deckofcardsapi.com/static/img/back.png')"></div>
-      `;
-      document.getElementById("communityCards").innerHTML = renderCards(communityCards);
-      document.getElementById("status").textContent = "";
+    
+    // Reveal cards and determine winner
+    function reveal() {
+      play("clickSound");
+      
+      if (!gameInProgress) {
+        showResultDialog("Deal cards first!");
+        return;
+      }
+      
+      gameInProgress = false;
+      document.getElementById("revealBtn").disabled = true;
+      
+      // Show bot's cards
+      document.getElementById("botHand").innerHTML = renderCards(botCards);
+      
+      // Calculate scores
+      const playerScore = score(playerCards.concat(communityCards));
+      const botScore = score(botCards.concat(communityCards));
+      
+      let resultMessage = "";
+      let xpGain = 0;
+      let usdtGain = 0;
+      
+      if (playerScore > botScore) {
+        xpGain = 10;
+        usdtGain = 0.02;
+        resultMessage = `🎉 YOU WON!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>+${xpGain} XP, +${usdtGain.toFixed(2)} USDT`;
+        play("winSound");
+        totalWins++;
+        localStorage.setItem("totalWins", totalWins);
+        createConfetti();
+      } else if (playerScore < botScore) {
+        xpGain = 2;
+        resultMessage = `🤖 CUBECO WON!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>+${xpGain} XP`;
+        play("lose");
+      } else {
+        xpGain = 5;
+        resultMessage = `⚖️ IT'S A DRAW!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>+${xpGain} XP`;
+        play("moi");
+      }
+      
+      // Award XP and USDT
+      addXP(xpGain);
+      if (usdtGain > 0) {
+        usdt += usdtGain;
+        localStorage.setItem("walletBalance", usdt.toFixed(2));
+        document.getElementById("walletCount").textContent = usdt.toFixed(2);
+      }
+      
+      // Show result
+      showResultDialog(resultMessage);
     }
-function play(soundId) {
-  const audio = document.getElementById(soundId);
-  if (audio) {
-    audio.currentTime = 0;
-    audio.play().catch(() => {});
-  }
-}
-
-
+    
+    // Create confetti effect
+    function createConfetti() {
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement("div");
+        confetti.className = "confetti";
+        confetti.style.left = `${Math.random() * 100}vw`;
+        confetti.style.backgroundColor = `hsl(${Math.random() * 60 + 20}, 100%, 50%)`;
+        confetti.style.width = `${Math.random() * 10 + 5}px`;
+        confetti.style.height = `${Math.random() * 10 + 5}px`;
+        confetti.style.animationDuration = `${Math.random() * 2 + 2}s`;
+        document.body.appendChild(confetti);
+        
+        setTimeout(() => {
+          confetti.remove();
+        }, 3000);
+      }
+    }
+    
+    // Render cards to HTML
     function renderCards(cards) {
       return cards.map(c => `<div class="card" style="background-image: url('${c.image}')"></div>`).join("");
     }
-
-function reveal() {
-  // Show Cubeco's hand
-  document.getElementById("botHand").innerHTML = renderCards(botCards);
-
-  // Calculate scores
-  const playerScore = score(playerCards.concat(communityCards));
-  const botScore = score(botCards.concat(communityCards));
-
-  let resultMessage = "";
-  if (playerScore > botScore) {
-    xp += 5;
-    usdt += 0.01;
-    resultMessage = `🎉 You won!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>+5 XP, +0.01 USDT`;
-    play("levelCompSound");
-  } else if (playerScore < botScore) {
-    resultMessage = `🤖 Cubeco won!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>Try again!`;
-    play("lose");
-  } else {
-    xp += 2;
-    resultMessage = `⚖️ It's a draw!<br>Your Score: ${playerScore}<br>Cubeco's Score: ${botScore}<br>+2 XP`;
-    play("moi");
-  }
-  // Update high XP if current is greater
-  let highXP = parseInt(localStorage.getItem("marsHighXP") || 0);
-  if (xp > highXP) {
-    highXP = xp;
-    localStorage.setItem("marsHighXP", highXP);
-  }
-  document.getElementById("highXP").textContent = highXP;
-
-  // Update local storage and UI
-  localStorage.setItem("playerXP", xp);
-  localStorage.setItem("walletBalance", usdt.toFixed(2));
-  document.getElementById("xpCount").textContent = xp;
-  document.getElementById("walletCount").textContent = usdt.toFixed(2);
-
-  // Show result modal
-  showResultDialog(resultMessage);
-}
-
+    
+    // Calculate hand score
     function score(cards) {
       return cards.reduce((total, c) => {
         let val = c.value;
@@ -521,199 +1453,130 @@ function reveal() {
         return total;
       }, 0);
     }
-
-function restart() {
-  playerCards = [];
-  botCards = [];
-  communityCards = [];
-  document.getElementById("playerHand").innerHTML = "";
-  document.getElementById("botHand").innerHTML = "";
-  document.getElementById("communityCards").innerHTML = "";
-  document.getElementById("status").textContent = "";
-
-  // Reset XP and wallet **visually** but not in storage
-  xp = 0;
-  usdt = 0;
-  document.getElementById("xpCount").textContent = "0";
-  document.getElementById("walletCount").textContent = "0.00";
-}
-
-  </script>
-  <script>
-  const slides = [
-    {
-      title: "📜 Welcome to Mars Poker",
-      text: `You’ve landed on a hostile world, but one tradition keeps everyone sharp: <strong>Mars Poker</strong>.<br><br>
-      It’s you vs Cubeco — and every card you play earns you power on Mars.`
-    },
-    {
-      title: "🎴 Understand the Cards",
-      text: `Each player is dealt <strong>2 cards</strong>.<br>The table shows <strong>3 shared cards</strong>.<br><br>
-      Card values:<br>
-      • Number cards = face value<br>
-      • Face cards (J, Q, K) = <strong>10</strong><br>
-      • Ace = <strong>11</strong>`
-    },
-    {
-      title: "🎮 How to Play",
-      text: `Step 1: Tap <strong>"Deal"</strong><br>
-      → You and Cubeco get 2 cards<br>
-      → 3 community cards appear<br><br>
-      Step 2: Tap <strong>"Reveal"</strong><br>
-      → See Cubeco's hand<br>
-      → Highest total score wins!`
-    },
-    {
-      title: "🏆 Win or Lose?",
-      text: `• <strong>You win</strong> → +5 XP & 0.01 USDT<br>
-      • <strong>Draw</strong> → +2 XP<br>
-      • <strong>You lose</strong> → No rewards<br><br>
-      Every win pushes your journey across Mars 🌌`
-    },
-    {
-      title: "🚀 Ready to Play?",
-      text: `Think fast. Tap smart.<br>
-      One round can change your mission.<br><br>
-      🪐 Good luck, Commander.`
+    
+    // Restart game
+    function restart() {
+      play("clickSound");
+      
+      playerCards = [];
+      botCards = [];
+      communityCards = [];
+      gameInProgress = false;
+      
+      document.getElementById("playerHand").innerHTML = "";
+      document.getElementById("botHand").innerHTML = "";
+      document.getElementById("communityCards").innerHTML = "";
+      document.getElementById("revealBtn").disabled = true;
+      document.getElementById("status").textContent = "Ready to play! Click DEAL to start.";
     }
-  ];
-
-  let currentSlide = 0;
-
-  function nextSlide() {
-    currentSlide++;
-    if (currentSlide < slides.length) {
-      document.getElementById("slide-title").innerHTML = slides[currentSlide].title;
-      document.getElementById("slide-text").innerHTML = slides[currentSlide].text;
-      if (currentSlide === slides.length - 1) {
-        document.querySelector(".slide-actions button").innerHTML = "🎮 Play Now";
-        document.querySelector(".slide-actions button").onclick = () => {
-          document.querySelector(".slide-actions button").onclick = () => {
-  showGame();
-};
-
-        };
+    
+    // Show result dialog
+    function showResultDialog(message) {
+      document.getElementById("resultMessage").innerHTML = message;
+      document.getElementById("resultModal").style.display = "flex";
+      play("arcadeAlertSound");
+    }
+    
+    // Close result dialog
+    function closeResult() {
+      play("clickSound");
+      document.getElementById("resultModal").style.display = "none";
+    }
+    
+    // Rules Slides
+    const slides = [
+      {
+        title: "📜 Welcome to Mars Poker",
+        text: `You've landed on a hostile world, but one tradition keeps everyone sharp: <strong>Mars Poker</strong>.<br><br>
+        It's you vs Cubeco — and every card you play earns you power on Mars.`
+      },
+      {
+        title: "🎴 Understand the Cards",
+        text: `Each player is dealt <strong>2 cards</strong>.<br>The table shows <strong>3 shared cards</strong>.<br><br>
+        Card values:<br>
+        • Number cards = face value<br>
+        • Face cards (J, Q, K) = <strong>10</strong><br>
+        • Ace = <strong>11</strong>`
+      },
+      {
+        title: "🎮 How to Play",
+        text: `Step 1: Tap <strong>"DEAL"</strong><br>
+        → You and Cubeco get 2 cards<br>
+        → 3 community cards appear<br><br>
+        Step 2: Tap <strong>"REVEAL"</strong><br>
+        → See Cubeco's hand<br>
+        → Highest total score wins!`
+      },
+      {
+        title: "🏆 Win or Lose?",
+        text: `• <strong>You win</strong> → +10 XP & 0.02 USDT<br>
+        • <strong>Draw</strong> → +5 XP<br>
+        • <strong>You lose</strong> → +2 XP<br><br>
+        Every win pushes your journey across Mars 🌌`
+      },
+      {
+        title: "🚀 Ready to Play?",
+        text: `Think fast. Tap smart.<br>
+        One round can change your mission.<br><br>
+        🪐 Good luck, Commander.`
+      }
+    ];
+    
+    let currentSlide = 0;
+    
+    function nextSlide() {
+      play("clickSound");
+      
+      currentSlide++;
+      if (currentSlide < slides.length) {
+        document.getElementById("slide-title").innerHTML = slides[currentSlide].title;
+        document.getElementById("slide-text").innerHTML = slides[currentSlide].text;
+        
+        if (currentSlide === slides.length - 1) {
+          document.querySelector(".slide-actions button").innerHTML = "🎮 PLAY NOW";
+        }
+      } else {
+        showGame();
       }
     }
-  }
-  function showGame() {
-  document.getElementById("rules-slide").style.display = "none";
-  document.getElementById("game").style.display = "flex";
-  document.getElementById("game").scrollIntoView({ behavior: "smooth" });
-}
-
-</script>
-<script>
-  function showResultDialog(message) {
-  document.getElementById("resultMessage").innerHTML = message;
-  document.getElementById("resultModal").style.display = "flex";
-}
-
-function closeResult() {
-  document.getElementById("resultModal").style.display = "none";
-}
-        // 🧠 Grab all audio elements
-    const allSounds = document.querySelectorAll("audio");
-    const volumeSlider = document.querySelector(".slider .level");
-
-    // 🎚 Set initial volume
-    volumeSlider.value = 1;
-    allSounds.forEach(sound => sound.volume = volumeSlider.value);
-
-    // 🎧 Live volume control
-    volumeSlider.addEventListener("input", function () {
-      const vol = parseFloat(this.value);
-      allSounds.forEach(sound => {
-        sound.volume = vol;
+    
+    function showGame() {
+      play("swooshSound");
+      document.getElementById("rules-slide").style.display = "none";
+      document.getElementById("game-container").style.display = "flex";
+      initUI();
+    }
+    
+    // Initialize when DOM is loaded
+    document.addEventListener("DOMContentLoaded", () => {
+      // Play intro sound
+      const afterstory = document.getElementById("afterstorySound");
+      const mainsound = document.getElementById("mainsound");
+      
+      if (afterstory) {
+        afterstory.currentTime = 0;
+        afterstory.loop = false;
+        afterstory.volume = parseFloat(localStorage.getItem("musicVolume")) || 1;
+        afterstory.play().catch(err => console.warn("Afterstory play error:", err));
+        
+        setTimeout(() => {
+          afterstory.pause();
+          afterstory.currentTime = 0;
+          
+          if (mainsound) {
+            mainsound.currentTime = 0;
+            mainsound.loop = true;
+            mainsound.volume = parseFloat(localStorage.getItem("musicVolume")) || 1;
+            mainsound.play().catch(err => console.warn("Main sound play error:", err));
+          }
+        }, 7000);
+      }
+      
+      // Click sound for all buttons
+      document.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => play("clickSound"));
       });
     });
-</script>
-<script>
-  const sounds = {
-    click: document.getElementById('clickSound'),
-    win: document.getElementById('winSound'),
-    lose: document.getElementById('loseSound'),
-  };
-
-  // Helper to play sound safely
-  function playSound(soundName) {
-    const sound = sounds[soundName];
-    if (sound) {
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
-    }
-  }
-
-document.addEventListener('click', (event) => {
-  const soundControl = document.getElementById('sound-control');
-  const clickSound = document.getElementById('clickSound');
-
-  if (soundControl && soundControl.contains(event.target)) {
-    // Don't play sound if clicking inside the sound-control
-    return;
-  }
-
-  if (clickSound) {
-    clickSound.currentTime = 0;
-    clickSound.play().catch(() => {});
-  }
-});
-
-
-</script>
-<script>
-  window.addEventListener("DOMContentLoaded", () => {
-    const allSounds = document.querySelectorAll("audio");
-    const volumeSlider = document.querySelector(".slider .level");
-
-    // Set initial volume from localStorage or default to 1
-    const initialVolume = parseFloat(localStorage.getItem("marsVolume")) || 1;
-    if (volumeSlider) volumeSlider.value = initialVolume;
-    allSounds.forEach(sound => sound.volume = initialVolume);
-
-    // Volume change handler
-    if (volumeSlider) {
-      volumeSlider.addEventListener("input", function () {
-        const vol = parseFloat(this.value);
-        allSounds.forEach(sound => sound.volume = vol);
-        localStorage.setItem("marsVolume", vol);
-      });
-    }
-const afterstory = document.getElementById("afterstorySound");
-const mainsound= document.getElementById("mainsound");
-
-if (afterstory) {
-  afterstory.currentTime = 0;
-  afterstory.loop = false; // play once
-  afterstory.volume = initialVolume;
-
-  afterstory.play().catch(err => console.warn("Afterstory play error:", err));
-
-  setTimeout(() => {
-    afterstory.pause();
-    afterstory.currentTime = 0;mainsound
-
-    if (mainsound) {
-      mainsound.currentTime = 0;
-      mainsound.loop = true;
-      mainsound.volume = initialVolume;
-      mainsound.play().catch(err => console.warn("gameboy play error:", err));
-    }
-  }, 7000); // Stop after 4 seconds
-}
-
-  });
-</script>
-<div id="sound-control" style="position: fixed; bottom: 20px; left: 25px; z-index: 9999; width: 25px;">
-  <label class="slider">
-    <input type="range" class="level" min="0" max="1" step="0.01" value="1" />
-    <svg class="volume" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <g>
-        <path d="M18.36 19.36a1 1 0 0 1-.705-1.71C19.167 16.148 20 14.142 20 12s-.833-4.148-2.345-5.65a1 1 0 1 1 1.41-1.419C20.958 6.812 22 9.322 22 12s-1.042 5.188-2.935 7.069a.997.997 0 0 1-.705.291z" fill="currentColor"></path>
-        <path d="M15.53 16.53a.999.999 0 0 1-.703-1.711C15.572 14.082 16 13.054 16 12s-.428-2.082-1.173-2.819a1 1 0 1 1 1.406-1.422A6 6 0 0 1 18 12a6 6 0 0 1-1.767 4.241.996.996 0 0 1-.703.289zM12 22a1 1 0 0 1-.707-.293L6.586 17H4c-1.103 0-2-.897-2-2V9c0-1.103.897-2 2-2h2.586l4.707-4.707A.998.998 0 0 1 13 3v18a1 1 0 0 1-1 1z" fill="currentColor"></path>
-      </g>
-    </svg>
-  </label>
-</div>
+  </script>
 </body>
 </html>

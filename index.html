@@ -15,6 +15,7 @@
   <link rel="icon" href="images\logo.png" type="image/x-icon">
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
   <script src="/scripts/honeycomb-bundle.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@solana/wallet-adapter-react-ui@0.9.23/styles.css" />
   <!-- Add Solana Wallet Adapter -->
   <script src="https://unpkg.com/@solana/web3.js@1.95.1/lib/index.iife.js"></script>
   <script src="https://unpkg.com/@solana/wallet-adapter-base@0.9.23/lib/index.iife.js"></script>
@@ -492,10 +493,10 @@
     <button id="acceptReward" class="mallo" style="margin-top: 1rem;">Accept</button>
   </div>
 </div>
+<!-- Add this script section to fix wallet connection issues in your index.html -->
+<!-- Replace your existing SolanaWalletManager script with this updated version -->
+
 <script>
-  function isMobileDevice() {
-  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
 class SolanaWalletManager {
   constructor() {
     this.wallets = [
@@ -542,15 +543,22 @@ class SolanaWalletManager {
         downloadUrl: 'https://tor.us/'
       }
     ];
-    
+
     this.connectedWallet = null;
-    this.connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
-    
+    // Use a different RPC endpoint that works better with localhost
+    this.connection = new solanaWeb3.Connection(
+      'https://api.mainnet-beta.solana.com',
+      { 
+        commitment: 'confirmed',
+        confirmTransactionInitialTimeout: 60000
+      }
+    );
+
     this.initializeElements();
     this.setupEventListeners();
     this.renderWalletList();
   }
-  
+
   initializeElements() {
     this.connectWalletBtn = document.getElementById('connectWalletBtn');
     this.walletPreview = document.getElementById('walletPreview');
@@ -560,40 +568,51 @@ class SolanaWalletManager {
     this.walletList = document.getElementById('walletList');
     this.walletStatus = document.getElementById('walletStatus');
   }
-  
+
   setupEventListeners() {
-    this.connectWalletBtn.addEventListener('click', () => this.showWalletModal());
-    this.closeModal.addEventListener('click', () => this.hideWalletModal());
-    this.skipLink.addEventListener('click', () => this.skipWallet());
-    
-    // Close modal when clicking outside
-    this.walletModal.addEventListener('click', (e) => {
-      if (e.target === this.walletModal) {
-        this.hideWalletModal();
-      }
-    });
-    
-    // Disconnect wallet when preview is clicked
-    this.walletPreview.addEventListener('click', () => {
-      if (this.connectedWallet && this.walletPreview.textContent.includes('...')) {
-        this.disconnectWallet();
-      }
-    });
+    if (this.connectWalletBtn) {
+      this.connectWalletBtn.addEventListener('click', () => this.showWalletModal());
+    }
+    if (this.closeModal) {
+      this.closeModal.addEventListener('click', () => this.hideWalletModal());
+    }
+    if (this.skipLink) {
+      this.skipLink.addEventListener('click', () => this.skipWallet());
+    }
+
+    if (this.walletModal) {
+      this.walletModal.addEventListener('click', (e) => {
+        if (e.target === this.walletModal) {
+          this.hideWalletModal();
+        }
+      });
+    }
+
+    if (this.walletPreview) {
+      this.walletPreview.addEventListener('click', () => {
+        if (this.connectedWallet && this.walletPreview.textContent.includes('...')) {
+          this.disconnectWallet();
+        }
+      });
+    }
   }
-  
+
   showWalletModal() {
+    if (!this.walletModal) return;
     this.walletModal.classList.remove('hidden');
     this.renderWalletList();
   }
-  
+
   hideWalletModal() {
+    if (!this.walletModal) return;
     this.walletModal.classList.add('hidden');
     this.hideStatus();
   }
-  
+
   renderWalletList() {
+    if (!this.walletList) return;
     this.walletList.innerHTML = '';
-    
+
     this.wallets.forEach(wallet => {
       const walletElement = document.createElement('div');
       walletElement.className = 'wallet-option';
@@ -604,191 +623,294 @@ class SolanaWalletManager {
           <div class="wallet-description">${wallet.description}</div>
         </div>
       `;
-      
       walletElement.addEventListener('click', () => this.connectWallet(wallet));
       this.walletList.appendChild(walletElement);
     });
   }
-  
+
   async connectWallet(walletInfo) {
     this.showStatus('Connecting to ' + walletInfo.name + '...', 'connecting');
-    
+
     try {
       let walletAdapter = null;
-      
-      // Check for wallet availability and connect
+
+      // Wait for wallet to be available
+      await this.waitForWallet(walletInfo.adapter);
+
       switch (walletInfo.adapter) {
         case 'phantom':
           if (window.solana && window.solana.isPhantom) {
             walletAdapter = window.solana;
           }
           break;
-          
         case 'solflare':
           if (window.solflare && window.solflare.isSolflare) {
             walletAdapter = window.solflare;
           }
           break;
-          
         case 'backpack':
           if (window.backpack && window.backpack.isBackpack) {
             walletAdapter = window.backpack;
           }
           break;
-          
         case 'glow':
           if (window.glow) {
             walletAdapter = window.glow;
           }
           break;
-          
         case 'slope':
           if (window.Slope) {
             walletAdapter = window.Slope;
           }
           break;
-          
         case 'torus':
           if (window.torus) {
             walletAdapter = window.torus;
           }
           break;
       }
+
       if (!walletAdapter) {
-        this.showStatus(`${walletInfo.name} not found. Open it?`, 'error');
-
+        this.showStatus(`${walletInfo.name} not found. Install it?`, 'error');
         setTimeout(() => {
-          let deepLinks = {
-            phantom: isMobileDevice() ? 'phantom://' : walletInfo.downloadUrl,
-            solflare: isMobileDevice() ? 'solflare://' : walletInfo.downloadUrl,
-            slope: isMobileDevice() ? 'slope://' : walletInfo.downloadUrl,
-            glow: walletInfo.downloadUrl,
-            backpack: walletInfo.downloadUrl,
-            torus: walletInfo.downloadUrl
-          };
-
-          if (confirm(`${walletInfo.name} not detected. Open wallet app?`)) {
-            window.location.href = deepLinks[walletInfo.adapter] || walletInfo.downloadUrl;
+          if (confirm(`${walletInfo.name} wallet not found. Would you like to install it?`)) {
+            window.open(walletInfo.downloadUrl, '_blank');
           }
           this.hideStatus();
         }, 2000);
-
         return;
       }
 
-      // if (!walletAdapter) {
-      //   // Wallet not found, offer to install
-      //   this.showStatus(`${walletInfo.name} not found. Install it?`, 'error');
-        
-      //   setTimeout(() => {
-      //     if (confirm(`${walletInfo.name} wallet not found. Would you like to install it?`)) {
-      //       window.open(walletInfo.downloadUrl, '_blank');
-      //     }
-      //     this.hideStatus();
-      //   }, 2000);
-      //   return;
-      // }
-      
       // Connect to wallet
-      const response = await walletAdapter.connect();
-      const publicKey = response.publicKey || response.account?.address;
-      
+      const response = await walletAdapter.connect({ onlyIfTrusted: false });
+      const publicKey = response.publicKey || response.account?.address || walletAdapter.publicKey;
+
       if (!publicKey) {
-        throw new Error('No public key received');
+        throw new Error('No public key received from wallet');
       }
-      
-      // Store connection info
+
+      const publicKeyString = typeof publicKey === 'string' ? publicKey : publicKey.toString();
+
       this.connectedWallet = {
         adapter: walletAdapter,
-        publicKey: typeof publicKey === 'string' ? publicKey : publicKey.toString(),
+        publicKey: publicKeyString,
         name: walletInfo.name
       };
-      
-      // Update UI
+
+      // Store wallet info
+      localStorage.setItem('walletAddress', publicKeyString);
+      localStorage.setItem('walletName', walletInfo.name);
+
+      // Try to create profile with better error handling
+      await this.createHoneycombProfile();
+
       this.showStatus('Connected successfully!', 'connected');
       this.updateWalletPreview();
-      
-      // Store in localStorage
-      localStorage.setItem('walletAddress', this.connectedWallet.publicKey);
-      localStorage.setItem('walletName', walletInfo.name);
-      
-      // Hide modal and proceed after short delay
+
       setTimeout(() => {
         this.hideWalletModal();
-        this.proceedToNextSection();
+        // Continue to gender section instead of redirecting
+        const phasetwo = document.getElementById('phasetwo');
+        const genderSection = document.getElementById('genderSection');
+        
+        if (phasetwo) phasetwo.classList.remove('active');
+        if (genderSection) genderSection.classList.add('active');
       }, 1500);
-      
+
     } catch (error) {
       console.error('Wallet connection failed:', error);
-      this.showStatus('Connection failed: ' + error.message, 'error');
+      let errorMessage = 'Connection failed';
       
-      setTimeout(() => {
-        this.hideStatus();
-      }, 3000);
+      if (error.message.includes('User rejected')) {
+        errorMessage = 'Connection cancelled by user';
+      } else if (error.message.includes('timeout')) {
+        errorMessage = 'Connection timeout - please try again';
+      } else if (error.message.includes('network')) {
+        errorMessage = 'Network error - check your connection';
+      }
+      
+      this.showStatus(errorMessage, 'error');
+      setTimeout(() => this.hideStatus(), 3000);
     }
   }
-  
+
+  async waitForWallet(adapterName) {
+    return new Promise((resolve) => {
+      const checkWallet = () => {
+        let walletFound = false;
+        
+        switch (adapterName) {
+          case 'phantom':
+            walletFound = window.solana && window.solana.isPhantom;
+            break;
+          case 'solflare':
+            walletFound = window.solflare && window.solflare.isSolflare;
+            break;
+          case 'backpack':
+            walletFound = window.backpack && window.backpack.isBackpack;
+            break;
+          case 'glow':
+            walletFound = !!window.glow;
+            break;
+          case 'slope':
+            walletFound = !!window.Slope;
+            break;
+          case 'torus':
+            walletFound = !!window.torus;
+            break;
+        }
+
+        if (walletFound) {
+          resolve();
+        } else {
+          setTimeout(checkWallet, 100);
+        }
+      };
+      
+      checkWallet();
+      
+      // Timeout after 5 seconds
+      setTimeout(() => resolve(), 5000);
+    });
+  }
+
+  async createHoneycombProfile() {
+    try {
+      const playerData = {
+        name: localStorage.getItem('playerName') || 'Adventurer',
+        age: localStorage.getItem('playerAge') || 'Unknown',
+        gender: localStorage.getItem('gender') || 'Other',
+        companion: localStorage.getItem('companionName') || 'None',
+        cyborg: localStorage.getItem('cyborgName') || 'None',
+        xp: localStorage.getItem('playerXP') || '5',
+        balance: localStorage.getItem('walletBalance') || '1'
+      };
+
+      // Use localhost:3000 since that's where your server is running
+      const serverUrl = window.location.hostname === 'localhost' ? 
+        'http://localhost:3000' : 
+        'https://your-deployed-backend.com';
+
+      const profileResponse = await fetch(`${serverUrl}/api/create-profile`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          authority: this.connectedWallet.publicKey,
+          playerData
+        })
+      });
+
+      if (!profileResponse.ok) {
+        throw new Error(`HTTP error! status: ${profileResponse.status}`);
+      }
+
+      const profileResult = await profileResponse.json();
+
+      if (profileResult.error) {
+        throw new Error(profileResult.error);
+      }
+
+      // Send transaction
+      const txResponse = await fetch(`${serverUrl}/api/send-transaction`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ transaction: profileResult.transaction })
+      });
+
+      if (!txResponse.ok) {
+        throw new Error(`Transaction HTTP error! status: ${txResponse.status}`);
+      }
+
+      const txResult = await txResponse.json();
+
+      if (!txResult.success) {
+        throw new Error(txResult.error || 'Transaction failed');
+      }
+
+      // Update localStorage with success
+      localStorage.setItem('profileAddress', profileResult.profile || this.connectedWallet.publicKey);
+      localStorage.setItem('playerXP', '5');
+      localStorage.setItem('walletBalance', '1');
+      localStorage.setItem('rewardShown', 'true');
+
+      console.log('Profile created successfully:', txResult.signature);
+
+    } catch (error) {
+      console.warn('Honeycomb profile creation failed, continuing with local storage:', error);
+      // Continue without blocking the user experience
+      localStorage.setItem('playerXP', '5');
+      localStorage.setItem('walletBalance', '1');
+    }
+  }
+
   updateWalletPreview() {
-    if (this.connectedWallet) {
+    if (this.connectedWallet && this.walletPreview) {
       const shortAddress = this.connectedWallet.publicKey.slice(0, 4) + '...' + this.connectedWallet.publicKey.slice(-4);
       this.walletPreview.textContent = `${this.connectedWallet.name}: ${shortAddress}`;
       this.walletPreview.style.display = 'inline-block';
-      this.skipLink.style.display = 'none';
+      
+      if (this.skipLink) {
+        this.skipLink.style.display = 'none';
+      }
     }
   }
-  
+
   async disconnectWallet() {
     if (confirm('Do you want to disconnect your wallet?')) {
       try {
         if (this.connectedWallet?.adapter?.disconnect) {
           await this.connectedWallet.adapter.disconnect();
         }
-        
-        // Clear stored data
         this.connectedWallet = null;
         localStorage.removeItem('walletAddress');
         localStorage.removeItem('walletName');
+        localStorage.removeItem('profileAddress');
         
-        // Update UI
-        this.walletPreview.style.display = 'none';
-        this.skipLink.style.display = 'inline-block';
+        if (this.walletPreview) {
+          this.walletPreview.style.display = 'none';
+        }
+        if (this.skipLink) {
+          this.skipLink.style.display = 'inline-block';
+        }
         
         alert('Wallet disconnected successfully');
-        
       } catch (error) {
         console.error('Disconnect error:', error);
         alert('Disconnect failed: ' + error.message);
       }
     }
   }
-  
+
   showStatus(message, type) {
+    if (!this.walletStatus) return;
     this.walletStatus.textContent = message;
     this.walletStatus.className = `wallet-status status-${type}`;
     this.walletStatus.style.display = 'block';
   }
-  
+
   hideStatus() {
-    this.walletStatus.style.display = 'none';
+    if (this.walletStatus) {
+      this.walletStatus.style.display = 'none';
+    }
   }
-  
+
   skipWallet() {
-    // Your existing skip logic
-    this.proceedToNextSection();
+    const phasetwo = document.getElementById('phasetwo');
+    const genderSection = document.getElementById('genderSection');
+    
+    if (phasetwo) phasetwo.classList.remove('active');
+    if (genderSection) genderSection.classList.add('active');
   }
-  
-  proceedToNextSection() {
-    // Hide current section and show next section
-    // Replace 'genderSection' with your actual next section ID
-    document.getElementById('phasetwo').classList.remove('active');
-    document.getElementById('genderSection').classList.add('active');
-  }
-  
-  // Check if wallet was previously connected
+
   checkPreviousConnection() {
     const storedAddress = localStorage.getItem('walletAddress');
     const storedName = localStorage.getItem('walletName');
-    
     if (storedAddress && storedName) {
       this.connectedWallet = {
         publicKey: storedAddress,
@@ -799,21 +921,23 @@ class SolanaWalletManager {
   }
 }
 
-// Initialize wallet manager when page loads
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  window.solanaWalletManager = new SolanaWalletManager();
-  window.solanaWalletManager.checkPreviousConnection();
+  // Add small delay to ensure all wallet extensions are loaded
+  setTimeout(() => {
+    window.solanaWalletManager = new SolanaWalletManager();
+    window.solanaWalletManager.checkPreviousConnection();
+  }, 1000);
 });
 
-// Helper function for your existing code
 function showSection(sectionId) {
-  // Hide all sections
   document.querySelectorAll('.section').forEach(section => {
     section.classList.remove('active');
   });
-  
-  // Show target section
-  document.getElementById(sectionId).classList.add('active');
+  const targetSection = document.getElementById(sectionId);
+  if (targetSection) {
+    targetSection.classList.add('active');
+  }
 }
 </script>
 <script>

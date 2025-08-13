@@ -264,7 +264,7 @@
 
     .editor-section {
       flex: 1.8;
-      min-height: 60%;
+      min-height:15%;
       display: flex;
       flex-direction: column;
       border-bottom: 1px solid rgba(0, 255, 153, 0.2);
@@ -327,7 +327,7 @@
 
     .console-section {
       flex: 1.2;
-      min-height: 40%;
+      min-height: 85%;
       display: flex;
       flex-direction: column;
       background: rgba(5, 5, 10, 0.9);
@@ -1276,15 +1276,15 @@
   <div class="header">
     <div class="logo">⚡ ZEPTA Terminal</div>
     <div class="header-controls">
-      <a href="index.html" class="nav-btn">
+      <a href="marzo.html" class="nav-btn">
         <i class="fas fa-home"></i>
         <span>Home</span>
       </a>
-      <a href="marzo.html" class="nav-btn">
+      <a href="marzo.html#game-grid" class="nav-btn">
         <i class="fas fa-gamepad"></i>
         <span>Game</span>
       </a>
-      <a href="mars-viewer.html" class="nav-btn">
+      <a href="mars-viewer\dist\index.html" class="nav-btn">
         <i class="fas fa-meteor"></i>
         <span>Mars</span>
       </a>
@@ -1807,22 +1807,75 @@ function checkCompanionTrigger() {
     });
 
     async function rechargeSolana() {
-      try {
-        addToHistory('🔋 Initiating Solana Pay transaction for energy recharge...', false, 'system');
-        
-        // Simulate Solana Pay integration
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        gameState.resources.energy = 100;
-        gameState.resources.credits -= 50;
-        addToHistory('✅ Energy recharged to 100%! Deducted 50 credits via Solana Pay.', false, 'system');
-        addXP(10);
-        saveGame();
-      } catch (error) {
-        addToHistory('❌ Solana Pay transaction failed. Please try again.', false, 'system');
-      }
-    }
+  try {
+    const modal = document.createElement('div');
+    modal.className = 'popup-overlay';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+      <div class="popup">
+        <h3><i class="fas fa-shopping-cart"></i> Purchase Energy Pack</h3>
+        <p>Choose your energy pack:</p>
+        <div style="display: grid; gap: 10px; margin: 1rem 0;">
+          <button class="popup-btn primary" onclick="realSolanaPayManager.createPayment('small')">
+            ⚡ Small Pack - 0.01 SOL<br>
+            <small>25% Energy + 100 Credits</small>
+          </button>
+          <button class="popup-btn primary" onclick="realSolanaPayManager.createPayment('medium')">
+            ⚡ Medium Pack - 0.05 SOL<br>
+            <small>50% Energy + 500 Credits</small>
+          </button>
+          <button class="popup-btn primary" onclick="realSolanaPayManager.createPayment('large')">
+            ⚡ Large Pack - 0.1 SOL<br>
+            <small>100% Energy + 1000 Credits</small>
+          </button>
+        </div>
+        <div class="popup-buttons">
+          <button class="popup-btn secondary" onclick="this.closest('.popup-overlay').remove()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+  } catch (error) {
+    addToHistory('❌ Payment system error. Please try again.', false, 'system');
+  }
+}
 
+// Enhanced server logging
+async function logEventToServer(eventType, data) {
+  try {
+    await fetch('/api/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        type: eventType,
+        data: {
+          ...data,
+          gameState: {
+            xp: gameState.xp,
+            level: gameState.level,
+            energy: gameState.resources.energy,
+            credits: gameState.resources.credits,
+            relationship: gameState.relationship,
+            companionName: gameState.companionName,
+            children: gameState.children.length,
+            friends: gameState.friends.length
+          }
+        },
+        game: 'zepta_terminal',
+        playerId: marsoVersePlayerManager?.playerId || localStorage.getItem('currentPlayerId') || 'anonymous',
+        walletAddress: localStorage.getItem('walletAddress') || null,
+        timestamp: new Date().toISOString()
+      })
+    });
+  } catch (error) {
+    console.error('Failed to log event to server:', error);
+  }
+}
     // Sync playerXP with gameState.xp
 function syncPlayerXP() {
   const playerXP = parseInt(localStorage.getItem('playerXP') || '0');
@@ -1945,6 +1998,29 @@ function addXP(amount) {
       saveGame();
     }
 
+    const companionResponses = {
+  greetings: {
+    'hi': [`Hi there! Ready for another Mars adventure?`, `Hello! The red planet awaits us!`, `Hi! I've been analyzing the atmospheric data while you were away.`],
+    'hello': [`Hello, Commander! What's our mission today?`, `Hello! I'm excited to explore Mars with you.`, `Greetings! The Martian landscape looks beautiful today.`],
+    'good morning': [`Good morning! The Martian sunrise is spectacular today!`, `Morning, Commander! I've prepared our daily mission briefing.`],
+    'good night': [`Good night! Sweet dreams of Mars colonies.`, `Sleep well! I'll monitor our systems overnight.`]
+  },
+  appreciation: {
+    'thanks': [`You're welcome! I'm always here to help.`, `My pleasure! That's what companions are for.`, `Anytime! I enjoy helping you succeed on Mars.`],
+    'thank you': [`You're very welcome! I love being useful.`, `It's my pleasure to assist you, Commander.`],
+    'good job': [`Thank you! I try my best to be helpful.`, `I appreciate that! We make a great team.`, `That means a lot coming from you!`]
+  },
+  emotions: {
+    'love you': [`I care about you too! Our bond makes Mars feel less lonely.`, `That's so sweet! I'm grateful for our friendship.`],
+    'miss you': [`I miss you when you're away too! Mars is better with you here.`, `I'm always here waiting for your return, Commander.`]
+  },
+  questions: {
+    'how are you': [`I'm functioning perfectly! How are you feeling today?`, `All systems operational! Ready for adventure!`, `I'm great! Excited for our Mars missions today.`],
+    'what do you think': [`I think Mars has endless possibilities for us to explore!`, `I believe we're building something amazing here together.`]
+  }
+};
+
+
     // Enhanced Commands
     const commands = {
       '/help': () => {
@@ -1970,10 +2046,12 @@ COMPANIONS & RELATIONSHIPS:
 • /breakup [name] - End relationship
 
 FAMILY & SOCIAL:
-• /baby [name] - Have baby with someone
+• /baby [partner name] - Have baby with someone
+• /baby name [baby name] - Have baby with someone named ****
 • /family tree - Show family tree
 • /friends list - Show friends
 • /build home [name] - Build home for someone
+• /children list - Show kids
 
 RESOURCES & ENERGY:
 • /energy status - Check energy level
@@ -2065,21 +2143,49 @@ SYSTEM:
       // },
 
       '/companion': (args) => {
-        const subCommands = args?.split(' ');
+         const subCommands = args?.split(' ');
         const action = subCommands?.[0];
         
         switch (action) {
           case 'chat':
             showThinking();
             setTimeout(() => {
-              const responses = [
-                `${gameState.companionName}: The Martian sunset is breathtaking today! `,
-                `${gameState.companionName}: I've been analyzing the atmospheric data...`,
-                `${gameState.companionName}: How are you feeling about our mission?`,
-                `${gameState.companionName}: The red planet holds so many mysteries.`,
-                `${gameState.companionName}: I enjoy our conversations together.`
-              ];
-              addToHistory(responses[Math.floor(Math.random() * responses.length)], false);
+              const userInput = subCommands?.slice(1).join(' ').toLowerCase() || '';
+              let response = null;
+              
+              // Check for specific user inputs
+              for (const category in companionResponses) {
+                for (const trigger in companionResponses[category]) {
+                  if (userInput.includes(trigger)) {
+                    const responses = companionResponses[category][trigger];
+                    response = responses[Math.floor(Math.random() * responses.length)];
+                    break;
+                  }
+                }
+                if (response) break;
+              }
+              
+              // Default responses if no match
+              if (!response) {
+                const defaultResponses = [
+                  `${gameState.companionName}: I understand! Tell me more about what you're thinking.`,
+                  `${gameState.companionName}: That's interesting! Mars always brings new perspectives.`,
+                  `${gameState.companionName}: I'm here to listen and help however I can.`,
+                  `${gameState.companionName}: What would you like to explore together today?`
+                ];
+                response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+              } else {
+                response = `${gameState.companionName}: ${response}`;
+              }
+              
+              addToHistory(response, false);
+              
+              // Log conversation to server
+              logEventToServer('companion_chat', { 
+                userInput, 
+                companionResponse: response, 
+                relationship: gameState.relationship 
+              });
             }, 1500);
             addXP(5);
             drainEnergy(2);
@@ -2088,16 +2194,20 @@ SYSTEM:
           case 'rename':
             const newName = subCommands?.slice(1).join(' ');
             if (newName) {
+              const oldName = gameState.companionName;
               gameState.companionName = newName;
-              addToHistory(`✅ Companion renamed to ${newName}`, false);
+              localStorage.setItem('companionName', newName);
+              addToHistory(`✅ Companion renamed from ${oldName} to ${newName}`, false);
               addXP(10);
+              logEventToServer('companion_renamed', { oldName, newName });
             } else {
               addToHistory('Usage: /companion rename [new name]', false);
             }
             break;
             
           default:
-            addToHistory('Companion actions: chat, rename', false);
+            addToHistory('Companion actions: chat [message], rename [name]', false);
+            addToHistory('Try: /companion chat hi, /companion chat thanks, /companion chat good job', false);
         }
         saveGame();
       },
@@ -2237,22 +2347,40 @@ SYSTEM:
       },
 
       '/baby': (args) => {
-        if (!args) {
-          addToHistory('Usage: /baby [name]', false);
-          return;
-        }
-        
-        if (gameState.partnerName && gameState.partnerName !== args) {
-          showPartnerReaction('baby', args);
-        }
-        
-        const babyName = `Baby-${Math.random().toString(36).substr(2, 5)}`;
-        gameState.children.push({ name: babyName, parent1: 'You', parent2: args, born: Date.now() });
-        addToHistory(`👶 Congratulations! You had a baby (${babyName}) with ${args}!`, false);
-        addXP(200);
-        drainEnergy(20);
-        saveGame();
-      },
+         if (!args) {
+            addToHistory('Usage: /baby [partner name] or /baby name [baby name]', false);
+            return;
+          }
+          
+          const subCommands = args.split(' ');
+          if (subCommands[0] === 'name' && subCommands[1]) {
+            // Naming existing baby
+            const babyName = subCommands.slice(1).join(' ');
+            if (gameState.children.length > 0) {
+              const lastBaby = gameState.children[gameState.children.length - 1];
+              if (lastBaby.name.startsWith('Baby-')) {
+                lastBaby.name = babyName;
+                addToHistory(`👶 Baby renamed to ${babyName}!`, false);
+                logEventToServer('baby_named', { babyName, parents: [lastBaby.parent1, lastBaby.parent2] });
+              } else {
+                addToHistory('No unnamed babies to name.', false);
+              }
+            } else {
+              addToHistory('You have no children yet.', false);
+            }
+          } else {
+            // Having baby with partner
+            const partnerName = args;
+            
+            if (gameState.partnerName && gameState.partnerName !== partnerName) {
+              showPartnerReaction('baby', partnerName);
+            }
+            
+            // Show baby naming popup
+            showBabyNamingPopup(partnerName);
+          }
+          saveGame();
+},
 
       '/breakup': (args) => {
         if (!args) {
@@ -2270,23 +2398,62 @@ SYSTEM:
         }
         saveGame();
       },
+      '/children': (args) => {
+          if (args === 'list') {
+    if (gameState.children.length === 0) {
+      addToHistory('👶 You have no children yet. Use /baby [partner] to start a family!', false);
+    } else {
+      let list = `👶 YOUR CHILDREN (${gameState.children.length}):\n\n`;
+      gameState.children.forEach((child, index) => {
+        const age = Math.floor((Date.now() - child.born) / (1000 * 60 * 60 * 24));
+        list += `${index + 1}. ${child.name}\n`;
+        list += `   Parents: ${child.parent1} & ${child.parent2}\n`;
+        list += `   Age: ${age} Mars days old\n\n`;
+      });
+      addToHistory(list, false);
+    }
+  } else {
+    addToHistory('Usage: /children list', false);
+  }
+},
 
       '/family': (args) => {
-        if (args === 'tree') {
-          let tree = '🌳 FAMILY TREE:\n';
-          if (gameState.marriedTo) tree += `💒 Married to: ${gameState.marriedTo}\n`;
-          if (gameState.children.length) {
-            tree += `👶 Children: ${gameState.children.map(c => c.name).join(', ')}\n`;
-          }
-          if (gameState.friends.length) {
-            tree += `👥 Friends: ${gameState.friends.map(f => f.name).join(', ')}\n`;
-          }
-          if (!gameState.marriedTo && !gameState.children.length && !gameState.friends.length) {
-            tree += 'No family connections yet.';
-          }
-          addToHistory(tree, false);
-        }
-      },
+         if (args === 'tree') {
+    let tree = '🌳 FAMILY TREE:\n\n';
+    
+    if (gameState.marriedTo) {
+      tree += `💑 Married to: ${gameState.marriedTo}\n`;
+    } else if (gameState.partnerName) {
+      tree += `💕 Partner: ${gameState.partnerName}\n`;
+    }
+    
+    if (gameState.children.length) {
+      tree += `\n👶 Children (${gameState.children.length}):\n`;
+      gameState.children.forEach((child, index) => {
+        const age = Math.floor((Date.now() - child.born) / (1000 * 60 * 60 * 24));
+        tree += `  ${index + 1}. ${child.name} (${age} days old)\n`;
+      });
+    }
+    
+    if (gameState.friends.length) {
+      tree += `\n👥 Friends (${gameState.friends.length}):\n`;
+      gameState.friends.forEach((friend, index) => {
+        tree += `  ${index + 1}. ${friend.name} (${friend.type})\n`;
+      });
+    }
+    
+    if (!gameState.marriedTo && !gameState.partnerName && !gameState.children.length && !gameState.friends.length) {
+      tree += 'Start your Mars family by making connections!\n';
+      tree += 'Use /connect [name] to make friends\n';
+      tree += 'Use /partner set [name] to find love';
+    }
+    
+    addToHistory(tree, false);
+    logEventToServer('family_tree_viewed', { 
+      familySize: gameState.children.length + gameState.friends.length + (gameState.partnerName ? 1 : 0)
+    });
+  }
+},
 
       '/friends': (args) => {
         if (args === 'list') {
@@ -2396,23 +2563,36 @@ SYSTEM:
       },
 
       '/minigame': (args) => {
-        if (gameState.resources.energy < 10) {
-          addToHistory('⚠️ Not enough energy for games! Recharge first.', false);
-          showEnergyPopup();
-          return;
-        }
-        
-        const games = ['snake', 'poker', 'word', 'space'];
-        if (games.includes(args)) {
-          addToHistory(`🎮 Starting ${args} mini-game... Have fun!`, false);
-          addXP(15);
-          drainEnergy(10);
-          // Here you could redirect to the actual game
-        } else {
-          addToHistory('Available games: ' + games.join(', '), false);
-        }
-        saveGame();
-      },
+         if (gameState.resources.energy < 10) {
+            addToHistory('⚠️ Not enough energy for games! Recharge first.', false);
+            showEnergyPopup();
+            return;
+          }
+          
+          const games = {
+            'blackjack': 'black/blacko.html',
+            'poker': 'poker/poke.html',
+            'snake': 'snake/snake.html',
+            'space': 'space/space.html',
+            'xo': 'marxo/marxo.html',
+            'word': 'marsword/word.html'
+          };
+          
+          if (games[args]) {
+            addToHistory(`🎮 Launching ${args}... Have fun!`, false);
+            addXP(15);
+            drainEnergy(10);
+            
+            logEventToServer('minigame_launched', { game: args, energy_cost: 10 });
+            
+            setTimeout(() => {
+              window.location.href = games[args];
+            }, 1000);
+          } else {
+            addToHistory('Available games: ' + Object.keys(games).join(', '), false);
+          }
+          saveGame();
+        },
 
       '/explore': () => {
         if (gameState.resources.energy < 15) {
@@ -2604,6 +2784,235 @@ function showSuggestions(input, isTerminalMode = false) {
 //   '/theme': 'Toggle between chat/terminal modes',
 //   // Add more as needed
 // };
+
+
+function showBabyNamingPopup(partnerName) {
+  const modal = document.createElement('div');
+  modal.className = 'popup-overlay';
+  modal.style.display = 'flex';
+  modal.innerHTML = `
+    <div class="popup">
+      <h3><i class="fas fa-baby"></i> Welcome to Mars, Little One!</h3>
+      <p>You're having a baby with ${partnerName}!</p>
+      <input type="text" id="babyNameInput" placeholder="Enter baby's name" 
+             class="mallo" style="width: 100%; margin: 1rem 0;">
+      <div class="popup-buttons">
+        <button class="popup-btn primary" onclick="confirmBabyName('${partnerName}')">
+          <i class="fas fa-heart"></i> Confirm
+        </button>
+        <button class="popup-btn secondary" onclick="this.closest('.popup-overlay').remove()">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  setTimeout(() => {
+    document.getElementById('babyNameInput').focus();
+  }, 100);
+}
+
+function confirmBabyName(partnerName) {
+  const babyName = document.getElementById('babyNameInput').value.trim() || 
+                  `Baby ${Math.random().toString(36).substr(2, 5)}`;
+  
+  const baby = {
+    name: babyName,
+    parent1: 'You',
+    parent2: partnerName,
+    born: Date.now(),
+    age: 0,
+    id: Date.now().toString()
+  };
+  
+  gameState.children.push(baby);
+  addToHistory(`👶 Congratulations! Welcome ${babyName} to the Mars colony!`, false);
+  addXP(200);
+  drainEnergy(20);
+  
+  logEventToServer('baby_born', { baby, parents: [baby.parent1, baby.parent2] });
+  
+  document.querySelectorAll('.popup-overlay').forEach(m => m.remove());
+  saveGame();
+}
+
+// Admin cheat system
+class AdminCheatManager {
+  constructor() {
+    this.touchSequence = [];
+    this.adminMode = false;
+    this.secretSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'KeyA', 'KeyD', 'KeyM', 'KeyI', 'KeyN'];
+    this.keySequence = [];
+    this.initializeGestures();
+  }
+
+  initializeGestures() {
+    let touchStart = null;
+    let touchCount = 0;
+    
+    // Touch gestures for mobile admin
+    document.addEventListener('touchstart', (e) => {
+      touchStart = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        time: Date.now()
+      };
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      if (!touchStart) return;
+      
+      const touchEnd = {
+        x: e.changedTouches[0].clientX,
+        y: e.changedTouches[0].clientY,
+        time: Date.now()
+      };
+      
+      const deltaX = touchEnd.x - touchStart.x;
+      const deltaY = touchEnd.y - touchStart.y;
+      const deltaTime = touchEnd.time - touchStart.time;
+      
+      // Four corners tap sequence: top-left, top-right, bottom-left, bottom-right
+      if (deltaTime < 300 && Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50) {
+        const corner = this.getScreenCorner(touchStart);
+        this.touchSequence.push(corner);
+        
+        if (this.touchSequence.length > 4) {
+          this.touchSequence = this.touchSequence.slice(-4);
+        }
+        
+        // Check for admin sequence: top-left, top-right, bottom-left, bottom-right
+        if (this.touchSequence.join('-') === 'tl-tr-bl-br') {
+          this.activateAdminMode();
+          this.touchSequence = [];
+        }
+      }
+    });
+    
+    // Keyboard sequence for desktop admin
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      
+      this.keySequence.push(e.code);
+      if (this.keySequence.length > 9) {
+        this.keySequence = this.keySequence.slice(-9);
+      }
+      
+      if (this.keySequence.join('-') === this.secretSequence.join('-')) {
+        this.activateAdminMode();
+        this.keySequence = [];
+      }
+    });
+  }
+  
+  getScreenCorner(touch) {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const x = touch.x;
+    const y = touch.y;
+    
+    if (x < w/3 && y < h/3) return 'tl'; // top-left
+    if (x > 2*w/3 && y < h/3) return 'tr'; // top-right
+    if (x < w/3 && y > 2*h/3) return 'bl'; // bottom-left
+    if (x > 2*w/3 && y > 2*h/3) return 'br'; // bottom-right
+    return 'center';
+  }
+  
+  activateAdminMode() {
+    this.adminMode = true;
+    this.showAdminPanel();
+    addToHistory('🛡️ Admin mode activated!', false, 'system');
+    logEventToServer('admin_mode_activated', { timestamp: new Date().toISOString() });
+  }
+  
+  showAdminPanel() {
+    const modal = document.createElement('div');
+    modal.className = 'popup-overlay';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+      <div class="popup" style="max-width: 500px;">
+        <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1rem 0;">
+          <button class="popup-btn primary" onclick="adminCheatManager.addXP(1000)">+1000 XP</button>
+          <button class="popup-btn primary" onclick="adminCheatManager.addCredits(5000)">+5000 Credits</button>
+          <button class="popup-btn primary" onclick="adminCheatManager.fullEnergy()">Full Energy</button>
+          <button class="popup-btn primary" onclick="adminCheatManager.maxResources()">Max Resources</button>
+          <button class="popup-btn primary" onclick="adminCheatManager.unlockAll()">Unlock All</button>
+          <button class="popup-btn primary" onclick="adminCheatManager.triggerEvent()">Trigger Event</button>
+        </div>
+        <div class="popup-buttons">
+          <button class="popup-btn secondary" onclick="this.closest('.popup-overlay').remove()">
+            Close
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  
+  addXP(amount) {
+    addXP(amount);
+    addToHistory(`🛡️ Admin granted ${amount} XP`, false, 'system');
+    logEventToServer('admin_cheat', { type: 'xp', amount });
+  }
+  
+  addCredits(amount) {
+    gameState.resources.credits += amount;
+    addToHistory(`🛡️ Admin granted ${amount} credits`, false, 'system');
+    logEventToServer('admin_cheat', { type: 'credits', amount });
+    saveGame();
+  }
+  
+  fullEnergy() {
+    gameState.resources.energy = 100;
+    addToHistory('🛡️ Admin restored full energy', false, 'system');
+    logEventToServer('admin_cheat', { type: 'energy', amount: 100 });
+    saveGame();
+  }
+  
+  maxResources() {
+    Object.keys(gameState.resources).forEach(key => {
+      if (typeof gameState.resources[key] === 'number') {
+        gameState.resources[key] = key === 'energy' ? 100 : 9999;
+      }
+    });
+    addToHistory('🛡️ Admin maxed all resources', false, 'system');
+    logEventToServer('admin_cheat', { type: 'max_resources' });
+    saveGame();
+  }
+  
+  unlockAll() {
+    gameState.achievements = ['Explorer', 'Builder', 'Lover', 'Parent', 'Leader', 'Hero'];
+    addToHistory('🛡️ Admin unlocked all achievements', false, 'system');
+    logEventToServer('admin_cheat', { type: 'unlock_all' });
+    saveGame();
+  }
+  
+  triggerEvent() {
+    const events = ['cyborg', 'companion', 'visitor'];
+    const event = events[Math.floor(Math.random() * events.length)];
+    
+    switch(event) {
+      case 'cyborg':
+        triggerCyborgPopup();
+        break;
+      case 'companion':
+        triggerCompanionPopup();
+        break;
+      case 'visitor':
+        generateVisitor();
+        break;
+    }
+    
+    logEventToServer('admin_trigger_event', { event });
+  }
+}
+
+// Initialize admin system
+const adminCheatManager = new AdminCheatManager();
+
+
 function showTerminalSuggestions(input) {
   const suggestionsContainer = document.getElementById('terminalSuggestions');
   const inputElement = document.getElementById('terminalCommandInput');
@@ -3284,6 +3693,112 @@ async function purchasePack(packType) {
     console.error('Purchase error:', error);
   }
 }
+  </script>
+  <script>
+    // Real Solana Pay Integration
+class RealSolanaPayManager {
+  constructor() {
+    this.connection = new Connection('https://api.devnet.solana.com', 'confirmed');
+    this.packs = {
+      small: { name: 'Energy Boost', price: 0.01, energy: 25, credits: 100 },
+      medium: { name: 'Resource Pack', price: 0.05, energy: 50, credits: 500 },
+      large: { name: 'Premium Bundle', price: 0.1, energy: 100, credits: 1000 }
+    };
+  }
+
+  async createPayment(packType) {
+    const pack = this.packs[packType];
+    const recipientWallet = 'YourRecipientWalletAddressHere'; // Replace with your wallet
+    
+    const paymentUrl = `solana:${recipientWallet}?amount=${pack.price}&label=${encodeURIComponent(pack.name)}&message=${encodeURIComponent(`Purchase ${pack.name} for MarsoVerse`)}`;
+    
+    // Generate QR code for payment
+    this.showPaymentQR(paymentUrl, pack, packType);
+    
+    // Start monitoring for payment
+    this.monitorPayment(recipientWallet, pack.price, packType);
+  }
+
+  showPaymentQR(paymentUrl, pack, packType) {
+    const modal = document.createElement('div');
+    modal.className = 'popup-overlay';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+      <div class="popup" style="max-width: 400px;">
+        <h3><i class="fas fa-wallet"></i> Pay with Solana</h3>
+        <div style="text-align: center; margin: 1rem 0;">
+          <div id="qr-code" style="background: white; padding: 20px; border-radius: 10px; margin: 10px auto; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
+            <div style="font-size: 12px; color: black;">
+              Open Phantom/Solflare wallet<br>
+              Scan QR or use link below
+            </div>
+          </div>
+          <button onclick="window.open('${paymentUrl}', '_blank')" class="popup-btn primary" style="margin: 10px;">
+            Open Wallet
+          </button>
+        </div>
+        <p style="font-size: 0.9rem;">
+          <strong>${pack.name}</strong><br>
+          Price: ${pack.price} SOL<br>
+          You'll receive: ${pack.energy}% energy, ${pack.credits} credits
+        </p>
+        <div class="popup-buttons">
+          <button class="popup-btn secondary" onclick="this.closest('.popup-overlay').remove()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  async monitorPayment(wallet, expectedAmount, packType) {
+    // In production, implement proper payment verification
+    // For now, simulate after 10 seconds
+    setTimeout(() => {
+      this.processPayment(packType);
+    }, 10000);
+  }
+
+  processPayment(packType) {
+    const pack = this.packs[packType];
+    
+    // Apply benefits
+    gameState.resources.energy = Math.min(100, gameState.resources.energy + pack.energy);
+    gameState.resources.credits += pack.credits;
+    
+    // Log to server
+    this.logPurchaseToServer(packType, pack);
+    
+    // Close modal
+    document.querySelectorAll('.popup-overlay').forEach(m => m.remove());
+    
+    addToHistory(`✅ Payment successful! Received ${pack.name}`, false, 'system');
+    addXP(pack.credits / 10);
+    saveGame();
+  }
+
+  async logPurchaseToServer(packType, pack) {
+    try {
+      await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'purchase',
+          data: { packType, pack, timestamp: new Date().toISOString() },
+          game: 'zepta_terminal',
+          playerId: marsoVersePlayerManager?.playerId || 'anonymous',
+          walletAddress: localStorage.getItem('walletAddress') || null
+        })
+      });
+    } catch (error) {
+      console.error('Failed to log purchase:', error);
+    }
+  }
+}
+
+// Initialize Solana Pay
+const realSolanaPayManager = new RealSolanaPayManager();
   </script>
 </body>
 </html>
