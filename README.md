@@ -1,6 +1,6 @@
 # Marsoverse: A Gamified Metaverse Exploration on Mars
 
-![Marsoverse ](MARS-WALKTHRU/1.png)  
+![Marsoverse ](/MARS-WALKTHRU/1.png)  
 
 
 ## Introduction
