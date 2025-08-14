@@ -1,4 +1,3 @@
-// Game State
 let gameLoop = null;
 let gamePaused = false;
 let gameStarted = false;
@@ -123,9 +122,18 @@ function setupEventListeners() {
   muteBtn.addEventListener("click", toggleMute);
   
   // Tutorial controls
-  prevBtn.addEventListener("click", prevSlide);
-  nextBtn.addEventListener("click", nextSlide);
-  skipTutorial.addEventListener("click", skipTutorialHandler);
+  prevBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    prevSlide();
+  });
+  nextBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    nextSlide();
+  });
+  skipTutorial.addEventListener("click", (e) => {
+    e.preventDefault();
+    skipTutorialHandler();
+  });
 }
 
 function setupTouchControls() {
@@ -172,11 +180,19 @@ function setupTouchControls() {
 }
 
 function showTutorial() {
-  tutorial.style.display = "flex";
-  showSlide(1);
+  if (tutorial) {
+    tutorial.style.display = "flex";
+    showSlide(1);
+  }
 }
 
 function showSlide(slideNum) {
+  if (!tutorialSlides.length || !slideCounter) return;
+  
+  // Ensure slideNum is within bounds
+  slideNum = Math.max(1, Math.min(slideNum, tutorialSlides.length));
+  
+  // Update slide visibility
   tutorialSlides.forEach(slide => {
     slide.classList.remove("active");
     if (parseInt(slide.dataset.slide) === slideNum) {
@@ -184,7 +200,10 @@ function showSlide(slideNum) {
     }
   });
   
+  // Update slide counter
   slideCounter.textContent = `${slideNum}/${tutorialSlides.length}`;
+  
+  // Update button states
   prevBtn.disabled = slideNum === 1;
   nextBtn.disabled = slideNum === tutorialSlides.length;
 }
@@ -192,6 +211,7 @@ function showSlide(slideNum) {
 function nextSlide() {
   playSound(clickSound);
   const currentSlide = document.querySelector(".tutorial-slide.active");
+  if (!currentSlide) return;
   const nextSlideNum = parseInt(currentSlide.dataset.slide) + 1;
   if (nextSlideNum <= tutorialSlides.length) {
     showSlide(nextSlideNum);
@@ -201,6 +221,7 @@ function nextSlide() {
 function prevSlide() {
   playSound(clickSound);
   const currentSlide = document.querySelector(".tutorial-slide.active");
+  if (!currentSlide) return;
   const prevSlideNum = parseInt(currentSlide.dataset.slide) - 1;
   if (prevSlideNum >= 1) {
     showSlide(prevSlideNum);
@@ -210,7 +231,9 @@ function prevSlide() {
 function skipTutorialHandler() {
   playSound(clickSound);
   localStorage.setItem("tutorialCompleted", "true");
-  tutorial.style.display = "none";
+  if (tutorial) {
+    tutorial.style.display = "none";
+  }
   startGame();
 }
 

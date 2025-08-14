@@ -10,7 +10,10 @@ Marsoverse is an immersive, browser-based 3D game universe that transports playe
 Escape Earth's destruction and build a new life on the Red Planet! Whether you're coding in the Zepta Terminal, exploring 3D Mars maps, or earning XP through missions, Marsoverse blends education, strategy, and fun in a low-resource, accessible metaverse.
 
 **Live Demo**: [https://marsoverse.netlify.app](https://marsoverse.netlify.app)  
-**GitHub Repo**: [https://github.com/JaimeCabary](https://github.com/JaimeCabary)
+**GitHub Repo**: [https://github.com/JaimeCabary](https://github.com/JaimeCabary/Marsoverse)
+**Walkthrough 1**: [https://youtu.be/t-fly8eS-6Q](https://youtu.be/t-fly8eS-6Q)
+**Walkthrough 2**: [https://youtu.be/53VvNd_5maw](https://youtu.be/53VvNd_5maw)
+
 
 ![Landing Page Screenshot](MARS-WALKTHRU/Marsoverse.gif)  
 *Placeholder: Screenshot of the landing page with cosmic visuals, onboarding form for name/age, wallet connect button, and intro story animation.*
@@ -79,10 +82,10 @@ Built as an MVP with 12 days left for fixes, including leaderboard, 360 video lo
 
 No installation required! Marsoverse is fully browser-based.
 
-1. Visit the demo URL: [https://marsrovers.netlify.app](https://marsoverse.netlify.app).
+1. Visit the demo URL: [https://marsoverse.netlify.app](https://marsoverse.netlify.app).
 2. For development:
-   - Clone the GitHub repo: `git clone https://github.com/JaimeCabary.git`
-   - Run `npm install` for dependencies (e.g., Honeycomb).
+   - Clone the GitHub repo: `git clone https://github.com/JaimeCabary/Marsoverse.git`
+   - Run `npm install or npm install --legacy-peer-deps` for dependencies (e.g., Honeycomb).
    - Start a local server (e.g., via Live Server extension or `node server.js`).
 3. `server.js` handles backend logic (Honeycomb API calls).
 

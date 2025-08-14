@@ -1269,55 +1269,152 @@
     font-size: 0.85rem;
   }
 }
+.mood-indicator {
+  position: fixed;
+  top: 120px;
+  right: 20px;
+  background: rgba(255, 68, 68, 0.9);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border-left: 4px solid #ff4444;
+  max-width: 300px;
+  animation: slideInRight 0.3s ease;
+  z-index: 1000;
+}
+
+.mood-indicator.happy {
+  background: rgba(0, 255, 136, 0.9);
+  border-left-color: #00ff88;
+}
+
+.mood-indicator.hurt_but_forgiving {
+  background: rgba(255, 165, 0, 0.9);
+  border-left-color: #ffa500;
+}
+
+.mood-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mood-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mood-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.mood-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+#relationshipHealthStatus {
+  transition: all 0.3s ease;
+}
+
+#relationshipHealthStatus.low-health {
+  background: rgba(255, 68, 68, 0.2);
+  border-left: 3px solid #ff4444;
+}
+
+#relationshipHealthStatus.medium-health {
+  background: rgba(255, 165, 0, 0.2);
+  border-left: 3px solid #ffa500;
+}
+
+#relationshipHealthStatus.high-health {
+  background: rgba(0, 255, 136, 0.2);
+  border-left: 3px solid #00ff88;
+}
   </style>
 </head>
 <body class="chat-mode">
   <!-- Header -->
   <div class="header">
-    <div class="logo">⚡ ZEPTA Terminal</div>
-    <div class="header-controls">
-      <a href="marzo.html" class="nav-btn">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-      </a>
-      <a href="marzo.html#game-grid" class="nav-btn">
-        <i class="fas fa-gamepad"></i>
-        <span>Game</span>
-      </a>
-      <a href="mars-viewer\dist\index.html" class="nav-btn">
-        <i class="fas fa-meteor"></i>
-        <span>Mars</span>
-      </a>
-      <button class="theme-toggle" id="themeToggle">
-        <i class="fas fa-code"></i>
-        <span>Terminal</span>
-      </button>
-    </div>
+  <div class="logo">⚡ ZEPTA Terminal</div>
+  <div class="header-controls">
+    <a href="index.html" class="nav-btn">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    <a href="marzo.html" class="nav-btn">
+      <i class="fas fa-gamepad"></i>
+      <span>Main Game</span>
+    </a>
+    <a href="mars-viewer/dist/index.html" class="nav-btn">
+      <i class="fas fa-meteor"></i>
+      <span>Mars</span>
+    </a>
+    <button class="theme-toggle" id="themeToggle">
+      <i class="fas fa-code"></i>
+      <span>Terminal</span>
+    </button>
   </div>
+</div>
+
 
   <!-- Status Bar -->
   <div class="status-bar">
-    <div class="status-item" id="xpStatus">
-      <i class="fas fa-star"></i>
-      <span>XP: <span id="xpDisplay">0</span></span>
-    </div>
-    <div class="status-item" id="relationshipStatus">
-      <i class="fas fa-heart"></i>
-      <span>Relationship: <span id="relationshipDisplay">Stranger</span></span>
-    </div>
-    <div class="status-item" id="energyStatus">
-      <i class="fas fa-battery-three-quarters"></i>
-      <span>Energy: <span id="energyDisplay">100</span>%</span>
-    </div>
-    <div class="status-item" id="creditsStatus">
-      <i class="fas fa-coins"></i>
-      <span>Credits: <span id="creditsDisplay">1000</span></span>
-    </div>
-    <div class="status-item" id="connectionStatus">
-      <i class="fas fa-wifi"></i>
-      <span id="connectionText">Online</span>
+  <div class="status-item" id="xpStatus">
+    <i class="fas fa-star"></i>
+    <span>XP: <span id="xpDisplay">0</span></span>
+  </div>
+  <div class="status-item" id="relationshipStatus">
+    <i class="fas fa-heart"></i>
+    <span>Relationship: <span id="relationshipDisplay">Stranger</span></span>
+  </div>
+  
+  <div class="status-item" id="energyStatus">
+    <i class="fas fa-battery-three-quarters"></i>
+    <span>Energy: <span id="energyDisplay">100</span>%</span>
+  </div>
+  <div class="status-item" id="relationshipHealthStatus">
+    <i class="fas fa-heartbeat"></i>
+    <span>Health: <span id="relationshipHealthDisplay">100</span>%</span>
+  </div>
+  <div class="status-item" id="creditsStatus">
+    <i class="fas fa-coins"></i>
+    <span>Credits: <span id="creditsDisplay">1000</span></span>
+  </div>
+  <div class="status-item" id="connectionStatus">
+    <i class="fas fa-wifi"></i>
+    <span id="connectionText">Online</span>
+  </div>
+</div>
+
+<!-- Enhanced Partner Mood Indicator -->
+<div class="mood-indicator" id="moodIndicator" style="display: none;">
+  <div class="mood-content">
+    <span id="partnerMoodText"></span>
+    <div class="mood-actions">
+      <button class="mood-btn" onclick="sendApology()">Apologize</button>
+      <button class="mood-btn" onclick="giveGift()">Give Gift</button>
     </div>
   </div>
+</div>
+
 
   <!-- Main Container -->
   <div class="container">
@@ -1548,34 +1645,119 @@
     }
 
     function updateStatusDisplay() {
-      document.getElementById('xpDisplay').textContent = gameState.xp;
-      document.getElementById('relationshipDisplay').textContent = gameState.relationship;
-      
-      const energyDisplay = document.getElementById('energyDisplay');
-      const energyStatus = document.getElementById('energyStatus');
-      energyDisplay.textContent = Math.round(gameState.resources.energy);
-      
-      if (gameState.resources.energy < 50) {
-        energyStatus.classList.add('low-energy');
-      } else {
-        energyStatus.classList.remove('low-energy');
-      }
-      
-      document.getElementById('creditsDisplay').textContent = gameState.resources.credits;
-      
-      const connectionStatus = document.getElementById('connectionStatus');
-      const connectionText = document.getElementById('connectionText');
-      if (isOnline) {
-        connectionStatus.classList.remove('offline');
-        connectionText.textContent = 'Online';
-      } else {
-        connectionStatus.classList.add('offline');
-        connectionText.textContent = 'Offline';
-      }
-      
-      document.getElementById('historyCount').textContent = gameState.chatHistory.length;
-    }
+  document.getElementById('xpDisplay').textContent = gameState.xp;
+  document.getElementById('relationshipDisplay').textContent = gameState.relationship;
+  
+  // Update relationship health
+  const relationshipHealth = gameState.relationshipHealth || 100;
+  const relationshipHealthDisplay = document.getElementById('relationshipHealthDisplay');
+  const relationshipHealthStatus = document.getElementById('relationshipHealthStatus');
+  
+  relationshipHealthDisplay.textContent = Math.round(relationshipHealth);
+  
+  // Update health status styling
+  relationshipHealthStatus.classList.remove('low-health', 'medium-health', 'high-health');
+  if (relationshipHealth < 30) {
+    relationshipHealthStatus.classList.add('low-health');
+  } else if (relationshipHealth < 70) {
+    relationshipHealthStatus.classList.add('medium-health');
+  } else {
+    relationshipHealthStatus.classList.add('high-health');
+  }
+  
+  const energyDisplay = document.getElementById('energyDisplay');
+  const energyStatus = document.getElementById('energyStatus');
+  energyDisplay.textContent = Math.round(gameState.resources.energy);
+  
+  if (gameState.resources.energy < 50) {
+    energyStatus.classList.add('low-energy');
+  } else {
+    energyStatus.classList.remove('low-energy');
+  }
+  
+  document.getElementById('creditsDisplay').textContent = gameState.resources.credits;
+  
+  const connectionStatus = document.getElementById('connectionStatus');
+  const connectionText = document.getElementById('connectionText');
+  if (isOnline) {
+    connectionStatus.classList.remove('offline');
+    connectionText.textContent = 'Online';
+  } else {
+    connectionStatus.classList.add('offline');
+    connectionText.textContent = 'Offline';
+  }
+  
+  document.getElementById('historyCount').textContent = gameState.chatHistory.length;
+  
+  // Update mood indicator
+  updateMoodIndicator();
+}
 
+function updateMoodIndicator() {
+  const moodIndicator = document.getElementById('moodIndicator');
+  const partnerMoodText = document.getElementById('partnerMoodText');
+  
+  if (!gameState.partnerName && !gameState.marriedTo) {
+    moodIndicator.style.display = 'none';
+    return;
+  }
+  
+  const partner = gameState.partnerName || gameState.marriedTo;
+  const mood = gameState.partnerMood || 'happy';
+  const health = gameState.relationshipHealth || 100;
+  
+  if (health < 80 || mood !== 'happy') {
+    moodIndicator.style.display = 'block';
+    moodIndicator.className = `mood-indicator ${mood}`;
+    
+    const moodMessages = {
+      furious: `😡 ${partner} is furious with you! (Health: ${Math.round(health)}%)`,
+      hurt_but_forgiving: `😔 ${partner} is hurt but trying to forgive (Health: ${Math.round(health)}%)`,
+      still_angry: `😠 ${partner} is still upset with you (Health: ${Math.round(health)}%)`,
+      happy: `😊 ${partner} seems happy with you (Health: ${Math.round(health)}%)`
+    };
+    
+    partnerMoodText.textContent = moodMessages[mood] || `${partner} (Health: ${Math.round(health)}%)`;
+  } else {
+    moodIndicator.style.display = 'none';
+  }
+}
+function sendApology() {
+  if (gameState.resources.credits >= 10) {
+    gameState.resources.credits -= 10;
+    handleApology();
+    addToHistory('💝 You sent a heartfelt apology...', false, 'system');
+    
+    logEventToServer('apology_sent', {
+      partner: gameState.partnerName || gameState.marriedTo,
+      cost: 10
+    });
+  } else {
+    addToHistory('💰 You need 10 credits to send a proper apology.', false, 'system');
+  }
+}
+
+function giveGift() {
+  if (gameState.resources.credits >= 50) {
+    gameState.resources.credits -= 50;
+    gameState.relationshipHealth = Math.min(100, (gameState.relationshipHealth || 0) + 25);
+    gameState.partnerMood = 'happy';
+    
+    const partner = gameState.partnerName || gameState.marriedTo;
+    addToHistory(`🎁 You gave ${partner} a beautiful gift! They're touched.`, false, 'system');
+    
+    logEventToServer('gift_from_mood', {
+      partner,
+      cost: 50,
+      healthGain: 25
+    });
+    
+    updateStatusDisplay();
+    saveGame();
+  } else {
+    addToHistory('💰 You need 50 credits for a meaningful gift.', false, 'system');
+  }
+}
     function checkConnection() {
       window.addEventListener('online', () => {
         isOnline = true;
@@ -1746,20 +1928,51 @@ function checkCompanionTrigger() {
       document.getElementById('visitorPopup').setAttribute('data-visitor', JSON.stringify(visitor));
     }
 
-    function showPartnerReaction(action, target) {
-      if (!gameState.partnerName && !gameState.marriedTo) return;
-      
-      const partner = gameState.partnerName || gameState.marriedTo;
-      const reactions = {
-        kiss: `${partner} saw you kiss ${target} and looks hurt! 💔`,
-        flirt: `${partner} noticed you flirting with ${target} and seems jealous! 😠`,
-        date: `${partner} found out about your date with ${target} and is devastated! 😢`,
-        baby: `${partner} discovered you had a baby with ${target} and is heartbroken! 💔💔`
-      };
-      
-      document.getElementById('partnerReactionMessage').textContent = reactions[action];
-      document.getElementById('partnerReactionPopup').style.display = 'flex';
+    // Add this function before your commands object
+function showPartnerReaction(action, target) {
+  if (!gameState.partnerName && !gameState.marriedTo) return;
+  
+  const partner = gameState.partnerName || gameState.marriedTo;
+  const reactions = {
+    kiss: {
+      message: `${partner} saw you kiss ${target} and looks devastated! 💔 "How could you do this to me?"`,
+      relationshipDamage: 2
+    },
+    flirt: {
+      message: `${partner} noticed you flirting with ${target} and seems jealous! 😠 "I thought we had something special!"`,
+      relationshipDamage: 1
+    },
+    date: {
+      message: `${partner} found out about your date with ${target} and is heartbroken! 😢 "I trusted you..."`,
+      relationshipDamage: 3
+    },
+    marry: {
+      message: `${partner} found out you want to marry ${target} and is destroyed! 😭 "We had plans together..."`,
+      relationshipDamage: 10
     }
+  };
+  
+  const reaction = reactions[action];
+  if (!reaction) return;
+  
+  // Add relationship health tracking
+  gameState.relationshipHealth = (gameState.relationshipHealth || 100) - (reaction.relationshipDamage * 10);
+  gameState.partnerMood = 'furious';
+  gameState.lastCheatingIncident = { action, target, timestamp: Date.now() };
+  
+  document.getElementById('partnerReactionMessage').textContent = reaction.message;
+  document.getElementById('partnerReactionPopup').style.display = 'flex';
+  
+  logEventToServer('partner_reaction', {
+    action,
+    target, 
+    partner,
+    relationshipHealth: gameState.relationshipHealth,
+    mood: gameState.partnerMood
+  });
+  
+  saveGame();
+}
 
     // Event Listeners for Popups
     document.getElementById('rechargeBtn').addEventListener('click', () => {
@@ -1846,36 +2059,53 @@ function checkCompanionTrigger() {
 // Enhanced server logging
 async function logEventToServer(eventType, data) {
   try {
-    await fetch('/api/events', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        type: eventType,
-        data: {
-          ...data,
-          gameState: {
-            xp: gameState.xp,
-            level: gameState.level,
-            energy: gameState.resources.energy,
-            credits: gameState.resources.credits,
-            relationship: gameState.relationship,
-            companionName: gameState.companionName,
-            children: gameState.children.length,
-            friends: gameState.friends.length
-          }
+    const event = {
+      type: eventType,
+      data: {
+        ...data,
+        gameState: {
+          xp: gameState.xp,
+          level: gameState.level,
+          energy: Math.round(gameState.resources.energy),
+          credits: gameState.resources.credits,
+          relationship: gameState.relationship,
+          relationshipHealth: gameState.relationshipHealth || 100,
+          partnerMood: gameState.partnerMood || 'happy',
+          companionName: gameState.companionName,
+          partnerName: gameState.partnerName,
+          marriedTo: gameState.marriedTo,
+          children: gameState.children.length,
+          friends: gameState.friends.length,
+          achievements: gameState.achievements?.length || 0,
+          missions: gameState.missions?.length || 0
         },
-        game: 'zepta_terminal',
-        playerId: marsoVersePlayerManager?.playerId || localStorage.getItem('currentPlayerId') || 'anonymous',
-        walletAddress: localStorage.getItem('walletAddress') || null,
-        timestamp: new Date().toISOString()
-      })
+        deviceInfo: {
+          userAgent: navigator.userAgent,
+          screenResolution: `${screen.width}x${screen.height}`,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          language: navigator.language
+        }
+      },
+      game: 'zepta_terminal',
+      playerId: marsoVersePlayerManager?.playerId || localStorage.getItem('currentPlayerId') || 'anonymous',
+      playerName: localStorage.getItem('playerName') || gameState.companionName || 'Explorer',
+      walletAddress: localStorage.getItem('walletAddress') || null,
+      timestamp: new Date().toISOString(),
+      sessionId: gameState.gameSession || null
+    };
+
+    const response = await fetch('/api/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(event)
     });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
   } catch (error) {
     console.error('Failed to log event to server:', error);
   }
 }
+
     // Sync playerXP with gameState.xp
 function syncPlayerXP() {
   const playerXP = parseInt(localStorage.getItem('playerXP') || '0');
@@ -2658,7 +2888,453 @@ ${gameState.marriedTo ? `💒 Married to: ${gameState.marriedTo}` : ''}
 👶 Children: ${gameState.children.length}
 🎯 Missions completed: ${gameState.missions.length}
 ⏰ Session started: ${new Date(gameState.gameSession).toLocaleTimeString()}`, false);
+      },
+      '/jealousy': () => {
+  if (!gameState.partnerName && !gameState.marriedTo) {
+    addToHistory('💔 You need a partner first to experience jealousy.', false);
+    return;
+  }
+  
+  const partner = gameState.partnerName || gameState.marriedTo;
+  const health = gameState.relationshipHealth || 100;
+  const mood = gameState.partnerMood || 'happy';
+  
+  addToHistory(`💞 RELATIONSHIP STATUS with ${partner}:
+💖 Health: ${health}%
+😊 Mood: ${mood}
+${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '✅ No trust issues'}`, false);
+  
+  logEventToServer('jealousy_checked', { partner, health, mood });
+},
+
+'/propose': (args) => {
+  if (!args) {
+    addToHistory('Usage: /propose [name]', false);
+    return;
+  }
+  
+  if (gameState.marriedTo) {
+    addToHistory('💒 You\'re already married! Divorce first if you want to remarry.', false);
+    return;
+  }
+  
+  if (gameState.partnerName && gameState.partnerName !== args) {
+    enhancedPartnerReaction('marry', args);
+  }
+  
+  showThinking();
+  setTimeout(() => {
+    if (Math.random() > 0.3) {
+      addToHistory(`💍 ${args} said YES! You're engaged!`, false);
+      gameState.engagedTo = args;
+      gameState.relationship = 'engaged';
+      addXP(150);
+      logEventToServer('engagement', { partner: args, success: true });
+    } else {
+      addToHistory(`💔 ${args} said they need more time to think...`, false);
+      addXP(25);
+      logEventToServer('engagement', { partner: args, success: false });
+    }
+  }, 2000);
+  
+  drainEnergy(20);
+  saveGame();
+},
+
+'/gift': (args) => {
+  if (!args) {
+    addToHistory('Usage: /gift [name]', false);
+    return;
+  }
+  
+  if (gameState.resources.credits < 50) {
+    addToHistory('💰 Not enough credits for a gift! Need 50 credits.', false);
+    return;
+  }
+  
+  const gifts = [
+    '🌹 Beautiful Mars roses',
+    '💎 Rare Martian crystals', 
+    '🎵 Custom love song',
+    '🍫 Earth chocolate (imported)',
+    '🖼️ Painted portrait of them'
+  ];
+  
+  const gift = gifts[Math.floor(Math.random() * gifts.length)];
+  gameState.resources.credits -= 50;
+  
+  addToHistory(`🎁 You gave ${args} ${gift}! They're delighted!`, false);
+  
+  if (args === gameState.partnerName || args === gameState.marriedTo) {
+    gameState.relationshipHealth = Math.min(100, (gameState.relationshipHealth || 0) + 15);
+    gameState.partnerMood = 'happy';
+  }
+  
+  addXP(40);
+  drainEnergy(5);
+  logEventToServer('gift_given', { recipient: args, gift, cost: 50 });
+  saveGame();
+},
+'/affair': (args) => {
+  if (!args) {
+    addToHistory('Usage: /affair [name]', false);
+    return;
+  }
+  
+  if (!gameState.partnerName && !gameState.marriedTo) {
+    addToHistory('💔 You need a partner first to have an affair!', false);
+    return;
+  }
+  
+  const partner = gameState.partnerName || gameState.marriedTo;
+  enhancedPartnerReaction('affair', args);
+  
+  addToHistory(`🤫 You started a secret affair with ${args}...`, false);
+  
+  showThinking();
+  setTimeout(() => {
+    if (Math.random() > 0.4) {
+      addToHistory(`💕 Your secret relationship with ${args} is passionate but dangerous!`, false);
+      gameState.secretAffairs = gameState.secretAffairs || [];
+      gameState.secretAffairs.push({ name: args, started: Date.now() });
+      addXP(75);
+      
+      trackRelationshipEvent('affair_started', { lover: args, partner });
+    } else {
+      addToHistory(`😰 ${args} rejected your advances. They respect your relationship.`, false);
+      addXP(15);
+      
+      trackRelationshipEvent('affair_rejected', { target: args, partner });
+    }
+  }, 2500);
+  
+  drainEnergy(25);
+  saveGame();
+},
+
+'/confess': (args) => {
+  if (!gameState.secretAffairs || gameState.secretAffairs.length === 0) {
+    addToHistory('💯 You have nothing to confess. You\'re innocent!', false);
+    return;
+  }
+  
+  const partner = gameState.partnerName || gameState.marriedTo;
+  if (!partner) {
+    addToHistory('💔 No partner to confess to.', false);
+    return;
+  }
+  
+  const affair = gameState.secretAffairs[0];
+  addToHistory(`😭 You confessed your affair with ${affair.name} to ${partner}...`, false);
+  
+  showThinking();
+  setTimeout(() => {
+    gameState.relationshipHealth = Math.max(0, (gameState.relationshipHealth || 100) - 40);
+    gameState.partnerMood = 'devastated';
+    gameState.secretAffairs = [];
+    
+    if (gameState.relationshipHealth < 20) {
+      addToHistory(`💔 ${partner} broke up with you! "I can't trust you anymore!"`, false);
+      gameState.partnerName = null;
+      gameState.marriedTo = null;
+      gameState.relationship = 'single';
+    } else {
+      addToHistory(`😢 ${partner} is devastated but willing to work on the relationship...`, false);
+    }
+    
+    trackRelationshipEvent('affair_confessed', { 
+      affair, 
+      partner, 
+      relationshipSurvived: gameState.relationshipHealth >= 20 
+    });
+    
+    addXP(50); // XP for honesty
+  }, 3000);
+  
+  saveGame();
+},
+'/swingers': () => {
+  if (!gameState.partnerName && !gameState.marriedTo) {
+    addToHistory('💔 You need a partner to join the swinger lifestyle!', false);
+    return;
+  }
+  
+  const partner = gameState.partnerName || gameState.marriedTo;
+  addToHistory(`🔄 You suggest to ${partner} that you both explore swinging...`, false);
+  
+  showThinking();
+  setTimeout(() => {
+    if (Math.random() > 0.6) {
+      addToHistory(`😈 ${partner} is intrigued! "Let's explore together!"`, false);
+      gameState.lifestyle = 'swingers';
+      gameState.relationshipHealth = Math.min(100, (gameState.relationshipHealth || 100) + 10);
+      addXP(100);
+      
+      trackRelationshipEvent('lifestyle_change', { newLifestyle: 'swingers', partner });
+    } else {
+      addToHistory(`😐 ${partner} isn't comfortable with that idea right now.`, false);
+      addXP(25);
+      
+      trackRelationshipEvent('lifestyle_rejected', { proposedLifestyle: 'swingers', partner });
+    }
+  }, 2500);
+  
+  drainEnergy(15);
+  saveGame();
+},
+
+'/polyamory': (args) => {
+  if (!args) {
+    addToHistory('Usage: /polyamory [partner2_name]', false);
+    return;
+  }
+  
+  if (!gameState.partnerName && !gameState.marriedTo) {
+    addToHistory('💔 You need at least one partner first!', false);
+    return;
+  }
+  
+  const primaryPartner = gameState.partnerName || gameState.marriedTo;
+  addToHistory(`💕 You propose polyamory to ${primaryPartner}, wanting to include ${args}...`, false);
+  
+  showThinking();
+  setTimeout(() => {
+    if (Math.random() > 0.5) {
+      addToHistory(`🌈 ${primaryPartner} agrees! You're now in a polyamorous relationship with ${args}!`, false);
+      gameState.polyPartners = gameState.polyPartners || [];
+      gameState.polyPartners.push(args);
+      gameState.relationship = 'polyamorous';
+      addXP(150);
+      
+      trackRelationshipEvent('polyamory_started', { 
+        primaryPartner, 
+        newPartner: args 
+      });
+    } else {
+      addToHistory(`😔 ${primaryPartner} needs time to think about this...`, false);
+      gameState.relationshipHealth = Math.max(0, (gameState.relationshipHealth || 100) - 15);
+      addXP(30);
+      
+      trackRelationshipEvent('polyamory_rejected', { 
+        primaryPartner, 
+        proposedPartner: args 
+      });
+    }
+  }, 3000);
+  
+  drainEnergy(20);
+  saveGame();
+},
+
+'/scandal': () => {
+  addToHistory(`📰 MARS COLONY GOSSIP NETWORK`, false);
+  
+  const scandals = [
+    `🔥 Rumor: Someone was seen sneaking between habitats at night...`,
+    `💋 Gossip: Multiple colonists spotted in compromising positions!`,
+    `😱 Scandal: Secret love triangle discovered in the greenhouse!`,
+    `🤫 Whisper: Underground dating ring operating in the mining tunnels!`,
+    `💍 Drama: Someone's planning a secret wedding without telling their current partner!`
+  ];
+  
+  if (gameState.secretAffairs && gameState.secretAffairs.length > 0) {
+    scandals.push(`🕵️ Your affair with ${gameState.secretAffairs[0].name} is becoming colony gossip!`);
+  }
+  
+  if (gameState.polyPartners && gameState.polyPartners.length > 0) {
+    scandals.push(`👥 Your polyamorous relationship is the talk of the colony!`);
+  }
+  
+  const scandal = scandals[Math.floor(Math.random() * scandals.length)];
+  addToHistory(scandal, false);
+  
+  addXP(10);
+  drainEnergy(2);
+  
+  logEventToServer('scandal_viewed', { scandalType: scandal });
+},
+'/divorce_court': () => {
+  if (!gameState.marriedTo) {
+    addToHistory('⚖️ You\'re not married, no need for divorce court!', false);
+    return;
+  }
+  
+  addToHistory(`⚖️ MARS COLONY DIVORCE PROCEEDINGS`, false);
+  addToHistory(`🏛️ You vs. ${gameState.marriedTo}`, false);
+  
+  showThinking();
+  setTimeout(() => {
+    const courtOutcomes = [
+      { 
+        message: `⚖️ Court rules in your favor! You keep 70% of shared resources.`,
+        creditsChange: Math.floor(gameState.resources.credits * 0.2)
+      },
+      { 
+        message: `💸 Court rules against you. You must pay alimony.`,
+        creditsChange: -Math.floor(gameState.resources.credits * 0.3)
+      },
+      { 
+        message: `⚖️ Amicable settlement reached. Assets split 50/50.`,
+        creditsChange: 0
       }
+    ];
+    
+    const outcome = courtOutcomes[Math.floor(Math.random() * courtOutcomes.length)];
+    addToHistory(outcome.message, false);
+    
+    gameState.resources.credits = Math.max(0, gameState.resources.credits + outcome.creditsChange);
+    gameState.marriedTo = null;
+    gameState.relationship = 'divorced';
+    
+    trackRelationshipEvent('divorce_finalized', {
+      exSpouse: gameState.marriedTo,
+      financialOutcome: outcome.creditsChange,
+      courtRuling: outcome.message
+    });
+    
+    addXP(100);
+  }, 4000);
+  
+  drainEnergy(30);
+  saveGame();
+},
+
+'/reputation': () => {
+  const reputation = gameState.reputation || 50;
+  let reputationStatus;
+  
+  if (reputation < 20) {
+    reputationStatus = "Notorious Troublemaker 😈";
+  } else if (reputation < 40) {
+    reputationStatus = "Questionable Character 🤨";
+  } else if (reputation < 60) {
+    reputationStatus = "Average Colonist 😐";
+  } else if (reputation < 80) {
+    reputationStatus = "Respected Member 😊";
+  } else {
+    reputationStatus = "Colony Hero 👑";
+  }
+  
+  addToHistory(`📊 YOUR MARS COLONY REPUTATION:
+🏆 Status: ${reputationStatus}
+📈 Score: ${reputation}/100
+
+Recent Activities:
+${gameState.secretAffairs ? `🤫 Secret Affairs: ${gameState.secretAffairs.length}` : ''}
+${gameState.children.length > 0 ? `👶 Children: ${gameState.children.length}` : ''}
+${gameState.friends.length > 0 ? `👥 Friends: ${gameState.friends.length}` : ''}
+${gameState.polyPartners ? `💕 Poly Partners: ${gameState.polyPartners.length}` : ''}`, false);
+  
+  addXP(5);
+  logEventToServer('reputation_checked', { reputation, status: reputationStatus });
+},
+
+'/therapy': () => {
+  if (gameState.resources.credits < 100) {
+    addToHistory('💰 Therapy costs 100 credits. Mental health is expensive on Mars!', false);
+    return;
+  }
+  
+  gameState.resources.credits -= 100;
+  addToHistory(`🛋️ You attend a therapy session with Dr. Martinez...`, false);
+  
+  showThinking();
+  setTimeout(() => {
+    gameState.relationshipHealth = Math.min(100, (gameState.relationshipHealth || 50) + 30);
+    gameState.partnerMood = gameState.partnerMood === 'furious' ? 'hurt_but_forgiving' : 'happy';
+    gameState.mentalHealth = Math.min(100, (gameState.mentalHealth || 50) + 40);
+    
+    addToHistory(`💚 Therapy helps! You feel more balanced and your relationships improve.`, false);
+    addToHistory(`🧠 Mental Health: ${gameState.mentalHealth}% | Relationship Health: ${gameState.relationshipHealth}%`, false);
+    
+    trackRelationshipEvent('therapy_session', {
+      cost: 100,
+      mentalHealthGain: 40,
+      relationshipHealthGain: 30
+    });
+    
+    addXP(75);
+  }, 3000);
+  
+  drainEnergy(10);
+  saveGame();
+},
+
+'/drunk': () => {
+  if (gameState.resources.credits < 25) {
+    addToHistory('🍺 You need 25 credits for Mars moonshine!', false);
+    return;
+  }
+  
+  gameState.resources.credits -= 25;
+  gameState.isDrunk = true;
+  
+  addToHistory(`🍻 You drink some potent Mars moonshine... everything feels fuzzy!`, false);
+  
+  // Drunk commands have different effects
+  setTimeout(() => {
+    const drunkActions = [
+      `😵 You confess your love to your companion's reflection!`,
+      `🤪 You try to call Earth but end up talking to a rover!`,
+      `😂 You think the red soil is talking to you!`,
+      `🎤 You sing love songs to the Martian sunset!`
+    ];
+    
+    const action = drunkActions[Math.floor(Math.random() * drunkActions.length)];
+    addToHistory(action, false);
+    
+    logEventToServer('drunk_behavior', { action, cost: 25 });
+    addXP(20);
+    
+    // Sober up after some time
+    setTimeout(() => {
+      gameState.isDrunk = false;
+      addToHistory(`😅 You sober up and remember why Mars colonists should drink responsibly...`, false);
+    }, 120000); // 2 minutes
+  }, 1000);
+  
+  drainEnergy(15);
+  saveGame();
+},
+
+
+
+'/stalk': (args) => {
+  if (!args) {
+    addToHistory('Usage: /stalk [name]', false);
+    return;
+  }
+  
+  addToHistory(`🕵️ You carefully observe ${args} from a distance...`, false);
+  
+  showThinking();
+  setTimeout(() => {
+    const observations = [
+      `${args} likes to watch Earth rise over the Mars horizon`,
+      `${args} has a secret stash of Earth snacks in their habitat`,
+      `${args} talks to their plants in the greenhouse`,
+      `${args} practices zero-gravity dancing when alone`,
+      `${args} writes poetry about Mars sunsets`
+    ];
+    
+    const observation = observations[Math.floor(Math.random() * observations.length)];
+    addToHistory(`👁️ You discovered: ${observation}`, false);
+    
+    if (Math.random() > 0.7) {
+      addToHistory(`😱 ${args} noticed you watching! They seem uncomfortable...`, false);
+      if (args === gameState.partnerName || args === gameState.marriedTo) {
+        gameState.relationshipHealth = Math.max(0, (gameState.relationshipHealth || 100) - 10);
+      }
+      logEventToServer('stalking_caught', { target: args });
+    } else {
+      logEventToServer('stalking_successful', { target: args, observation });
+    }
+  }, 2500);
+  
+  addXP(15);
+  drainEnergy(10);
+  saveGame();
+}
     };
     
 //     function showSuggestions(input) {
@@ -2733,6 +3409,43 @@ ${gameState.marriedTo ? `💒 Married to: ${gameState.marriedTo}` : ''}
 //     suggestions.style.display = 'none';
 //   }
 // }
+// function showSuggestions(input, isTerminalMode = false) {
+//   const suggestionsContainer = isTerminalMode 
+//     ? document.getElementById('terminalSuggestions')
+//     : document.getElementById('suggestions');
+    
+//   const inputElement = isTerminalMode 
+//     ? document.getElementById('terminalCommandInput')
+//     : document.getElementById('terminalInput');
+  
+//   suggestionsContainer.innerHTML = '';
+  
+//   if (!input.startsWith('/')) {
+//     suggestionsContainer.style.display = 'none';
+//     return;
+//   }
+  
+//   const inputParts = input.split(' ');
+//   const command = inputParts[0];
+//   const availableCommands = Object.keys(commands).filter(cmd => cmd.startsWith(command));
+  
+//   if (availableCommands.length > 0) {
+//     suggestionsContainer.style.display = 'block';
+//     availableCommands.forEach(cmd => {
+//       const item = document.createElement('div');
+//       item.className = 'suggestion-item';
+//       item.textContent = cmd;
+//       item.addEventListener('click', () => {
+//         inputElement.value = cmd + ' ';
+//         suggestionsContainer.style.display = 'none';
+//         inputElement.focus();
+//       });
+//       suggestionsContainer.appendChild(item);
+//     });
+//   } else {
+//     suggestionsContainer.style.display = 'none';
+//   }
+// }
 function showSuggestions(input, isTerminalMode = false) {
   const suggestionsContainer = isTerminalMode 
     ? document.getElementById('terminalSuggestions')
@@ -2755,15 +3468,36 @@ function showSuggestions(input, isTerminalMode = false) {
   
   if (availableCommands.length > 0) {
     suggestionsContainer.style.display = 'block';
+    
     availableCommands.forEach(cmd => {
       const item = document.createElement('div');
       item.className = 'suggestion-item';
+      item.style.cssText = `
+        padding: 8px 12px;
+        margin: 2px 0;
+        background: rgba(0, 255, 153, 0.1);
+        border: 1px solid rgba(0, 255, 153, 0.3);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      `;
+      
       item.textContent = cmd;
+      
+      item.addEventListener('mouseenter', () => {
+        item.style.background = 'rgba(0, 255, 153, 0.2)';
+      });
+      
+      item.addEventListener('mouseleave', () => {
+        item.style.background = 'rgba(0, 255, 153, 0.1)';
+      });
+      
       item.addEventListener('click', () => {
         inputElement.value = cmd + ' ';
         suggestionsContainer.style.display = 'none';
         inputElement.focus();
       });
+      
       suggestionsContainer.appendChild(item);
     });
   } else {
@@ -3796,7 +4530,8 @@ class RealSolanaPayManager {
     }
   }
 }
-
+window.sendApology = sendApology;
+window.giveGift = giveGift;
 // Initialize Solana Pay
 const realSolanaPayManager = new RealSolanaPayManager();
   </script>
