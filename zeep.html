@@ -4569,7 +4569,7 @@ class RealSolanaPayManager {
 
   async createPayment(packType) {
     const pack = this.packs[packType];
-    const recipientWallet = 'YourRecipientWalletAddressHere'; // Replace with your wallet
+    const recipientWallet = '3KbAKcvoX91kBL59LUBxRq2chapuWhd1KfV86N5zxU5q'; // Replace with your wallet
     
     const paymentUrl = `solana:${recipientWallet}?amount=${pack.price}&label=${encodeURIComponent(pack.name)}&message=${encodeURIComponent(`Purchase ${pack.name} for MarsoVerse`)}`;
     
