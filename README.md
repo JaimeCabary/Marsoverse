@@ -9,6 +9,13 @@ Marsoverse is an immersive, browser-based 3D game universe that transports playe
 
 Escape Earth's destruction and build a new life on the Red Planet! Whether you're coding in the Zepta Terminal, exploring 3D Mars maps, or earning XP through missions, Marsoverse blends education, strategy, and fun in a low-resource, accessible metaverse.
 
+## Project Media & Docs
+
+- [How HoneyComb Protocol Powers My Game (PDF)](./How%20HoneyComb%20protocol%20powers%20my%20game.pdf)
+- [Marsoverse (1) (PDF)](./Marsoverse%20(1).pdf)
+- [Full Mars Walkthrough (MP4)](./Full%20Mars%20Walkthrough.mp4)
+- [Mars Walkthrough 2 (MP4)](./Mars%20walkthrough%202.mp4)
+
 **Live Demo**: [https://marsoverse.netlify.app](https://marsoverse.netlify.app)  
 **GitHub Repo**: [https://github.com/JaimeCabary](https://github.com/JaimeCabary/Marsoverse)
 **Walkthrough 1**: [https://youtu.be/t-fly8eS-6Q](https://youtu.be/t-fly8eS-6Q)
@@ -91,6 +98,7 @@ No installation required! Marsoverse is fully browser-based.
 
 Contributions welcome - fork the repo and submit PRs!
 
+
 ## Future Possibilities
 
 - Multiplayer exploration and Martian economy with collectibles.
@@ -111,4 +119,74 @@ Follow for updates: [GitHub](https://github.com/JaimeCabary)
 Ready to become a Martian? Dive in and explore! For feedback, contributions, or questions, open an issue on GitHub or reach out. Let's build the future of Mars together.
 
 Thank you! Built with AI and Love by Shalom Chidi-Azuwike.
+
+
+## 📸 Gallery
+
+<p align="center">
+  <img src="MARS-WALKTHRU/1.png" width="300" />
+  <img src="MARS-WALKTHRU/10.png" width="300" />
+  <img src="MARS-WALKTHRU/11.png" width="300" />
+  <img src="MARS-WALKTHRU/12.png" width="300" />
+  <img src="MARS-WALKTHRU/13.png" width="300" />
+  <img src="MARS-WALKTHRU/14.png" width="300" />
+  <img src="MARS-WALKTHRU/15.png" width="300" />
+  <img src="MARS-WALKTHRU/16.png" width="300" />
+  <img src="MARS-WALKTHRU/17.png" width="300" />
+  <img src="MARS-WALKTHRU/18.png" width="300" />
+  <img src="MARS-WALKTHRU/19.png" width="300" />
+  <img src="MARS-WALKTHRU/2.png" width="300" />
+  <img src="MARS-WALKTHRU/3.png" width="300" />
+  <img src="MARS-WALKTHRU/4.png" width="300" />
+  <img src="MARS-WALKTHRU/5.png" width="300" />
+  <img src="MARS-WALKTHRU/6.png" width="300" />
+  <img src="MARS-WALKTHRU/7.png" width="300" />
+  <img src="MARS-WALKTHRU/8.png" width="300" />
+  <img src="MARS-WALKTHRU/9.png" width="300" />
+  <img src="MARS-WALKTHRU/agaa.png" width="300" />
+  <img src="MARS-WALKTHRU/age.png" width="300" />
+  <img src="MARS-WALKTHRU/assh.jpg" width="300" />
+  <img src="MARS-WALKTHRU/blja.png" width="300" />
+  <img src="MARS-WALKTHRU/comp.png" width="300" />
+  <img src="MARS-WALKTHRU/cyb.png" width="300" />
+  <img src="MARS-WALKTHRU/gee.png" width="300" />
+  <img src="MARS-WALKTHRU/gg.png" width="300" />
+  <img src="MARS-WALKTHRU/hang.png" width="300" />
+  <img src="MARS-WALKTHRU/honn.svg" width="300" />
+  <img src="MARS-WALKTHRU/iphone view.png" width="300" />
+  <img src="MARS-WALKTHRU/land.png" width="300" />
+  <img src="MARS-WALKTHRU/lau.png" width="300" />
+  <img src="MARS-WALKTHRU/loseblj.png" width="300" />
+  <img src="MARS-WALKTHRU/mars.png" width="300" />
+  <img src="MARS-WALKTHRU/Marsoverse.gif" width="300" />
+  <img src="MARS-WALKTHRU/Marsoversea.gif" width="300" />
+  <img src="MARS-WALKTHRU/marss.png" width="300" />
+  <img src="MARS-WALKTHRU/marzo.png" width="300" />
+  <img src="MARS-WALKTHRU/me.png" width="300" />
+  <img src="MARS-WALKTHRU/mini.png" width="300" />
+  <img src="MARS-WALKTHRU/name.png" width="300" />
+  <img src="MARS-WALKTHRU/node.jpeg" width="300" />
+  <img src="MARS-WALKTHRU/oker.png" width="300" />
+  <img src="MARS-WALKTHRU/pc view.png" width="300" />
+  <img src="MARS-WALKTHRU/pl.png" width="300" />
+  <img src="MARS-WALKTHRU/poeek.png" width="300" />
+  <img src="MARS-WALKTHRU/poke.png" width="300" />
+  <img src="MARS-WALKTHRU/saa.png" width="300" />
+  <img src="MARS-WALKTHRU/sas.png" width="300" />
+  <img src="MARS-WALKTHRU/Screenshot (1672).png" width="300" />
+  <img src="MARS-WALKTHRU/sdes.png" width="300" />
+  <img src="MARS-WALKTHRU/settings.png" width="300" />
+  <img src="MARS-WALKTHRU/shaa.png" width="300" />
+  <img src="MARS-WALKTHRU/sol.png" width="300" />
+  <img src="MARS-WALKTHRU/solll.jpeg" width="300" />
+  <img src="MARS-WALKTHRU/space.png" width="300" />
+  <img src="MARS-WALKTHRU/tab.png" width="300" />
+  <img src="MARS-WALKTHRU/terminal.png" width="300" />
+  <img src="MARS-WALKTHRU/terrr.png" width="300" />
+  <img src="MARS-WALKTHRU/three.png" width="300" />
+  <img src="MARS-WALKTHRU/vann.jpeg" width="300" />
+  <img src="MARS-WALKTHRU/winbj.png" width="300" />
+  <img src="MARS-WALKTHRU/word.png" width="300" />
+  <img src="MARS-WALKTHRU/xno.png" width="300" />
+</p>
 

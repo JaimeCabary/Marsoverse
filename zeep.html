@@ -1611,7 +1611,6 @@
       initializeGame();
       loadChatHistory();
       updateStatusDisplay();
-      startEnergyDrain();
       startVisitorSystem();
       checkConnection();
       
@@ -1758,6 +1757,41 @@ function giveGift() {
     addToHistory('💰 You need 50 credits for a meaningful gift.', false, 'system');
   }
 }
+
+// Enhanced apologize system
+function handleApology() {
+  if (!gameState.lastCheatingIncident) return;
+  
+  const forgiveChance = Math.random();
+  const incident = gameState.lastCheatingIncident;
+  
+  if (forgiveChance > 0.6) {
+    // Partner forgives
+    gameState.relationshipHealth = Math.min(100, (gameState.relationshipHealth || 0) + 20);
+    gameState.partnerMood = 'hurt_but_forgiving';
+    addToHistory(`💝 ${gameState.partnerName || gameState.marriedTo} forgives you... "I love you, but please don't hurt me again."`, false, 'system');
+    
+    logEventToServer('apology_accepted', {
+      incident,
+      newRelationshipHealth: gameState.relationshipHealth
+    });
+  } else {
+    // Partner doesn't forgive easily
+    gameState.relationshipHealth = Math.max(0, (gameState.relationshipHealth || 0) + 5);
+    gameState.partnerMood = 'still_angry';
+    addToHistory(`😔 ${gameState.partnerName || gameState.marriedTo} is still hurt: "I need time to think about us..."`, false, 'system');
+    
+    logEventToServer('apology_rejected', {
+      incident,
+      newRelationshipHealth: gameState.relationshipHealth
+    });
+  }
+  
+  // Clear incident after addressing it
+  gameState.lastCheatingIncident = null;
+  saveGame();
+}
+
     function checkConnection() {
       window.addEventListener('online', () => {
         isOnline = true;
@@ -2253,59 +2287,142 @@ function addXP(amount) {
 
     // Enhanced Commands
     const commands = {
-      '/help': () => {
-        const helpText = `🧭 ZEPTA Commands Available:
+'/help': () => {
+  // Send help in organized batches with delays
+  const helpSections = [
+    {
+      title: "🧭 ZEPTA MARS COLONY COMMANDS",
+      content: `Welcome to Mars! Here are all available commands organized by category.
+Type any command to get started on your adventure! 🔴
 
-NAVIGATION:
-• /nav home - Go to landing page
-• /nav game - Go to main game  
-• /nav mars - Open Mars viewer
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+    },
+    
+    {
+      title: "🚀 NAVIGATION & SYSTEM",
+      content: `🚀 NAVIGATION:
+/nav home - Go to landing page
+/nav game - Go to main game  
+/nav mars - Open Mars viewer
 
-COMPANIONS & RELATIONSHIPS:
-• /connect [name] - Connect with companion
-• /companion chat - Talk with companion
-• /companion rename [name] - Rename companion
-• /partner set [name] - Set romantic partner
-• /partner status - Check partner relationship
-• /marry [name] - Propose marriage
-• /divorce - End marriage
-• /date [name] - Go on romantic date
-• /kiss [name] - Kiss someone
-• /hug [name] - Hug someone
-• /flirt [name] - Flirt with someone
-• /breakup [name] - End relationship
+⚙️ SYSTEM CONTROLS:
+/theme toggle - Switch terminal/chat mode
+/chat new - Start fresh chat session
+/save - Save game progress manually
+/status - Show detailed player status
 
-FAMILY & SOCIAL:
-• /baby [partner name] - Have baby with someone
-• /baby name [baby name] - Have baby with someone named ****
-• /family tree - Show family tree
-• /friends list - Show friends
-• /build home [name] - Build home for someone
-• /children list - Show kids
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+    },
+    
+    {
+      title: "💕 COMPANIONS & RELATIONSHIPS",
+      content: `💕 BASIC RELATIONSHIPS:
+/connect [name] - Connect with companion
+/companion chat [message] - Talk with companion
+/companion rename [name] - Rename companion
+/partner set [name] - Set romantic partner
+/partner status - Check partner relationship
 
-RESOURCES & ENERGY:
-• /energy status - Check energy level
-• /energy recharge - Recharge with Solana Pay
-• /credits earn [amount] - Earn credits
-• /trade [resource] [amount] - Trade resources
-• /resources status - Check all resources
+💒 MARRIAGE & COMMITMENT:
+/marry [name] - Propose marriage
+/propose [name] - Formally propose engagement
+/divorce - End marriage
+/divorce_court - Legal divorce proceedings
 
-MISSIONS & ACTIVITIES:
-• /mission [type] - Start mission (costs energy)
-• /explore - Explore Mars (costs energy)
-• /build [structure] - Build structure
-• /minigame [game] - Play mini game (costs energy)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+    },
+    
+    {
+      title: "💋 ROMANCE & INTIMACY",
+      content: `💋 ROMANTIC ACTIONS:
+/date [name] - Go on romantic date
+/kiss [name] - Kiss someone
+/hug [name] - Hug someone
+/flirt [name] - Flirt with someone
+/gift [name] - Give romantic gift (50 credits)
+/breakup [name] - End relationship
 
-SYSTEM:
-• /theme toggle - Switch terminal/chat mode
-• /chat new - Start new chat session
-• /save - Save game manually
-• /status - Show detailed status`;
-        
-        addToHistory(helpText, false);
-        addXP(5);
-      },
+🔥 ADVANCED RELATIONSHIPS:
+/affair [name] - Start secret affair (risky!)
+/confess - Confess affair to partner
+/swingers - Propose swinger lifestyle
+/polyamory [name] - Add partner to poly relationship
+/jealousy - Check relationship health
+/stalk [name] - Secretly observe someone
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+    },
+    
+    {
+      title: "👨‍👩‍👧‍👦 FAMILY & SOCIAL",
+      content: `👶 FAMILY BUILDING:
+/baby [partner name] - Have baby with someone
+/baby name [baby name] - Name your newborn baby
+/family tree - Show complete family tree
+/children list - Show all your children
+
+👥 SOCIAL CONNECTIONS:
+/friends list - Show all friends
+/build home [name] - Build home for someone
+
+🏥 MENTAL HEALTH & SOCIETY:
+/therapy - Attend therapy session (100 credits)
+/reputation - Check your colony reputation
+/scandal - Read colony gossip network
+/drunk - Get drunk on Mars moonshine (25 credits)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+    },
+    
+    {
+      title: "💰 RESOURCES & ACTIVITIES",
+      content: `💰 RESOURCES & ENERGY:
+/energy status - Check current energy level
+/energy recharge - Recharge with Solana Pay
+/credits earn [amount] - Earn credits from work
+/trade [resource] [amount] - Trade resources for credits
+/resources status - Check all resource levels
+
+🎯 MISSIONS & ACTIVITIES:
+/mission [type] - Start mission (explore/build/science/rescue)
+/explore - Explore Mars terrain
+/build [structure] - Build infrastructure
+/minigame [game] - Play games (blackjack/poker/snake/space/xo/word)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+    },
+    
+    {
+      title: "💡 TIPS & INFO",
+      content: `💡 IMPORTANT TIPS:
+
+• Most romantic actions affect relationship health
+• Energy costs: Low (2-5) | Medium (10-15) | High (20-30)
+• Some commands require credits - check /resources first
+• Type /status for detailed character information
+• Commands are case-sensitive, use lowercase
+
+🔴 Ready to explore Mars? Pick any command above and start your adventure!
+
+Need help with a specific command? Just try it out!`
+    }
+  ];
+
+  // Send first section immediately
+  addToHistory(helpSections[0].content, false);
+
+  // Send remaining sections with delays
+  helpSections.slice(1).forEach((section, index) => {
+    setTimeout(() => {
+      addToHistory(`${section.title}
+
+${section.content}`, false);
+    }, (index + 1) * 2000); // 2 second delays between sections
+  });
+
+  addXP(5);
+},
+  
       '/nav': (args) => {
         const destinations = {
           'home': { url: 'index.html', name: '🏠 Landing Page' },
@@ -2339,22 +2456,32 @@ SYSTEM:
       }
       
       if (gameState.companionName !== name) {
-        gameState.companionName = name;
-        localStorage.setItem('companionName', name);
-        localStorage.setItem('companionImage', 'images/elena.png'); // Default image for non-Errin/Elena names
-        if (gameState.relationship === 'stranger') {
-          gameState.relationship = 'friend';
-        }
-        addToHistory(`🤖 ${name} has joined your mission as your companion!`, false);
-        triggerCompanionPopup(name);
-      } else {
-        addToHistory(`🤖 ${name} is already your companion!`, false);
-      }
-      
-      addXP(25);
-      drainEnergy(3);
-      saveGame();
-    },
+  gameState.companionName = name;
+
+  // Set companion image based on name
+  if (name.toLowerCase() === 'errin') {
+    localStorage.setItem('companionImage', 'images/errin.png');
+  } else {
+    localStorage.setItem('companionImage', 'images/elena.png');
+  }
+
+  localStorage.setItem('companionName', name);
+
+  if (gameState.relationship === 'stranger') {
+    gameState.relationship = 'friend';
+  }
+
+  addToHistory(`🤖 ${name} has joined your mission as your companion!`, false);
+  triggerCompanionPopup(name);
+
+} else {
+  addToHistory(`🤖 ${name} is already your companion!`, false);
+}
+
+addXP(25);
+drainEnergy(3);
+saveGame();
+},
 
       // '/connect': (args) => {
       //   if (!args) {

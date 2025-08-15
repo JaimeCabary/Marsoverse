@@ -1,0 +1,8 @@
+Admin cheats: for energy in zepta terminal
+PC: <up, up, down, down, a,d,m,i,n>
+Mobile: <top right, top left, bottom left, bottom right>
+admin cheat:
+enter admin as name on onboarding
+admin name: admin
+password: admin@marsoverse
+more loading
