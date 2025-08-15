@@ -17,9 +17,13 @@ Escape Earth's destruction and build a new life on the Red Planet! Whether you'r
 - [Mars Walkthrough 2 (MP4)](./Mars%20walkthrough%202.mp4)
 
 **Live Demo**: [https://marsoverse.netlify.app](https://marsoverse.netlify.app)  
-**GitHub Repo**: [https://github.com/JaimeCabary](https://github.com/JaimeCabary/Marsoverse)
+**GitHub Repo**: [https://github.com/JaimeCabary/Marsoverse](https://github.com/JaimeCabary/Marsoverse)
+## On internet
 **Walkthrough 1**: [https://youtu.be/t-fly8eS-6Q](https://youtu.be/t-fly8eS-6Q)
 **Walkthrough 2**: [https://youtu.be/53VvNd_5maw](https://youtu.be/53VvNd_5maw)
+## Locally
+**Walkthrough 1:** [Full Mars Walkthrough.mp4](Full%20Mars%20Walkthrough.mp4)  
+**Walkthrough 2:** [Mars Walkthrough 2.mp4](Mars%20Walkthrough%202.mp4)
 
 
 ![Landing Page Screenshot](MARS-WALKTHRU/Marsoverse.gif)  
