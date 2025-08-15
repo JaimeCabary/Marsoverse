@@ -290,7 +290,14 @@ function createHUD() {
   `;
   backBtn.onmouseover = () => (backBtn.style.background = 'rgba(255, 255, 255, 0.2)');
   backBtn.onmouseout = () => (backBtn.style.background = 'rgba(255, 255, 255, 0.1)');
-  backBtn.onclick = () => (window.location.href = 'marzo.html');
+  backBtn.onclick = () => {
+    if (window.location.hostname === 'localhost') {
+        window.location.href = 'http://localhost:5501/marzo.html'; // adjust port if needed 
+    } else {
+        window.location.href = 'https://marsoverse.netlify.app/marzo.html';
+    }
+};
+
 
   // Player name display
   const playerName = localStorage.getItem('playerName') || 'Space Explorer';
