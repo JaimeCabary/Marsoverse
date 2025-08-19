@@ -1,6 +1,9 @@
 Admin cheats: for energy in zepta terminal
+<zeep.html>
 PC: <up, up, down, down, a,d,m,i,n>
-Mobile: <top right, top left, bottom left, bottom right>
+Mobile: <top left, top right, bottom left, bottom right>
+
+<index.html>
 admin cheat:
 enter admin as name on onboarding
 admin name: admin

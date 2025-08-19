@@ -420,9 +420,61 @@ app.get('/api/game-data/:userId', async (req, res) => {
 });
 
 // Send Push Notification Endpoint (mobile-optimized)
+// app.post('/api/send-notification', express.json(), async (req, res) => {
+//   try {
+//     const { userId, title, body, icon, badge, image } = req.body;
+    
+//     if (!userId || !title) {
+//       return res.status(400).json({ error: 'userId and title are required' });
+//     }
+    
+//     const subscription = pushSubscriptions.get(userId);
+    
+//     if (!subscription) {
+//       return res.status(404).json({ error: 'No subscription found for user' });
+//     }
+    
+//     // Mobile-optimized notification payload
+//     const payload = {
+//       title: title,
+//       body: body || 'Marsoverse Notification',
+//       icon: icon || '/images/icon-192.png',
+//       badge: badge || '/images/icon-192.png',
+//       image: image || '/images/mars-bg.jpg',
+//       vibrate: [200, 100, 200],
+//       timestamp: Date.now(),
+//       data: {
+//         url: '/index.html',
+//         gameId: 'marsoverse-main'
+//       },
+//       actions: [
+//         { action: 'play', title: 'Play Now' },
+//         { action: 'explore', title: 'Explore Mars' }
+//       ]
+//     };
+    
+//     // Send push notification
+//     await sendPushNotification(subscription.subscription, payload);
+    
+//     res.status(200).json({ success: true, message: 'Notification sent' });
+    
+//   } catch (error) {
+//     console.error('❌ Send notification error:', error);
+    
+//     // Remove invalid subscriptions (GONE status)
+//     if (error.statusCode === 410) {
+//       pushSubscriptions.delete(userId);
+//       console.log('🧹 Removed expired subscription for user:', userId);
+//     }
+    
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+// Enhanced mobile push notification endpoint
 app.post('/api/send-notification', express.json(), async (req, res) => {
   try {
-    const { userId, title, body, icon, badge, image } = req.body;
+    const { userId, title, body, icon, badge, image, data } = req.body;
     
     if (!userId || !title) {
       return res.status(400).json({ error: 'userId and title are required' });
@@ -433,35 +485,56 @@ app.post('/api/send-notification', express.json(), async (req, res) => {
     if (!subscription) {
       return res.status(404).json({ error: 'No subscription found for user' });
     }
-    
-    // Mobile-optimized notification payload
+
+    // Get user's platform for optimization
+    const userAgent = subscription.userAgent || '';
+    const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+    const isAndroid = /Android/i.test(userAgent);
+
+    // Platform-optimized payload
     const payload = {
       title: title,
       body: body || 'Marsoverse Notification',
       icon: icon || '/images/icon-192.png',
       badge: badge || '/images/icon-192.png',
-      image: image || '/images/mars-bg.jpg',
-      vibrate: [200, 100, 200],
       timestamp: Date.now(),
       data: {
-        url: '/index.html',
-        gameId: 'marsoverse-main'
-      },
-      actions: [
-        { action: 'play', title: 'Play Now' },
-        { action: 'explore', title: 'Explore Mars' }
-      ]
+        url: data?.url || '/index.html',
+        gameId: data?.gameId || 'marsoverse-main',
+        deepLink: data?.deepLink || '/game'
+      }
     };
-    
+
+    // Platform-specific enhancements
+    if (isAndroid && !isIOS) {
+      // Android-specific features
+      payload.image = image || '/images/mars-bg.jpg';
+      payload.vibrate = [200, 100, 200];
+      payload.actions = [
+        { action: 'play', title: '🎮 Play Now' },
+        { action: 'explore', title: '🔴 Explore Mars' }
+      ];
+    } else if (isIOS) {
+      // iOS-specific adjustments
+      payload.sound = 'default';
+      // iOS doesn't support image/vibrate in same way
+    }
+
+    // Add category for iOS grouping
+    payload.category = 'GAME_UPDATES';
+
     // Send push notification
     await sendPushNotification(subscription.subscription, payload);
     
-    res.status(200).json({ success: true, message: 'Notification sent' });
+    res.status(200).json({ 
+      success: true, 
+      message: 'Notification sent',
+      platform: isIOS ? 'ios' : isAndroid ? 'android' : 'desktop'
+    });
     
   } catch (error) {
     console.error('❌ Send notification error:', error);
     
-    // Remove invalid subscriptions (GONE status)
     if (error.statusCode === 410) {
       pushSubscriptions.delete(userId);
       console.log('🧹 Removed expired subscription for user:', userId);
