@@ -290,12 +290,8 @@ function createHUD() {
   `;
   backBtn.onmouseover = () => (backBtn.style.background = 'rgba(255, 255, 255, 0.2)');
   backBtn.onmouseout = () => (backBtn.style.background = 'rgba(255, 255, 255, 0.1)');
-  backBtn.onclick = () => {
-    if (window.location.hostname === 'localhost') {
-        window.location.href = 'http://localhost:5501/marzo.html'; // adjust port if needed 
-    } else {
-        window.location.href = 'https://marsoverse.netlify.app/marzo.html';
-    }
+backBtn.onclick = () => {
+  window.history.back(); // Let browser handle navigation
 };
 
 

@@ -62,6 +62,14 @@ The game starts with narrative onboarding: Enter your name and age, connect your
 ![Bottom Nav Bar Screenshot](MARS-WALKTHRU/marzo.png)  
 *Placeholder: Screenshot of the HUD with nav bar: Home, Leaderboard, Missions, Settings, Terminal.*
 
+## Pages to Focus on
+1. **Landing Page (`index.html`)**
+2. **Main Game Page (`marzo.html`)**
+3. **Zepta Terminal (`zeep.html`)**
+4. **Mars (`mars-viewer/dist/index.html`)**
+5. **Admin (`admin.html`)**
+
+
 ## How to Play (User Journey)
 
 1. **Landing & Onboarding (`index.html`)**: Visit the site, enter your name and age, connect your wallet, and read the Earth's destruction story. Generate your avatar and user ID with a WebGL-powered intro animation.
