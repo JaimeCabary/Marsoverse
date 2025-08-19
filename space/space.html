@@ -5,53 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🚀 Mars Space Shooter</title>
   <link rel="icon" href="screens\spacer.png" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+
   <style>
-    body {
+    html, body {
+      height: 100%;
+      overflow: hidden; /* Prevent scrolling */
       margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
       padding: 20px;
-      font-family: 'Arial', sans-serif;
+      box-sizing: border-box;
+      font-family: 'Orbitron', sans-serif;
       background: linear-gradient(to bottom, #0a0a2a, #1a1a3a);
       color: white;
       text-align: center;
-      overflow: hidden;
     }
-    
+
     h1 {
       color: #ff6600;
-      text-shadow: 0 0 3px #302c2c;
+      text-shadow: 0 0 10px #302c2c;
       margin-bottom: 10px;
     }
-    
+
     #stats {
       margin-bottom: 20px;
       font-size: 18px;
     }
-    
+
     #xpDisplay, #lifeDisplay {
       color: #00ffcc;
       font-weight: bold;
     }
-    
-    canvas {
+
+    #gameCanvas {
+      max-width: 100%;
+      max-height: 70vh;
+      width: auto;
+      height: auto;
+      display: block;
       border: 2px solid #00aaff;
       border-radius: 10px;
       background: #000;
       box-shadow: 0 0 20px rgba(0, 170, 255, 0.5);
       margin-bottom: 20px;
     }
-    
+
     a {
       display: block;
-      margin-top: 20px;
+      margin-top: 2px;
       color: #00ffcc;
       text-decoration: none;
       font-size: 18px;
     }
-    
+
     a:hover {
       text-decoration: underline;
     }
-    
+
     #gameOverScreen {
       position: absolute;
       top: 50%;
@@ -66,12 +84,12 @@
       width: 80%;
       max-width: 400px;
     }
-    
+
     #gameOverScreen h2 {
       color: #ff3300;
       margin-top: 0;
     }
-    
+
     button {
       background: #ff6600;
       color: white;
@@ -83,7 +101,7 @@
       font-size: 16px;
       transition: all 0.3s;
     }
-    
+
     button:hover {
       background: #ff9933;
       transform: scale(1.05);
@@ -109,95 +127,28 @@
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    // Create placeholder images programmatically
-    function createSpaceshipImage() {
-      const img = new Image();
-      const canvas = document.createElement('canvas');
-      canvas.width = 60;
-      canvas.height = 60;
-      const ctx = canvas.getContext('2d');
-      
-      // Draw spaceship
-      ctx.fillStyle = '#00ff00';
-      ctx.beginPath();
-      ctx.moveTo(30, 0);
-      ctx.lineTo(0, 60);
-      ctx.lineTo(60, 60);
-      ctx.closePath();
-      ctx.fill();
-      
-      // Draw cockpit
-      ctx.fillStyle = '#00aaff';
-      ctx.beginPath();
-      ctx.arc(30, 20, 10, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Draw engine glow
-      const gradient = ctx.createLinearGradient(30, 50, 30, 60);
-      gradient.addColorStop(0, '#ff3300');
-      gradient.addColorStop(1, '#ff9900');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(20, 50, 20, 10);
-      
-      img.src = canvas.toDataURL();
-      return img;
-    }
-
-    function createEnemyImage() {
-      const img = new Image();
-      const canvas = document.createElement('canvas');
-      canvas.width = 40;
-      canvas.height = 40;
-      const ctx = canvas.getContext('2d');
-      
-      // Draw enemy ship
-      ctx.fillStyle = '#ff0000';
-      ctx.beginPath();
-      ctx.moveTo(20, 40);
-      ctx.lineTo(0, 0);
-      ctx.lineTo(40, 0);
-      ctx.closePath();
-      ctx.fill();
-      
-      // Draw details
-      ctx.fillStyle = '#ffff00';
-      ctx.fillRect(15, 15, 10, 5);
-      
-      img.src = canvas.toDataURL();
-      return img;
-    }
-
-    function createPotionImage() {
-      const img = new Image();
-      const canvas = document.createElement('canvas');
-      canvas.width = 20;
-      canvas.height = 20;
-      const ctx = canvas.getContext('2d');
-      
-      // Draw potion
-      ctx.fillStyle = '#00ff00';
-      ctx.beginPath();
-      ctx.arc(10, 10, 8, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Draw highlight
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(6, 6, 2, 0, Math.PI * 2);
-      ctx.fill();
-      
-      img.src = canvas.toDataURL();
-      return img;
-    }
-
-    // Create images
-    const spaceshipImg = createSpaceshipImage();
-    const potionImg = createPotionImage();
+    // Preload images
+    const spaceshipImg = new Image();
+    spaceshipImg.src = "assets/spaceship.png";
     
-    const enemyImages = [];
-    for (let i = 0; i < 5; i++) {
-      enemyImages.push({ img: createEnemyImage(), rotate: i > 0 });
-    }
+    const potionImg = new Image();
+    potionImg.src = "assets/food-icon.png";
+    
+    // Enemy images
+    const enemyImages = [
+      { img: new Image(), rotate: false },
+      { img: new Image(), rotate: true },
+      { img: new Image(), rotate: true },
+      { img: new Image(), rotate: true },
+      { img: new Image(), rotate: true }
+    ];
+    
+    // Set enemy image sources
+    enemyImages[0].img.src = "assets/enemy.png";
+    enemyImages[1].img.src = "assets/enemy1.png";
+    enemyImages[2].img.src = "assets/enemy2.png";
+    enemyImages[3].img.src = "assets/enemy3.png";
+    enemyImages[4].img.src = "assets/enemy4.png";
 
     let spaceship = { x: canvas.width / 2 - 30, y: canvas.height - 80, width: 60, height: 60 };
     let bullets = [], enemies = [], enemyBullets = [], potions = [];
@@ -222,6 +173,10 @@
       if (!isTouching || gamePaused) return;
       const dx = e.touches[0].clientX - lastTouchX;
       spaceship.x += dx;
+      
+      // Keep spaceship within canvas bounds
+      spaceship.x = Math.max(0, Math.min(canvas.width - spaceship.width, spaceship.x));
+      
       lastTouchX = e.touches[0].clientX;
     });
     canvas.addEventListener("touchend", () => { isTouching = false; });
@@ -231,7 +186,11 @@
       if (gamePaused) return;
       if (e.key === "ArrowLeft") spaceship.x -= 20;
       if (e.key === "ArrowRight") spaceship.x += 20;
+      
+      // Keep spaceship within canvas bounds
+      spaceship.x = Math.max(0, Math.min(canvas.width - spaceship.width, spaceship.x));
     });
+    
     canvas.addEventListener("click", () => { if (!gamePaused) shoot(); });
 
     // === Shooting ===
@@ -243,6 +202,7 @@
         bullets.push({ x: spaceship.x + spaceship.width / 2 + offset - 2, y: spaceship.y, width: 4, height: 10 });
       }
     }
+    
     function getBulletCount() {
       if (xp >= 15) return 5;
       if (xp >= 10) return 4;
@@ -272,6 +232,7 @@
         spawnBoss();
       }
     }
+    
     function spawnBoss() {
       enemies.push({
         x: canvas.width / 2 - 60,
@@ -288,10 +249,12 @@
       bossWarningShown = true;
       setTimeout(() => bossWarningShown = false, 3000);
     }
+    
     function spawnPotion() {
       if (gamePaused || !bossSpawned) return;
       potions.push({ x: Math.random() * (canvas.width - 20), y: -20 });
     }
+    
     function enemyShoot(enemy) {
       if (!gamePaused) {
         enemyBullets.push({ x: enemy.x + enemy.width / 2 - 2, y: enemy.y + enemy.height });
@@ -492,28 +455,3 @@
   </script>
 </body>
 </html>
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🚀 Mars Space Shooter</title>
-  <link rel="stylesheet" href="space.css" />
-  <link rel="icon" href="screens\spacer.png" type="image/x-icon" />
-</head>
-<body>
-  <h1>🚀 Mars Space Shooter</h1>
-  <p>XP: <span id="xpDisplay">0</span> | Lives: <span id="lifeDisplay">3</span></p>
-  <canvas id="gameCanvas" width="400" height="600"></canvas>
-  <a href="/marzo.html" style="color:rgb(0, 255, 200);text-decoration:underline; font-size: medium;">← Go back to Mars</a>
-    
-  <div id="gameOverScreen" style="display:none;">
-    <h2>💀 You were killed by the enemy</h2>
-    <button onclick="resetGame()">Restart</button>
-    <button onclick="window.location.href='/marzo.html'">Return Home</button>
-  </div>
-  <script src="space.js"></script>
-</body>
-</html> -->
