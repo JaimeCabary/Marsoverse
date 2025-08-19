@@ -4,6 +4,502 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🚀 Mars Space Shooter</title>
+  <link rel="icon" href="screens\spacer.png" type="image/x-icon" />
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #0a0a2a, #1a1a3a);
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+    
+    h1 {
+      color: #ff6600;
+      text-shadow: 0 0 3px #302c2c;
+      margin-bottom: 10px;
+    }
+    
+    #stats {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    
+    #xpDisplay, #lifeDisplay {
+      color: #00ffcc;
+      font-weight: bold;
+    }
+    
+    canvas {
+      border: 2px solid #00aaff;
+      border-radius: 10px;
+      background: #000;
+      box-shadow: 0 0 20px rgba(0, 170, 255, 0.5);
+      margin-bottom: 20px;
+    }
+    
+    a {
+      display: block;
+      margin-top: 20px;
+      color: #00ffcc;
+      text-decoration: none;
+      font-size: 18px;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    #gameOverScreen {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      padding: 30px;
+      border-radius: 15px;
+      border: 2px solid #ff3300;
+      box-shadow: 0 0 30px rgba(255, 51, 0, 0.7);
+      z-index: 100;
+      width: 80%;
+      max-width: 400px;
+    }
+    
+    #gameOverScreen h2 {
+      color: #ff3300;
+      margin-top: 0;
+    }
+    
+    button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background: #ff9933;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Mars Space Shooter</h1>
+  <div id="stats">
+    XP: <span id="xpDisplay">0</span> | 
+    Lives: <span id="lifeDisplay">3</span>
+  </div>
+  <canvas id="gameCanvas" width="400" height="600"></canvas>
+  <a href="/marzo.html">← Go back to Mars</a>
+    
+  <div id="gameOverScreen" style="display:none;">
+    <h2>💀 You were killed by the enemy</h2>
+    <button onclick="resetGame()">Restart</button>
+    <button onclick="window.location.href='/marzo.html'">Return Home</button>
+  </div>
+  
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Create placeholder images programmatically
+    function createSpaceshipImage() {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      canvas.width = 60;
+      canvas.height = 60;
+      const ctx = canvas.getContext('2d');
+      
+      // Draw spaceship
+      ctx.fillStyle = '#00ff00';
+      ctx.beginPath();
+      ctx.moveTo(30, 0);
+      ctx.lineTo(0, 60);
+      ctx.lineTo(60, 60);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Draw cockpit
+      ctx.fillStyle = '#00aaff';
+      ctx.beginPath();
+      ctx.arc(30, 20, 10, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Draw engine glow
+      const gradient = ctx.createLinearGradient(30, 50, 30, 60);
+      gradient.addColorStop(0, '#ff3300');
+      gradient.addColorStop(1, '#ff9900');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(20, 50, 20, 10);
+      
+      img.src = canvas.toDataURL();
+      return img;
+    }
+
+    function createEnemyImage() {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      canvas.width = 40;
+      canvas.height = 40;
+      const ctx = canvas.getContext('2d');
+      
+      // Draw enemy ship
+      ctx.fillStyle = '#ff0000';
+      ctx.beginPath();
+      ctx.moveTo(20, 40);
+      ctx.lineTo(0, 0);
+      ctx.lineTo(40, 0);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Draw details
+      ctx.fillStyle = '#ffff00';
+      ctx.fillRect(15, 15, 10, 5);
+      
+      img.src = canvas.toDataURL();
+      return img;
+    }
+
+    function createPotionImage() {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      canvas.width = 20;
+      canvas.height = 20;
+      const ctx = canvas.getContext('2d');
+      
+      // Draw potion
+      ctx.fillStyle = '#00ff00';
+      ctx.beginPath();
+      ctx.arc(10, 10, 8, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Draw highlight
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(6, 6, 2, 0, Math.PI * 2);
+      ctx.fill();
+      
+      img.src = canvas.toDataURL();
+      return img;
+    }
+
+    // Create images
+    const spaceshipImg = createSpaceshipImage();
+    const potionImg = createPotionImage();
+    
+    const enemyImages = [];
+    for (let i = 0; i < 5; i++) {
+      enemyImages.push({ img: createEnemyImage(), rotate: i > 0 });
+    }
+
+    let spaceship = { x: canvas.width / 2 - 30, y: canvas.height - 80, width: 60, height: 60 };
+    let bullets = [], enemies = [], enemyBullets = [], potions = [];
+    let xp = parseFloat(localStorage.getItem("marsXP") || 0);
+    let lives = 3;
+    let hits = 0;
+    let bossSpawned = false, bossWarningShown = false, bossFlashTimer = 0;
+    let gamePaused = false;
+    
+    // === INVULNERABILITY SYSTEM ===
+    let isInvulnerable = false;
+    let invulnerabilityTimer = 0;
+    const INVULNERABILITY_DURATION = 2000; // 2 seconds of invulnerability after hit
+
+    // === Touch Control ===
+    let isTouching = false, lastTouchX = null;
+    canvas.addEventListener("touchstart", e => {
+      isTouching = true;
+      lastTouchX = e.touches[0].clientX;
+    });
+    canvas.addEventListener("touchmove", e => {
+      if (!isTouching || gamePaused) return;
+      const dx = e.touches[0].clientX - lastTouchX;
+      spaceship.x += dx;
+      lastTouchX = e.touches[0].clientX;
+    });
+    canvas.addEventListener("touchend", () => { isTouching = false; });
+
+    // === Keyboard Control ===
+    document.addEventListener("keydown", e => {
+      if (gamePaused) return;
+      if (e.key === "ArrowLeft") spaceship.x -= 20;
+      if (e.key === "ArrowRight") spaceship.x += 20;
+    });
+    canvas.addEventListener("click", () => { if (!gamePaused) shoot(); });
+
+    // === Shooting ===
+    function shoot() {
+      const count = getBulletCount();
+      const spacing = 8;
+      for (let i = 0; i < count; i++) {
+        const offset = (i - (count - 1) / 2) * spacing;
+        bullets.push({ x: spaceship.x + spaceship.width / 2 + offset - 2, y: spaceship.y, width: 4, height: 10 });
+      }
+    }
+    function getBulletCount() {
+      if (xp >= 15) return 5;
+      if (xp >= 10) return 4;
+      if (xp >= 5) return 3;
+      if (xp >= 1) return 2;
+      return 1;
+    }
+
+    // === Enemies & Boss ===
+    function spawnEnemy() {
+      if (gamePaused || enemies.length >= 7) return;
+      const type = Math.floor(Math.random() * enemyImages.length);
+      const selected = enemyImages[type];
+      enemies.push({
+        x: Math.random() * (canvas.width - 40),
+        y: -40,
+        width: 40,
+        height: 40,
+        img: selected.img,
+        rotate: selected.rotate,
+        isBoss: false
+      });
+    }
+
+    function checkSpawnBoss() {
+      if (hits >= 20 && !bossSpawned && !gamePaused) {
+        spawnBoss();
+      }
+    }
+    function spawnBoss() {
+      enemies.push({
+        x: canvas.width / 2 - 60,
+        y: -100,
+        width: 120,
+        height: 120,
+        img: enemyImages[0].img,
+        rotate: false,
+        isBoss: true,
+        hp: 30,
+        maxHp: 30
+      });
+      bossSpawned = true;
+      bossWarningShown = true;
+      setTimeout(() => bossWarningShown = false, 3000);
+    }
+    function spawnPotion() {
+      if (gamePaused || !bossSpawned) return;
+      potions.push({ x: Math.random() * (canvas.width - 20), y: -20 });
+    }
+    function enemyShoot(enemy) {
+      if (!gamePaused) {
+        enemyBullets.push({ x: enemy.x + enemy.width / 2 - 2, y: enemy.y + enemy.height });
+      }
+    }
+
+    // === INVULNERABILITY SYSTEM ===
+    function updateInvulnerability(deltaTime) {
+      if (isInvulnerable) {
+        invulnerabilityTimer -= deltaTime;
+        if (invulnerabilityTimer <= 0) {
+          isInvulnerable = false;
+        }
+      }
+    }
+
+    // === Game Loop ===
+    let lastTime = 0;
+    function update(currentTime) {
+      if (gamePaused) {
+        requestAnimationFrame(update);
+        return;
+      }
+      
+      const deltaTime = currentTime - lastTime;
+      lastTime = currentTime;
+      
+      // Update invulnerability timer
+      updateInvulnerability(deltaTime);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw player with invulnerability effect
+      if (isInvulnerable) {
+        // Blinking effect when invulnerable
+        if (Math.floor(currentTime / 200) % 2 === 0) {
+          ctx.globalAlpha = 0.5;
+          ctx.drawImage(spaceshipImg, spaceship.x, spaceship.y, spaceship.width, spaceship.height);
+          ctx.globalAlpha = 1.0;
+        }
+      } else {
+        ctx.drawImage(spaceshipImg, spaceship.x, spaceship.y, spaceship.width, spaceship.height);
+      }
+
+      bullets = bullets.filter(b => b.y > -10);
+      bullets.forEach(b => {
+        b.y -= 6;
+        ctx.fillStyle = "#ff0";
+        ctx.fillRect(b.x, b.y, 4, 10);
+      });
+
+      enemies.forEach((enemy, i) => {
+        enemy.y += 2;
+        if (Math.random() < 0.01) enemyShoot(enemy);
+
+        if (enemy.isBoss) {
+          if (bossFlashTimer > 0) {
+            ctx.fillStyle = "rgba(255,0,0,0.5)";
+            ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            bossFlashTimer--;
+          } else {
+            ctx.drawImage(enemy.img, enemy.x, enemy.y, enemy.width, enemy.height);
+          }
+          ctx.fillStyle = "#800";
+          ctx.fillRect(enemy.x, enemy.y - 10, enemy.width, 6);
+          ctx.fillStyle = "#0f0";
+          ctx.fillRect(enemy.x, enemy.y - 10, (enemy.hp / enemy.maxHp) * enemy.width, 6);
+        } else {
+          enemy.rotate
+            ? drawRotatedImage(enemy.img, enemy.x, enemy.y, enemy.width, enemy.height, Math.PI)
+            : ctx.drawImage(enemy.img, enemy.x, enemy.y, enemy.width, enemy.height);
+        }
+      });
+
+      enemyBullets = enemyBullets.filter(b => b.y < canvas.height);
+      enemyBullets.forEach(b => {
+        b.y += 4;
+        ctx.fillStyle = "red";
+        ctx.fillRect(b.x, b.y, 4, 10);
+        if (checkCollision(b, spaceship) && !isInvulnerable) {
+          handleHit();
+        }
+      });
+
+      potions = potions.filter(p => p.y < canvas.height);
+      potions.forEach((p, pi) => {
+        p.y += 2;
+        ctx.drawImage(potionImg, p.x, p.y, 20, 20);
+        if (checkCollision(p, spaceship)) {
+          const boss = enemies.find(e => e.isBoss);
+          if (boss && boss.hp < boss.maxHp) boss.hp++;
+          potions.splice(pi, 1);
+        }
+      });
+
+      bullets.forEach((b, bi) => {
+        enemies.forEach((e, ei) => {
+          if (checkCollision(b, e)) {
+            bullets.splice(bi, 1);
+            hits++;
+            xp += 0.5;
+            document.getElementById("xpDisplay").textContent = xp.toFixed(1);
+            localStorage.setItem("marsXP", xp);
+
+            if (e.isBoss) {
+              e.hp--;
+              bossFlashTimer = 4;
+              if (e.hp <= 0) {
+                enemies.splice(ei, 1);
+                bossSpawned = false;
+                setTimeout(() => {
+                  if (confirm("🎉 You Win! Play again?")) resetGame();
+                }, 300);
+              }
+            } else {
+              enemies.splice(ei, 1);
+            }
+          }
+        });
+      });
+
+      if (bossWarningShown) {
+        ctx.fillStyle = "#f00";
+        ctx.font = "bold 26px Arial";
+        ctx.fillText("⚠️ BOSS INCOMING!", 50, canvas.height / 2);
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    // === Lives & End ===
+    function handleHit() {
+      // Only take damage if not invulnerable
+      if (!isInvulnerable) {
+        lives--;
+        document.getElementById("lifeDisplay").textContent = lives;
+        
+        // Activate invulnerability
+        isInvulnerable = true;
+        invulnerabilityTimer = INVULNERABILITY_DURATION;
+        
+        if (lives <= 0) {
+          pauseGame();
+          document.getElementById("gameOverScreen").style.display = "block";
+        }
+      }
+    }
+    
+    function pauseGame() {
+      gamePaused = true;
+    }
+    
+    function resumeGame() {
+      if (!gamePaused) return;
+      gamePaused = false;
+      lastTime = performance.now();
+      requestAnimationFrame(update);
+    }
+
+    // === Utilities ===
+    function checkCollision(a, b) {
+      return a.x < b.x + b.width && a.x + 4 > b.x && a.y < b.y + b.height && a.y + 10 > b.y;
+    }
+    
+    function drawRotatedImage(img, x, y, w, h, angle) {
+      ctx.save();
+      ctx.translate(x + w / 2, y + h / 2);
+      ctx.rotate(angle);
+      ctx.drawImage(img, -w / 2, -h / 2, w, h);
+      ctx.restore();
+    }
+    
+    function resetGame() {
+      spaceship.x = canvas.width / 2 - 30;
+      bullets = []; enemies = []; enemyBullets = []; potions = [];
+      xp = 0; hits = 0; lives = 3; bossSpawned = false; bossWarningShown = false; gamePaused = false;
+      isInvulnerable = false;
+      document.getElementById("xpDisplay").textContent = xp.toFixed(1);
+      document.getElementById("lifeDisplay").textContent = lives;
+      document.getElementById("gameOverScreen").style.display = "none";
+      lastTime = performance.now();
+      requestAnimationFrame(update);
+    }
+
+    // === Init ===
+    document.getElementById("xpDisplay").textContent = xp.toFixed(1);
+    document.getElementById("lifeDisplay").textContent = lives;
+    
+    // Start the game loop
+    lastTime = performance.now();
+    requestAnimationFrame(update);
+    
+    // Set up game intervals
+    setInterval(spawnEnemy, 1000);
+    setInterval(spawnPotion, 5000);
+    setInterval(shoot, 500);
+    setInterval(checkSpawnBoss, 2000);
+  </script>
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🚀 Mars Space Shooter</title>
   <link rel="stylesheet" href="space.css" />
   <link rel="icon" href="screens\spacer.png" type="image/x-icon" />
 </head>
@@ -11,6 +507,8 @@
   <h1>🚀 Mars Space Shooter</h1>
   <p>XP: <span id="xpDisplay">0</span> | Lives: <span id="lifeDisplay">3</span></p>
   <canvas id="gameCanvas" width="400" height="600"></canvas>
+  <a href="/marzo.html" style="color:rgb(0, 255, 200);text-decoration:underline; font-size: medium;">← Go back to Mars</a>
+    
   <div id="gameOverScreen" style="display:none;">
     <h2>💀 You were killed by the enemy</h2>
     <button onclick="resetGame()">Restart</button>
@@ -18,4 +516,4 @@
   </div>
   <script src="space.js"></script>
 </body>
-</html>
+</html> -->

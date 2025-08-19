@@ -44,6 +44,9 @@ const players = [];
 const missions = [];
 const events = [];
 
+const pushSubscriptions = new Map();
+const gameDataStore = new Map();
+
 app.post('/api/backup', (req, res) => {
   const { playerId, data } = req.body;
   if (!playerId || !data) {
@@ -339,6 +342,190 @@ app.post('/api/create-mission', (req, res) => {
   res.json({ success: true });
 });
 
+// Push Notification Subscription Endpoint
+app.post('/api/push-subscribe', express.json(), async (req, res) => {
+  try {
+    const { subscription, userId, gamePreferences } = req.body;
+    
+    if (!subscription || !userId) {
+      return res.status(400).json({ error: 'Subscription and userId are required' });
+    }
+    
+    // Store subscription
+    pushSubscriptions.set(userId, {
+      subscription,
+      gamePreferences,
+      timestamp: Date.now()
+    });
+    
+    console.log(`✅ Push subscription stored for user: ${userId}`);
+    res.status(200).json({ success: true, message: 'Subscription stored' });
+    
+  } catch (error) {
+    console.error('❌ Push subscription error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Game Data Sync Endpoint
+app.post('/api/sync-game-data', express.json(), async (req, res) => {
+  try {
+    const gameData = req.body;
+    
+    if (!gameData || typeof gameData !== 'object') {
+      return res.status(400).json({ error: 'Invalid game data' });
+    }
+    
+    const userId = gameData.userId || 'anonymous';
+    
+    // Store or update game data
+    const existingData = gameDataStore.get(userId) || {};
+    const mergedData = {
+      ...existingData,
+      ...gameData,
+      lastSync: Date.now()
+    };
+    
+    gameDataStore.set(userId, mergedData);
+    
+    console.log(`✅ Game data synced for user: ${userId}`);
+    res.status(200).json({ 
+      success: true, 
+      message: 'Game data synced',
+      timestamp: Date.now() 
+    });
+    
+  } catch (error) {
+    console.error('❌ Game data sync error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get Game Data Endpoint (optional - for retrieving saved data)
+app.get('/api/game-data/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const gameData = gameDataStore.get(userId);
+    
+    if (!gameData) {
+      return res.status(404).json({ error: 'No game data found' });
+    }
+    
+    res.status(200).json({ success: true, data: gameData });
+    
+  } catch (error) {
+    console.error('❌ Get game data error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Send Push Notification Endpoint (mobile-optimized)
+app.post('/api/send-notification', express.json(), async (req, res) => {
+  try {
+    const { userId, title, body, icon, badge, image } = req.body;
+    
+    if (!userId || !title) {
+      return res.status(400).json({ error: 'userId and title are required' });
+    }
+    
+    const subscription = pushSubscriptions.get(userId);
+    
+    if (!subscription) {
+      return res.status(404).json({ error: 'No subscription found for user' });
+    }
+    
+    // Mobile-optimized notification payload
+    const payload = {
+      title: title,
+      body: body || 'Marsoverse Notification',
+      icon: icon || '/images/icon-192.png',
+      badge: badge || '/images/icon-192.png',
+      image: image || '/images/mars-bg.jpg',
+      vibrate: [200, 100, 200],
+      timestamp: Date.now(),
+      data: {
+        url: '/index.html',
+        gameId: 'marsoverse-main'
+      },
+      actions: [
+        { action: 'play', title: 'Play Now' },
+        { action: 'explore', title: 'Explore Mars' }
+      ]
+    };
+    
+    // Send push notification
+    await sendPushNotification(subscription.subscription, payload);
+    
+    res.status(200).json({ success: true, message: 'Notification sent' });
+    
+  } catch (error) {
+    console.error('❌ Send notification error:', error);
+    
+    // Remove invalid subscriptions (GONE status)
+    if (error.statusCode === 410) {
+      pushSubscriptions.delete(userId);
+      console.log('🧹 Removed expired subscription for user:', userId);
+    }
+    
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Push Notification Sending Function (updated)
+async function sendPushNotification(subscription, payload) {
+  try {
+    const webpush = require('web-push');
+    
+    // Use your hardcoded VAPID details
+    const vapidDetails = {
+      publicKey: 'BPeEnwKdvgPtRmdbldFTNPOE2QTH-r9jLRHjb2CprP3MnI6bIbg7BNT1mgIOQV0gnkyXlQX-ag7uYfH0k8s3ZaI',
+      privateKey: '5hx5caXgSIvH_J5s6Q4l7oLlyGAWlMKCLktcM8aeXgc',
+      subject: 'mailto:shazzyazuwike@gmail.com' // Fixed the format
+    };
+    
+    webpush.setVapidDetails(
+      vapidDetails.subject,
+      vapidDetails.publicKey,
+      vapidDetails.privateKey
+    );
+    
+    await webpush.sendNotification(
+      subscription,
+      JSON.stringify(payload)
+    );
+    
+    console.log('✅ Push notification sent');
+    
+  } catch (error) {
+    console.error('❌ Error sending push notification:', error);
+    throw error;
+  }
+}
+
+// Add a cleanup function for old data (optional)
+function cleanupOldData() {
+  const now = Date.now();
+  const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
+  
+  // Clean up old subscriptions
+  for (const [userId, data] of pushSubscriptions.entries()) {
+    if (data.timestamp < thirtyDaysAgo) {
+      pushSubscriptions.delete(userId);
+      console.log(`🧹 Removed old subscription for user: ${userId}`);
+    }
+  }
+  
+  // Clean up old game data
+  for (const [userId, data] of gameDataStore.entries()) {
+    if (data.lastSync < thirtyDaysAgo) {
+      gameDataStore.delete(userId);
+      console.log(`🧹 Removed old game data for user: ${userId}`);
+    }
+  }
+}
+
+// Run cleanup every 24 hours
+setInterval(cleanupOldData, 24 * 60 * 60 * 1000);
 app.get('/health', (req, res) => {
   res.json({ status: 'Server is running', timestamp: new Date().toISOString() });
 });

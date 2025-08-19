@@ -1,22 +1,154 @@
 {
-  "name": "Marsoverse",
+  "name": "Marsoverse - Mars Gaming Experience",
   "short_name": "Marsoverse",
-  "start_url": "./index.html",
+  "description": "An immersive Mars-themed gaming experience with multiple games and adventures",
+  "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#000000",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
   "theme_color": "#e6532e",
+  "background_color": "#000000",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  
   "icons": [
     {
-      "src": "./images/icon-192.png",
+      "src": "/images/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "./images/icon-512.png",
+      "src": "/images/icon-512.png", 
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "/screens/snake.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Snake Game"
+    },
+    {
+      "src": "/screens/blacko.png", 
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Blackjack Game"
+    },
+    {
+      "src": "/screens/marxo.png",
+      "sizes": "1280x720", 
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Mars Explorer"
+    },
+    {
+      "src": "/screens/poke.png",
+      "sizes": "1280x720",
+      "type": "image/png", 
+      "form_factor": "wide",
+      "label": "Poker Game"
+    },
+    {
+      "src": "/screens/spacer.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide", 
+      "label": "Space Adventure"
+    }
+  ],
+  
+  "categories": ["games", "entertainment", "education"],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  
+  "shortcuts": [
+    {
+      "name": "Snake Game",
+      "short_name": "Snake",
+      "description": "Classic snake game with Mars theme",
+      "url": "/snake/snake.html",
+      "icons": [
+        {
+          "src": "/images/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Mars Explorer", 
+      "short_name": "Explorer",
+      "description": "Explore the surface of Mars",
+      "url": "/mars.html",
+      "icons": [
+        {
+          "src": "/images/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Poker",
+      "short_name": "Poker",
+      "description": "Mars-themed poker game",
+      "url": "/poker/poker.html",
+      "icons": [
+        {
+          "src": "/images/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Space Adventure",
+      "short_name": "Space", 
+      "description": "Epic space exploration game",
+      "url": "/space/space.html",
+      "icons": [
+        {
+          "src": "/images/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  
+  "handle_links": "preferred",
+  "capture_links": "existing-client-navigate",
+  
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "application/json": [".json"],
+        "text/plain": [".txt"]
+      }
+    }
+  ],
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+marsoverse",
+      "url": "/?handler=%s"
     }
   ]
 }

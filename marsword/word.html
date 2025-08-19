@@ -183,6 +183,7 @@
   </div>
 
   <h1>MarsWord+ 🪐</h1>
+  <div id="xpBar">XP: 0 | High Score: 0</div>
 
   <div id="startScreen">
     <div id="instructions">
@@ -200,6 +201,7 @@
     <div id="game"></div>
     <div id="keyboard"></div>
     <div id="message"></div>
+    <a href="/marzo.html" style="color:#0ff;text-decoration:underline;">← Go back to Mars</a>
   </div>
 
   <div id="popup">
@@ -229,16 +231,17 @@
     const xpBar = document.getElementById("xpBar");
 
     function startGame() {
-      document.getElementById("startScreen").style.display = "none";
-      document.getElementById("gameUI").style.display = "flex";
-      popup.style.display = "none";
-      targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
-      currentRow = currentCol = 0;
-      score = parseInt(localStorage.getItem("xp") || "0");
-      createGrid();
-      initKeyboard();
-      xpBar.textContent = `XP: ${score} | High Score: ${high}`;
-    }
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("gameUI").style.display = "flex";
+  popup.style.display = "none";
+  targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+  currentRow = currentCol = 0;
+  // REMOVE THIS LINE: score = parseInt(localStorage.getItem("xp") || "0");
+  // This line is already correctly loading the score earlier in the code
+  createGrid();
+  initKeyboard();
+  xpBar.textContent = `XP: ${score} | High Score: ${high}`;
+}
 
     document.getElementById("startBtn").onclick = startGame;
     document.getElementById("playAgainBtn").onclick = startGame;

@@ -15,8 +15,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
-  <!-- Add this to index.html, mars.html, and other main game pages -->
-<script src="/scripts/app-integration.js"></script>
 
   <style>
     * {
@@ -1350,6 +1348,580 @@
   background: rgba(0, 255, 136, 0.2);
   border-left: 3px solid #00ff88;
 }
+/* ============================================================================
+   ZEPTA TERMINAL CSS ENHANCEMENTS
+   Add these styles to your existing CSS
+   ============================================================================ */
+
+/* Scroll to Bottom Button */
+.scroll-to-bottom-btn {
+  position: absolute !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  width: 40px !important;
+  height: 40px !important;
+  border: none !important;
+  border-radius: 50% !important;
+  background: rgba(0, 255, 153, 0.2) !important;
+  color: #00ff99 !important;
+  cursor: pointer !important;
+  display: none !important;
+  z-index: 100 !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(0, 255, 153, 0.3) !important;
+}
+
+.scroll-to-bottom-btn:hover {
+  background: rgba(0, 255, 153, 0.4) !important;
+  transform: scale(1.1) !important;
+}
+
+.scroll-to-bottom-btn:active {
+  transform: scale(0.95) !important;
+}
+
+/* History Panel Styles */
+.history-panel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  border-left: 1px solid rgba(0, 255, 153, 0.3);
+  z-index: 1000;
+  transition: right 0.3s ease;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.history-panel.active {
+  right: 0;
+}
+
+.history-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(0, 255, 153, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 255, 153, 0.1);
+}
+
+.history-header h3 {
+  margin: 0;
+  color: #00ff99;
+  font-size: 1rem;
+}
+
+.close-history-btn {
+  background: none;
+  border: none;
+  color: #00ff99;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.close-history-btn:hover {
+  background: rgba(255, 0, 0, 0.2);
+}
+
+.history-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.history-filters {
+  padding: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(0, 255, 153, 0.2);
+}
+
+.filter-btn {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgba(0, 255, 153, 0.3);
+  background: transparent;
+  color: #00ff99;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: rgba(0, 255, 153, 0.1);
+}
+
+.filter-btn.active {
+  background: rgba(0, 255, 153, 0.2);
+  border-color: #00ff99;
+}
+
+.history-search {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(0, 255, 153, 0.2);
+}
+
+.history-search input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid rgba(0, 255, 153, 0.3);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #00ff99;
+  font-family: 'Courier New', monospace;
+}
+
+.history-search input::placeholder {
+  color: rgba(0, 255, 153, 0.5);
+}
+
+.history-sessions {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+/* Custom Scrollbar for History Panel */
+.history-sessions::-webkit-scrollbar {
+  width: 8px;
+}
+
+.history-sessions::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.history-sessions::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 153, 0.3);
+  border-radius: 4px;
+}
+
+.history-sessions::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 153, 0.5);
+}
+
+/* Session Item Styles */
+.session-item {
+  margin: 0.5rem 0;
+  padding: 1rem;
+  border: 1px solid rgba(0, 255, 153, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 255, 153, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session-item:hover {
+  background: rgba(0, 255, 153, 0.1);
+  border-color: rgba(0, 255, 153, 0.4);
+}
+
+.session-item.active {
+  background: rgba(0, 255, 153, 0.15);
+  border-color: #00ff99;
+}
+
+.session-info {
+  flex: 1;
+}
+
+.session-title {
+  color: #00ff99;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.session-meta {
+  color: rgba(0, 255, 153, 0.7);
+  font-size: 0.75rem;
+}
+
+.session-actions {
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.session-item:hover .session-actions {
+  opacity: 1;
+}
+
+.session-btn {
+  padding: 0.25rem;
+  border: none;
+  background: rgba(0, 255, 153, 0.2);
+  color: #00ff99;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.session-btn:hover {
+  background: rgba(0, 255, 153, 0.3);
+}
+
+.session-btn.delete:hover {
+  background: rgba(255, 0, 0, 0.3);
+  color: #ff6b6b;
+}
+
+/* History Session Expandable Messages */
+.history-session {
+  margin: 0.5rem 0;
+  border: 1px solid rgba(0, 255, 153, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.session-header {
+  padding: 0.75rem;
+  background: rgba(0, 255, 153, 0.1);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s ease;
+}
+
+.session-header:hover {
+  background: rgba(0, 255, 153, 0.15);
+}
+
+.session-messages {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.history-session.expanded .session-messages {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.history-message {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(0, 255, 153, 0.1);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.history-message:hover {
+  background: rgba(0, 255, 153, 0.05);
+}
+
+.history-message:last-child {
+  border-bottom: none;
+}
+
+.history-message.user {
+  background: rgba(0, 123, 255, 0.1);
+}
+
+.history-message.system {
+  background: rgba(255, 193, 7, 0.1);
+}
+
+.message-time {
+  font-size: 0.7rem;
+  color: rgba(0, 255, 153, 0.5);
+  margin-bottom: 0.25rem;
+}
+
+.message-text {
+  color: #00ff99;
+  word-wrap: break-word;
+}
+
+/* Enhanced Suggestions Styles */
+.terminal-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(0, 255, 153, 0.3);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+  backdrop-filter: blur(10px);
+}
+
+.terminal-suggestions.active {
+  display: block;
+}
+
+.suggestion-item {
+  padding: 8px 12px;
+  margin: 2px 0;
+  background: rgba(0, 255, 153, 0.1);
+  border: 1px solid rgba(0, 255, 153, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #00ff99;
+}
+
+.suggestion-item:hover {
+  background: rgba(0, 255, 153, 0.2);
+  border-color: #00ff99;
+}
+
+#suggestions {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(0, 255, 153, 0.3);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+/* Enhanced Chat Container */
+.chat-container {
+  position: relative;
+}
+
+.terminal-log {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* Enhanced Animation for New Messages */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.terminal-line.user-line {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.terminal-line.zepta-reply {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.terminal-line.system-line {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Enhanced Status Bar */
+.status-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+}
+
+/* Responsive Design for History Panel */
+@media (max-width: 768px) {
+  .history-panel {
+    width: 100vw;
+    right: -100vw;
+  }
+  
+  .history-panel.active {
+    right: 0;
+  }
+  
+  .session-actions {
+    opacity: 1; /* Always show on mobile */
+  }
+}
+
+/* Enhanced Popup Animations */
+.popup-overlay {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(10px);
+  }
+}
+
+.popup {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Enhanced Button Styles */
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 153, 0.3);
+}
+
+/* Loading States */
+.loading-dots::after {
+  content: '';
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+/* Enhanced Console Output */
+.console-output {
+  position: relative;
+}
+
+.console-output::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ff99, transparent);
+  animation: scanLine 2s linear infinite;
+}
+
+@keyframes scanLine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Enhanced Typography */
+.terminal-line, .console-line {
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+}
+
+/* Focus States */
+.terminal-input:focus,
+.terminal-command-input:focus,
+.history-search input:focus {
+  outline: none;
+  border-color: #00ff99;
+  box-shadow: 0 0 10px rgba(0, 255, 153, 0.3);
+}
+
+/* Command History Indicator */
+.command-history-indicator {
+  position: absolute;
+  top: -20px;
+  right: 10px;
+  font-size: 0.7rem;
+  color: rgba(0, 255, 153, 0.5);
+}
+
+/* Connection Status Enhancements */
+.status-item.offline {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}
+
+/* Enhanced Mood Indicator */
+.mood-indicator.furious {
+  border-left: 4px solid #ff4757;
+  background: rgba(255, 71, 87, 0.1);
+}
+
+.mood-indicator.hurt_but_forgiving {
+  border-left: 4px solid #ffa502;
+  background: rgba(255, 165, 2, 0.1);
+}
+
+.mood-indicator.still_angry {
+  border-left: 4px solid #ff6348;
+  background: rgba(255, 99, 72, 0.1);
+}
+
+/* Accessibility Improvements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .history-panel {
+    background: #000;
+    border-color: #00ff99;
+  }
+  
+  .suggestion-item {
+    border-color: #00ff99;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .terminal-line,
+  .popup,
+  .popup-overlay,
+  .history-panel {
+    animation: none;
+    transition: none;
+  }
+}
   </style>
 </head>
 <body class="chat-mode">
@@ -1609,26 +2181,275 @@
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
-      syncPlayerXP(); // Add this to sync XP on load
-      initializeGame();
-      loadChatHistory();
-      updateStatusDisplay();
-      startVisitorSystem();
-      checkConnection();
-      
-      // Set initial theme
-      toggleTheme(false); // Don't save on init
-      // setupCyborgInput();
-      setupCompanionSelection();
-    });
+  syncPlayerXP();
+  enhancedInitializeGame(); // Use enhanced version
+  loadChatHistory();
+  updateStatusDisplay();
+  startVisitorSystem();
+  checkConnection();
+  
+  // Set initial theme
+  toggleTheme(false);
+  setupCompanionSelection();
+  
+  // Initialize enhancements
+  setTimeout(() => {
+    createHistoryPanel();
+    addScrollToBottomButton();
+    scrollToBottom();
+  }, 1000);
+});
 
-    function initializeGame() {
-      // Welcome message if new session
-      if (!gameState.chatHistory.length) {
-        addToHistory('Welcome to ZEPTA Terminal! Type /help to get started.', false, 'system');
-        saveGame();
-      }
+
+    function enhancedInitializeGame() {
+  // Create history panel
+  createHistoryPanel();
+  
+  // Add scroll button
+  addScrollToBottomButton();
+  
+  // Welcome message if new session
+  if (!gameState.chatHistory.length) {
+    enhancedAddToHistory('Welcome to ZEPTA Terminal! Type /help to get started.', false, 'system');
+    saveGame();
+  }
+  
+  // Auto-scroll to bottom on load
+  setTimeout(() => {
+    scrollToBottom();
+  }, 500);
+  
+  // Initialize session manager
+  conversationManager.saveSession();
+}
+
+    function scrollToBottom(container = null) {
+  const containers = container ? [container] : [
+    document.getElementById('terminalLog'),
+    document.getElementById('consoleOutput')
+  ];
+  
+  containers.forEach(element => {
+    if (element) {
+      element.scrollTop = element.scrollHeight;
+      // Smooth scroll animation
+      element.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
+  });
+}
+
+function addScrollToBottomButton() {
+  // Create scroll button for chat container
+  const chatContainer = document.querySelector('.chat-container');
+  if (chatContainer && !document.getElementById('scrollToBottomBtn')) {
+    const scrollBtn = document.createElement('button');
+    scrollBtn.id = 'scrollToBottomBtn';
+    scrollBtn.className = 'scroll-to-bottom-btn';
+    scrollBtn.innerHTML = '<i class="fas fa-arrow-down"></i>';
+    scrollBtn.title = 'Scroll to bottom';
+    scrollBtn.style.cssText = `
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0, 255, 153, 0.2);
+      color: #00ff99;
+      cursor: pointer;
+      display: none;
+      z-index: 100;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    `;
+    
+    scrollBtn.addEventListener('click', () => {
+      scrollToBottom();
+      scrollBtn.style.display = 'none';
+    });
+    
+    chatContainer.appendChild(scrollBtn);
+  }
+  
+  // Add scroll detection
+  const terminalLog = document.getElementById('terminalLog');
+  if (terminalLog) {
+    terminalLog.addEventListener('scroll', () => {
+      const scrollBtn = document.getElementById('scrollToBottomBtn');
+      if (scrollBtn) {
+        const isNearBottom = terminalLog.scrollTop + terminalLog.clientHeight >= terminalLog.scrollHeight - 100;
+        scrollBtn.style.display = isNearBottom ? 'none' : 'block';
+      }
+    });
+  }
+}
+function createHistoryPanel() {
+  if (document.getElementById('historyPanel')) return; // Don't create if exists
+  
+  const historyPanel = document.createElement('div');
+  historyPanel.id = 'historyPanel';
+  historyPanel.className = 'history-panel';
+  historyPanel.innerHTML = `
+    <div class="history-header">
+      <h3><i class="fas fa-history"></i> Conversation History</h3>
+      <button class="close-history-btn" onclick="toggleHistoryPanel(false)">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="history-content">
+      <div class="history-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="system">System</button>
+        <button class="filter-btn" data-filter="user">User</button>
+        <button class="filter-btn" data-filter="zepta">ZEPTA</button>
+      </div>
+      <div class="history-search">
+        <input type="text" id="historySearch" placeholder="Search messages..." />
+      </div>
+      <div class="history-sessions" id="historySessions"></div>
+    </div>
+  `;
+  
+  document.body.appendChild(historyPanel);
+  
+  // Add history toggle button to header
+  const headerControls = document.querySelector('.header-controls');
+  if (headerControls && !document.getElementById('historyToggleBtn')) {
+    const historyBtn = document.createElement('button');
+    historyBtn.id = 'historyToggleBtn';
+    historyBtn.className = 'nav-btn';
+    historyBtn.innerHTML = '<i class="fas fa-history"></i><span>History</span>';
+    historyBtn.onclick = () => toggleHistoryPanel();
+    headerControls.insertBefore(historyBtn, headerControls.lastElementChild);
+  }
+  
+  setupHistoryFilters();
+  loadHistoryIntoPanel();
+}
+
+function toggleHistoryPanel(show = null) {
+  const panel = document.getElementById('historyPanel');
+  if (!panel) {
+    createHistoryPanel();
+    return;
+  }
+  
+  const isVisible = panel.classList.contains('active');
+  
+  if (show === null) {
+    show = !isVisible;
+  }
+  
+  if (show) {
+    panel.classList.add('active');
+    loadHistoryIntoPanel();
+  } else {
+    panel.classList.remove('active');
+  }
+}
+
+function setupHistoryFilters() {
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const searchInput = document.getElementById('historySearch');
+  
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadHistoryIntoPanel(btn.dataset.filter, searchInput?.value);
+    });
+  });
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+      loadHistoryIntoPanel(activeFilter, e.target.value);
+    });
+  }
+}
+
+function loadHistoryIntoPanel(filter = 'all', search = '') {
+  const container = document.getElementById('historySessions');
+  if (!container) return;
+  
+  const filteredHistory = gameState.chatHistory.filter(entry => {
+    // Filter by type
+    const typeMatch = filter === 'all' || 
+                     (filter === 'system' && entry.type === 'system') ||
+                     (filter === 'user' && entry.isUser) ||
+                     (filter === 'zepta' && !entry.isUser && entry.type !== 'system');
+    
+    // Filter by search
+    const searchMatch = !search || entry.text.toLowerCase().includes(search.toLowerCase());
+    
+    return typeMatch && searchMatch;
+  });
+  
+  // Group by session or day
+  const groupedHistory = groupHistoryBySession(filteredHistory);
+  
+  container.innerHTML = '';
+  
+  Object.keys(groupedHistory).reverse().forEach(sessionKey => {
+    const sessionDiv = document.createElement('div');
+    sessionDiv.className = 'history-session';
+    
+    const sessionHeader = document.createElement('div');
+    sessionHeader.className = 'session-header';
+    sessionHeader.innerHTML = `
+      <strong>Session: ${new Date(parseInt(sessionKey)).toLocaleDateString()}</strong>
+      <span>${groupedHistory[sessionKey].length} messages</span>
+    `;
+    sessionHeader.onclick = () => sessionDiv.classList.toggle('expanded');
+    
+    const messagesDiv = document.createElement('div');
+    messagesDiv.className = 'session-messages';
+    
+    groupedHistory[sessionKey].forEach(entry => {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `history-message ${entry.isUser ? 'user' : 'zepta'} ${entry.type || ''}`;
+      messageDiv.innerHTML = `
+        <div class="message-time">${new Date(entry.timestamp).toLocaleTimeString()}</div>
+        <div class="message-text">${entry.text}</div>
+      `;
+      
+      // Click to restore message
+      messageDiv.onclick = () => {
+        const input = isTerminalMode ? 
+          document.getElementById('terminalCommandInput') : 
+          document.getElementById('terminalInput');
+        if (input && entry.isUser) {
+          input.value = entry.text;
+          input.focus();
+        }
+      };
+      
+      messagesDiv.appendChild(messageDiv);
+    });
+    
+    sessionDiv.appendChild(sessionHeader);
+    sessionDiv.appendChild(messagesDiv);
+    container.appendChild(sessionDiv);
+  });
+}
+
+function groupHistoryBySession(history) {
+  const groups = {};
+  
+  history.forEach(entry => {
+    const sessionKey = entry.session || gameState.gameSession;
+    if (!groups[sessionKey]) {
+      groups[sessionKey] = [];
+    }
+    groups[sessionKey].push(entry);
+  });
+  
+  return groups;
+}
+
+
+
     function initializeSections() {
         const companionSection = document.getElementById('companionSection');
         const cyborgSection = document.getElementById('cyborg');
@@ -1643,6 +2464,7 @@
       gameState.lastSaved = Date.now();
       localStorage.setItem("marsoverse_zepta_game", JSON.stringify(gameState));
       updateStatusDisplay();
+      optimizePerformance();
     }
 
     function updateStatusDisplay() {
@@ -1727,14 +2549,14 @@ function sendApology() {
   if (gameState.resources.credits >= 10) {
     gameState.resources.credits -= 10;
     handleApology();
-    addToHistory('💝 You sent a heartfelt apology...', false, 'system');
+    enhancedAddToHistory('💝 You sent a heartfelt apology...', false, 'system');
     
     logEventToServer('apology_sent', {
       partner: gameState.partnerName || gameState.marriedTo,
       cost: 10
     });
   } else {
-    addToHistory('💰 You need 10 credits to send a proper apology.', false, 'system');
+    enhancedAddToHistory('💰 You need 10 credits to send a proper apology.', false, 'system');
   }
 }
 
@@ -1745,7 +2567,7 @@ function giveGift() {
     gameState.partnerMood = 'happy';
     
     const partner = gameState.partnerName || gameState.marriedTo;
-    addToHistory(`🎁 You gave ${partner} a beautiful gift! They're touched.`, false, 'system');
+    enhancedAddToHistory(`🎁 You gave ${partner} a beautiful gift! They're touched.`, false, 'system');
     
     logEventToServer('gift_from_mood', {
       partner,
@@ -1756,7 +2578,7 @@ function giveGift() {
     updateStatusDisplay();
     saveGame();
   } else {
-    addToHistory('💰 You need 50 credits for a meaningful gift.', false, 'system');
+    enhancedAddToHistory('💰 You need 50 credits for a meaningful gift.', false, 'system');
   }
 }
 
@@ -1771,7 +2593,7 @@ function handleApology() {
     // Partner forgives
     gameState.relationshipHealth = Math.min(100, (gameState.relationshipHealth || 0) + 20);
     gameState.partnerMood = 'hurt_but_forgiving';
-    addToHistory(`💝 ${gameState.partnerName || gameState.marriedTo} forgives you... "I love you, but please don't hurt me again."`, false, 'system');
+    enhancedAddToHistory(`💝 ${gameState.partnerName || gameState.marriedTo} forgives you... "I love you, but please don't hurt me again."`, false, 'system');
     
     logEventToServer('apology_accepted', {
       incident,
@@ -1781,7 +2603,7 @@ function handleApology() {
     // Partner doesn't forgive easily
     gameState.relationshipHealth = Math.max(0, (gameState.relationshipHealth || 0) + 5);
     gameState.partnerMood = 'still_angry';
-    addToHistory(`😔 ${gameState.partnerName || gameState.marriedTo} is still hurt: "I need time to think about us..."`, false, 'system');
+    enhancedAddToHistory(`😔 ${gameState.partnerName || gameState.marriedTo} is still hurt: "I need time to think about us..."`, false, 'system');
     
     logEventToServer('apology_rejected', {
       incident,
@@ -1798,13 +2620,13 @@ function handleApology() {
       window.addEventListener('online', () => {
         isOnline = true;
         updateStatusDisplay();
-        addToHistory('🌐 Connection restored! Welcome back online.', false, 'system');
+        enhancedAddToHistory('🌐 Connection restored! Welcome back online.', false, 'system');
       });
 
       window.addEventListener('offline', () => {
         isOnline = false;
         updateStatusDisplay();
-        addToHistory('📡 Connection lost. Operating in offline mode.', false, 'system');
+        enhancedAddToHistory('📡 Connection lost. Operating in offline mode.', false, 'system');
       });
     }
 
@@ -1818,7 +2640,7 @@ function handleApology() {
         }
         
         if (gameState.resources.energy <= 0) {
-          addToHistory('⚠️ Energy depleted! Some functions may be limited.', false, 'system');
+          enhancedAddToHistory('⚠️ Energy depleted! Some functions may be limited.', false, 'system');
         }
         
         saveGame();
@@ -1868,7 +2690,7 @@ function setupCompanionSelection() {
       localStorage.setItem('companionName', selectedName);
       localStorage.setItem('companionImage', selectedImage);
       companionNameInput.value = selectedName; // Update input field
-      addToHistory(`🚀 Selected ${selectedName} as your companion!`, false, 'system');
+      enhancedAddToHistory(`🚀 Selected ${selectedName} as your companion!`, false, 'system');
       triggerCompanionPopup(selectedName);
       saveGame();
     });
@@ -1888,22 +2710,22 @@ function setupCompanionSelection() {
   }
 }
 document.getElementById('interactCyborgBtn').addEventListener('click', () => {
-  addToHistory('🤖 You interacted with the Cyborg.', false, 'system');
+  enhancedAddToHistory('🤖 You interacted with the Cyborg.', false, 'system');
   document.getElementById('cyborgPopup').style.display = 'none';
 });
 
 document.getElementById('ignoreCyborgBtn').addEventListener('click', () => {
-  addToHistory('❌ You ignored the Cyborg.', false, 'system');
+  enhancedAddToHistory('❌ You ignored the Cyborg.', false, 'system');
   document.getElementById('cyborgPopup').style.display = 'none';
 });
 
 document.getElementById('interactCompanionBtn').addEventListener('click', () => {
-  addToHistory('👩‍🚀 You welcomed your companion!', false, 'system');
+  enhancedAddToHistory('👩‍🚀 You welcomed your companion!', false, 'system');
   document.getElementById('companionPopup').style.display = 'none';
 });
 
 document.getElementById('ignoreCompanionBtn').addEventListener('click', () => {
-  addToHistory('🚫 You ignored the companion.', false, 'system');
+  enhancedAddToHistory('🚫 You ignored the companion.', false, 'system');
   document.getElementById('companionPopup').style.display = 'none';
 });
 
@@ -1940,7 +2762,7 @@ function checkCompanionTrigger() {
           );
 
           if (unconnectedVisitors.length === 0) {
-            addToHistory("🚫 No new visitors. You've connected with everyone!", false);
+            enhancedAddToHistory("🚫 No new visitors. You've connected with everyone!", false);
             return;
           }
 
@@ -1965,46 +2787,68 @@ function checkCompanionTrigger() {
     }
 
     // Add this function before your commands object
-function showPartnerReaction(action, target) {
+function fixedShowPartnerReaction(action, target) {
   if (!gameState.partnerName && !gameState.marriedTo) return;
   
   const partner = gameState.partnerName || gameState.marriedTo;
   const reactions = {
     kiss: {
       message: `${partner} saw you kiss ${target} and looks devastated! 💔 "How could you do this to me?"`,
-      relationshipDamage: 2
+      relationshipDamage: 20
     },
     flirt: {
       message: `${partner} noticed you flirting with ${target} and seems jealous! 😠 "I thought we had something special!"`,
-      relationshipDamage: 1
+      relationshipDamage: 10
     },
     date: {
       message: `${partner} found out about your date with ${target} and is heartbroken! 😢 "I trusted you..."`,
-      relationshipDamage: 3
+      relationshipDamage: 30
     },
     marry: {
       message: `${partner} found out you want to marry ${target} and is destroyed! 😭 "We had plans together..."`,
-      relationshipDamage: 10
+      relationshipDamage: 50
+    },
+    affair: {
+      message: `${partner} discovered your affair with ${target}! 😡 "How long has this been going on?!"`,
+      relationshipDamage: 60
     }
   };
   
   const reaction = reactions[action];
   if (!reaction) return;
   
-  // Add relationship health tracking
-  gameState.relationshipHealth = (gameState.relationshipHealth || 100) - (reaction.relationshipDamage * 10);
-  gameState.partnerMood = 'furious';
-  gameState.lastCheatingIncident = { action, target, timestamp: Date.now() };
+  // Initialize relationship health if not exists
+  if (!gameState.relationshipHealth) {
+    gameState.relationshipHealth = 100;
+  }
+  
+  // Apply damage
+  gameState.relationshipHealth = Math.max(0, gameState.relationshipHealth - reaction.relationshipDamage);
+  gameState.partnerMood = gameState.relationshipHealth < 20 ? 'furious' : 
+                         gameState.relationshipHealth < 50 ? 'hurt_but_forgiving' : 'still_angry';
+  
+  gameState.lastCheatingIncident = { 
+    action, 
+    target, 
+    timestamp: Date.now(),
+    damage: reaction.relationshipDamage
+  };
   
   document.getElementById('partnerReactionMessage').textContent = reaction.message;
   document.getElementById('partnerReactionPopup').style.display = 'flex';
+  
+  // Auto-hide after 10 seconds
+  setTimeout(() => {
+    document.getElementById('partnerReactionPopup').style.display = 'none';
+  }, 10000);
   
   logEventToServer('partner_reaction', {
     action,
     target, 
     partner,
     relationshipHealth: gameState.relationshipHealth,
-    mood: gameState.partnerMood
+    mood: gameState.partnerMood,
+    damage: reaction.relationshipDamage
   });
   
   saveGame();
@@ -2025,7 +2869,7 @@ function showPartnerReaction(action, target) {
       const visitorData = JSON.parse(document.getElementById('visitorPopup').getAttribute('data-visitor'));
       gameState.friends.push(visitorData);
       gameState.relationships[visitorData.name] = 'friend';
-      addToHistory(`🤝 You're now friends with ${visitorData.name}!`, false, 'system');
+      enhancedAddToHistory(`🤝 You're now friends with ${visitorData.name}!`, false, 'system');
       addXP(20);
       document.getElementById('visitorPopup').style.display = 'none';
       saveGame();
@@ -2037,14 +2881,14 @@ function showPartnerReaction(action, target) {
 
     document.getElementById('apologizeBtn').addEventListener('click', () => {
       gameState.mood = 'apologetic';
-      addToHistory(`You apologized to ${gameState.partnerName || gameState.marriedTo}. They seem to forgive you... this time.`, false, 'system');
+      enhancedAddToHistory(`You apologized to ${gameState.partnerName || gameState.marriedTo}. They seem to forgive you... this time.`, false, 'system');
       document.getElementById('partnerReactionPopup').style.display = 'none';
       saveGame();
     });
 
     document.getElementById('defendBtn').addEventListener('click', () => {
       gameState.mood = 'defiant';
-      addToHistory(`You defended your actions. Your relationship is strained.`, false, 'system');
+      enhancedAddToHistory(`You defended your actions. Your relationship is strained.`, false, 'system');
       // Decrease relationship status
       const relationships = ['stranger', 'acquaintance', 'friend', 'close friend', 'partner', 'soulmate'];
       const currentIndex = relationships.indexOf(gameState.relationship);
@@ -2088,7 +2932,7 @@ function showPartnerReaction(action, target) {
     document.body.appendChild(modal);
     
   } catch (error) {
-    addToHistory('❌ Payment system error. Please try again.', false, 'system');
+    enhancedAddToHistory('❌ Payment system error. Please try again.', false, 'system');
   }
 }
 
@@ -2158,7 +3002,7 @@ function addXP(amount) {
   const newLevel = Math.floor(gameState.xp / 100) + 1;
   if (newLevel > gameState.level) {
     gameState.level = newLevel;
-    addToHistory(`🎉 Level Up! You are now level ${gameState.level}!`, false, 'system');
+    enhancedAddToHistory(`🎉 Level Up! You are now level ${gameState.level}!`, false, 'system');
   }
   // // Check for cyborg popup trigger
   // if (gameState.xp >= 100 && !gameState.relationships['Jeremy']) {
@@ -2172,66 +3016,261 @@ function addXP(amount) {
   saveGame();
 }
 
-    function addToHistory(text, isUser = true, type = 'normal') {
-      const timestamp = Date.now();
-      const historyEntry = {
-        text,
-        isUser,
-        type,
-        timestamp,
-        session: gameState.gameSession
-      };
-      
-      gameState.chatHistory.push(historyEntry);
-      
-      // Keep only last 500 messages to prevent storage overflow
-      if (gameState.chatHistory.length > 500) {
-        gameState.chatHistory = gameState.chatHistory.slice(-500);
+    function enhancedAddToHistory(text, isUser = true, type = 'normal') {
+  const timestamp = Date.now();
+  const historyEntry = {
+    text,
+    isUser,
+    type,
+    timestamp,
+    session: gameState.gameSession,
+    id: `msg_${timestamp}_${Math.random().toString(36).substr(2, 9)}`
+  };
+  
+  gameState.chatHistory.push(historyEntry);
+  
+  // Keep only last 1000 messages to prevent storage overflow
+  if (gameState.chatHistory.length > 1000) {
+    gameState.chatHistory = gameState.chatHistory.slice(-1000);
+  }
+  
+  // Use enhanced display function
+  enhancedDisplayMessage(text, isUser, type);
+  
+  // Update session
+  conversationManager.saveSession();
+  
+  saveGame();
+}
+
+function optimizePerformance() {
+  // Debounce scroll events
+  let scrollTimeout;
+  const terminalLog = document.getElementById('terminalLog');
+  
+  if (terminalLog) {
+    terminalLog.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(updateScrollButtonVisibility, 100);
+    });
+  }
+  
+  // Limit message display in chat (virtual scrolling concept)
+  function limitDisplayedMessages() {
+    const chatLog = document.getElementById('terminalLog');
+    const consoleOutput = document.getElementById('consoleOutput');
+    
+    [chatLog, consoleOutput].forEach(container => {
+      if (container && container.children.length > 200) {
+        // Remove old messages but keep them in gameState.chatHistory
+        const excess = container.children.length - 150;
+        for (let i = 0; i < excess; i++) {
+          container.removeChild(container.firstChild);
+        }
       }
-      
-      displayMessage(text, isUser, type);
-      saveGame();
-    }
+    });
+  }
+  
+  // Run cleanup every 50 messages
+  if (gameState.chatHistory.length % 50 === 0) {
+    limitDisplayedMessages();
+  }
+}
+
 
     function loadChatHistory() {
       gameState.chatHistory.forEach(entry => {
-        displayMessage(entry.text, entry.isUser, entry.type, false);
+        enhancedDisplayMessage(entry.text, entry.isUser, entry.type, false);
       });
     }
 
-    function displayMessage(text, isUser = true, type = 'normal', animate = true) {
-      // Display in chat mode
-      const chatLog = document.getElementById('terminalLog');
-      const chatLine = document.createElement('div');
-      let className = type === 'system' ? 'system-line' : 
-                    type === 'thinking' ? 'thinking' :
-                    (isUser ? 'user-line' : 'zepta-reply');
-      chatLine.className = `terminal-line ${className}`;
-      chatLine.textContent = text;
-      if (animate) {
-        chatLine.style.animation = 'slideIn 0.3s ease';
-      }
-      chatLog.appendChild(chatLine);
-      chatLog.scrollTop = chatLog.scrollHeight;
+    function enhancedDisplayMessage(text, isUser = true, type = 'normal', animate = true) {
+  // Display in chat mode
+  const chatLog = document.getElementById('terminalLog');
+  const chatLine = document.createElement('div');
+  let className = type === 'system' ? 'system-line' : 
+                type === 'thinking' ? 'thinking' :
+                (isUser ? 'user-line' : 'zepta-reply');
+  chatLine.className = `terminal-line ${className}`;
+  chatLine.textContent = text;
+  
+  if (animate) {
+    chatLine.style.animation = 'slideIn 0.3s ease';
+  }
+  
+  chatLog.appendChild(chatLine);
+  
+  // Auto-scroll to bottom
+  setTimeout(() => scrollToBottom(chatLog), 100);
 
-      // Display in terminal mode console
-      const consoleOutput = document.getElementById('consoleOutput');
-      const consoleLine = document.createElement('div');
-      let consoleClass = type === 'system' ? 'system' : 
-                       type === 'thinking' ? 'thinking' :
-                       (isUser ? 'user' : 'zepta');
-      consoleLine.className = `console-line ${consoleClass}`;
-      consoleLine.textContent = (isUser && type !== 'system' ? '> ' : '') + text;
-      consoleOutput.appendChild(consoleLine);
-      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+  // Display in terminal mode console
+  const consoleOutput = document.getElementById('consoleOutput');
+  const consoleLine = document.createElement('div');
+  let consoleClass = type === 'system' ? 'system' : 
+                   type === 'thinking' ? 'thinking' :
+                   (isUser ? 'user' : 'zepta');
+  consoleLine.className = `console-line ${consoleClass}`;
+  consoleLine.textContent = (isUser && type !== 'system' ? '> ' : '') + text;
+  consoleOutput.appendChild(consoleLine);
+  
+  // Auto-scroll console too
+  setTimeout(() => scrollToBottom(consoleOutput), 100);
+  
+  // Update scroll button visibility
+  updateScrollButtonVisibility();
+}
+
+function updateScrollButtonVisibility() {
+  const scrollBtn = document.getElementById('scrollToBottomBtn');
+  const terminalLog = document.getElementById('terminalLog');
+  
+  if (scrollBtn && terminalLog) {
+    const isAtBottom = terminalLog.scrollTop + terminalLog.clientHeight >= terminalLog.scrollHeight - 50;
+    scrollBtn.style.display = isAtBottom ? 'none' : 'block';
+  }
+}
+class ConversationSessionManager {
+  constructor() {
+    this.currentSession = gameState.gameSession;
+    this.sessions = this.loadSessions();
+  }
+  
+  loadSessions() {
+    const sessions = JSON.parse(localStorage.getItem('zepta_conversation_sessions') || '{}');
+    return sessions;
+  }
+  
+  saveSession() {
+    if (!this.sessions[this.currentSession]) {
+      this.sessions[this.currentSession] = {
+        id: this.currentSession,
+        created: Date.now(),
+        lastActive: Date.now(),
+        messageCount: 0,
+        title: this.generateSessionTitle()
+      };
     }
+    
+    this.sessions[this.currentSession].lastActive = Date.now();
+    this.sessions[this.currentSession].messageCount = gameState.chatHistory.filter(
+      msg => msg.session === this.currentSession
+    ).length;
+    
+    localStorage.setItem('zepta_conversation_sessions', JSON.stringify(this.sessions));
+  }
+  
+  generateSessionTitle() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const dateStr = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return `${dateStr} at ${timeStr}`;
+  }
+  
+  createNewSession() {
+    // Save current session first
+    this.saveSession();
+    
+    // Create new session
+    this.currentSession = Date.now();
+    gameState.gameSession = this.currentSession;
+    
+    // Clear current chat but keep in history
+    const terminalLog = document.getElementById('terminalLog');
+    const consoleOutput = document.getElementById('consoleOutput');
+    
+    if (terminalLog) terminalLog.innerHTML = '';
+    if (consoleOutput) consoleOutput.innerHTML = '';
+    
+    // Add welcome message to new session
+    enhancedAddToHistory('🆕 New conversation session started!', false, 'system');
+    
+    // Update session list
+    this.loadHistoryIntoPanel();
+    
+    return this.currentSession;
+  }
+  
+  loadSession(sessionId) {
+    this.saveSession(); // Save current first
+    
+    // Clear current display
+    const terminalLog = document.getElementById('terminalLog');
+    const consoleOutput = document.getElementById('consoleOutput');
+    
+    if (terminalLog) terminalLog.innerHTML = '';
+    if (consoleOutput) consoleOutput.innerHTML = '';
+    
+    // Load session messages
+    const sessionMessages = gameState.chatHistory.filter(msg => msg.session == sessionId);
+    sessionMessages.forEach(entry => {
+      displayMessage(entry.text, entry.isUser, entry.type, false);
+    });
+    
+    this.currentSession = sessionId;
+    gameState.gameSession = sessionId;
+    
+    enhancedAddToHistory(`📂 Loaded conversation session from ${new Date(parseInt(sessionId)).toLocaleString()}`, false, 'system');
+    scrollToBottom();
+  }
+  
+  loadHistoryIntoPanel() {
+    const container = document.getElementById('historySessions');
+    if (!container) return;
+    
+    const sortedSessions = Object.values(this.sessions).sort((a, b) => b.lastActive - a.lastActive);
+    
+    container.innerHTML = '';
+    
+    sortedSessions.forEach(session => {
+      const sessionDiv = document.createElement('div');
+      sessionDiv.className = `session-item ${session.id == this.currentSession ? 'active' : ''}`;
+      sessionDiv.innerHTML = `
+        <div class="session-info">
+          <div class="session-title">${session.title}</div>
+          <div class="session-meta">
+            ${session.messageCount} messages • ${new Date(session.lastActive).toLocaleDateString()}
+          </div>
+        </div>
+        <div class="session-actions">
+          <button class="session-btn" onclick="conversationManager.loadSession(${session.id})" title="Load Session">
+            <i class="fas fa-folder-open"></i>
+          </button>
+          <button class="session-btn delete" onclick="conversationManager.deleteSession(${session.id})" title="Delete Session">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `;
+      
+      container.appendChild(sessionDiv);
+    });
+  }
+  
+  deleteSession(sessionId) {
+    if (confirm('Delete this conversation session?')) {
+      delete this.sessions[sessionId];
+      
+      // Remove messages from game history
+      gameState.chatHistory = gameState.chatHistory.filter(msg => msg.session != sessionId);
+      
+      localStorage.setItem('zepta_conversation_sessions', JSON.stringify(this.sessions));
+      saveGame();
+      
+      this.loadHistoryIntoPanel();
+      enhancedAddToHistory('🗑️ Conversation session deleted.', false, 'system');
+    }
+  }
+}
+
+// Initialize conversation manager
+const conversationManager = new ConversationSessionManager();
+
 
     function clearChat() {
       gameState.chatHistory = [];
       gameState.gameSession = Date.now();
       document.getElementById('terminalLog').innerHTML = '';
       document.getElementById('consoleOutput').innerHTML = '';
-      addToHistory('🆕 New chat session started!', false, 'system');
+      enhancedAddToHistory('🆕 New chat session started!', false, 'system');
       saveGame();
     }
 
@@ -2245,7 +3284,7 @@ function addXP(amount) {
       ];
       
       const message = thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)];
-      addToHistory(message, false, 'thinking');
+      enhancedAddToHistory(message, false, 'thinking');
       
       // Remove thinking message after 2 seconds
       setTimeout(() => {
@@ -2411,12 +3450,12 @@ Need help with a specific command? Just try it out!`
   ];
 
   // Send first section immediately
-  addToHistory(helpSections[0].content, false);
+  enhancedAddToHistory(helpSections[0].content, false);
 
   // Send remaining sections with delays
   helpSections.slice(1).forEach((section, index) => {
     setTimeout(() => {
-      addToHistory(`${section.title}
+      enhancedAddToHistory(`${section.title}
 
 ${section.content}`, false);
     }, (index + 1) * 2000); // 2 second delays between sections
@@ -2433,12 +3472,12 @@ ${section.content}`, false);
         };
         
         if (!args || !destinations[args]) {
-          addToHistory('Available destinations: ' + Object.keys(destinations).join(', '), false);
+          enhancedAddToHistory('Available destinations: ' + Object.keys(destinations).join(', '), false);
           return;
         }
         
         const dest = destinations[args];
-        addToHistory(`🚀 Navigating to ${dest.name}...`, false);
+        enhancedAddToHistory(`🚀 Navigating to ${dest.name}...`, false);
         drainEnergy(2);
         addXP(10);
         setTimeout(() => window.location.href = dest.url, 1000);
@@ -2446,7 +3485,7 @@ ${section.content}`, false);
 
       '/connect': (args) => {
             if (!args) {
-        addToHistory('Usage: /connect [name]', false);
+        enhancedAddToHistory('Usage: /connect [name]', false);
         return;
       }
       
@@ -2454,7 +3493,7 @@ ${section.content}`, false);
       const isAlreadyFriend = gameState.friends.some(f => f.name === name);
       if (!isAlreadyFriend) {
         gameState.friends.push({ name, type: 'colonist' });
-        addToHistory(`👥 Added ${name} to your friends list!`, false);
+        enhancedAddToHistory(`👥 Added ${name} to your friends list!`, false);
       }
       
       if (gameState.companionName !== name) {
@@ -2473,11 +3512,11 @@ ${section.content}`, false);
     gameState.relationship = 'friend';
   }
 
-  addToHistory(`🤖 ${name} has joined your mission as your companion!`, false);
+  enhancedAddToHistory(`🤖 ${name} has joined your mission as your companion!`, false);
   triggerCompanionPopup(name);
 
 } else {
-  addToHistory(`🤖 ${name} is already your companion!`, false);
+  enhancedAddToHistory(`🤖 ${name} is already your companion!`, false);
 }
 
 addXP(25);
@@ -2487,7 +3526,7 @@ saveGame();
 
       // '/connect': (args) => {
       //   if (!args) {
-      //     addToHistory('Usage: /connect [name]', false);
+      //     enhancedAddToHistory('Usage: /connect [name]', false);
       //     return;
       //   }
         
@@ -2495,7 +3534,7 @@ saveGame();
       //   if (gameState.relationship === 'stranger') {
       //     gameState.relationship = 'friend';
       //   }
-      //   addToHistory(`🤖 ${gameState.companionName} has joined your mission!`, false);
+      //   enhancedAddToHistory(`🤖 ${gameState.companionName} has joined your mission!`, false);
       //   addXP(25);
       //   drainEnergy(3);
       //   saveGame();
@@ -2537,7 +3576,7 @@ saveGame();
                 response = `${gameState.companionName}: ${response}`;
               }
               
-              addToHistory(response, false);
+              enhancedAddToHistory(response, false);
               
               // Log conversation to server
               logEventToServer('companion_chat', { 
@@ -2556,17 +3595,17 @@ saveGame();
               const oldName = gameState.companionName;
               gameState.companionName = newName;
               localStorage.setItem('companionName', newName);
-              addToHistory(`✅ Companion renamed from ${oldName} to ${newName}`, false);
+              enhancedAddToHistory(`✅ Companion renamed from ${oldName} to ${newName}`, false);
               addXP(10);
               logEventToServer('companion_renamed', { oldName, newName });
             } else {
-              addToHistory('Usage: /companion rename [new name]', false);
+              enhancedAddToHistory('Usage: /companion rename [new name]', false);
             }
             break;
             
           default:
-            addToHistory('Companion actions: chat [message], rename [name]', false);
-            addToHistory('Try: /companion chat hi, /companion chat thanks, /companion chat good job', false);
+            enhancedAddToHistory('Companion actions: chat [message], rename [name]', false);
+            enhancedAddToHistory('Try: /companion chat hi, /companion chat thanks, /companion chat good job', false);
         }
         saveGame();
       },
@@ -2581,41 +3620,41 @@ saveGame();
             if (name) {
               gameState.partnerName = name;
               gameState.relationship = 'partner';
-              addToHistory(`💕 ${name} is now your romantic partner!`, false);
+              enhancedAddToHistory(`💕 ${name} is now your romantic partner!`, false);
               addXP(50);
             } else {
-              addToHistory('Usage: /partner set [name]', false);
+              enhancedAddToHistory('Usage: /partner set [name]', false);
             }
             break;
             
           case 'status':
             if (gameState.partnerName) {
-              addToHistory(`💞 Your partner: ${gameState.partnerName} (${gameState.relationship})`, false);
+              enhancedAddToHistory(`💞 Your partner: ${gameState.partnerName} (${gameState.relationship})`, false);
             } else {
-              addToHistory('💔 You don\'t have a romantic partner yet.', false);
+              enhancedAddToHistory('💔 You don\'t have a romantic partner yet.', false);
             }
             break;
             
           default:
-            addToHistory('Partner actions: set, status', false);
+            enhancedAddToHistory('Partner actions: set, status', false);
         }
         saveGame();
       },
 
       '/marry': (args) => {
         if (!args) {
-          addToHistory('Usage: /marry [name]', false);
+          enhancedAddToHistory('Usage: /marry [name]', false);
           return;
         }
         
         if (gameState.partnerName === args || gameState.relationship === 'soulmate') {
           gameState.marriedTo = args;
           gameState.relationship = 'married';
-          addToHistory(`💒 Congratulations! You married ${args} on Mars! 🎉`, false);
+          enhancedAddToHistory(`💒 Congratulations! You married ${args} on Mars! 🎉`, false);
           addXP(100);
           drainEnergy(10);
         } else {
-          addToHistory(`💔 You need to be in a committed relationship first.`, false);
+          enhancedAddToHistory(`💔 You need to be in a committed relationship first.`, false);
         }
         saveGame();
       },
@@ -2626,27 +3665,27 @@ saveGame();
           gameState.marriedTo = null;
           gameState.partnerName = null;
           gameState.relationship = 'friend';
-          addToHistory(`💔 You divorced ${ex}. You're now single.`, false);
+          enhancedAddToHistory(`💔 You divorced ${ex}. You're now single.`, false);
           addXP(20);
         } else {
-          addToHistory('💔 You\'re not married to anyone.', false);
+          enhancedAddToHistory('💔 You\'re not married to anyone.', false);
         }
         saveGame();
       },
 
       '/date': (args) => {
         if (!args) {
-          addToHistory('Usage: /date [name]', false);
+          enhancedAddToHistory('Usage: /date [name]', false);
           return;
         }
         
         if (gameState.partnerName && gameState.partnerName !== args) {
-          showPartnerReaction('date', args);
+          fixedShowPartnerReaction('date', args);
         }
         
         showThinking();
         setTimeout(() => {
-          addToHistory(`🌹 You went on a romantic date with ${args} under the Martian stars!`, false);
+          enhancedAddToHistory(`🌹 You went on a romantic date with ${args} under the Martian stars!`, false);
           addXP(30);
           drainEnergy(15);
         }, 2000);
@@ -2655,19 +3694,19 @@ saveGame();
 
       '/kiss': (args) => {
         if (!args) {
-          addToHistory('Usage: /kiss [name]', false);
+          enhancedAddToHistory('Usage: /kiss [name]', false);
           return;
         }
         
         if (gameState.partnerName && gameState.partnerName !== args) {
-          showPartnerReaction('kiss', args);
+          fixedShowPartnerReaction('kiss', args);
         }
         
         if (['partner', 'soulmate', 'married'].includes(gameState.relationship) || args === gameState.companionName) {
-          addToHistory(`😘 You kissed ${args}! They blush warmly.`, false);
+          enhancedAddToHistory(`😘 You kissed ${args}! They blush warmly.`, false);
           addXP(25);
         } else {
-          addToHistory(`😳 ${args} isn't ready for kisses yet.`, false);
+          enhancedAddToHistory(`😳 ${args} isn't ready for kisses yet.`, false);
         }
         drainEnergy(3);
         saveGame();
@@ -2675,15 +3714,15 @@ saveGame();
 
       '/hug': (args) => {
         if (!args) {
-          addToHistory('Usage: /hug [name]', false);
+          enhancedAddToHistory('Usage: /hug [name]', false);
           return;
         }
         
         if (gameState.relationship !== 'stranger') {
-          addToHistory(`🤗 You hugged ${args}! They seem happy.`, false);
+          enhancedAddToHistory(`🤗 You hugged ${args}! They seem happy.`, false);
           addXP(15);
         } else {
-          addToHistory(`😕 ${args} isn't ready for hugs yet.`, false);
+          enhancedAddToHistory(`😕 ${args} isn't ready for hugs yet.`, false);
         }
         drainEnergy(2);
         saveGame();
@@ -2691,15 +3730,15 @@ saveGame();
 
       '/flirt': (args) => {
         if (!args) {
-          addToHistory('Usage: /flirt [name]', false);
+          enhancedAddToHistory('Usage: /flirt [name]', false);
           return;
         }
         
         if (gameState.partnerName && gameState.partnerName !== args) {
-          showPartnerReaction('flirt', args);
+          fixedShowPartnerReaction('flirt', args);
         }
         
-        addToHistory(`😉 You flirted with ${args}! They seem interested.`, false);
+        enhancedAddToHistory(`😉 You flirted with ${args}! They seem interested.`, false);
         addXP(20);
         drainEnergy(5);
         saveGame();
@@ -2707,7 +3746,7 @@ saveGame();
 
       '/baby': (args) => {
          if (!args) {
-            addToHistory('Usage: /baby [partner name] or /baby name [baby name]', false);
+            enhancedAddToHistory('Usage: /baby [partner name] or /baby name [baby name]', false);
             return;
           }
           
@@ -2719,20 +3758,20 @@ saveGame();
               const lastBaby = gameState.children[gameState.children.length - 1];
               if (lastBaby.name.startsWith('Baby-')) {
                 lastBaby.name = babyName;
-                addToHistory(`👶 Baby renamed to ${babyName}!`, false);
+                enhancedAddToHistory(`👶 Baby renamed to ${babyName}!`, false);
                 logEventToServer('baby_named', { babyName, parents: [lastBaby.parent1, lastBaby.parent2] });
               } else {
-                addToHistory('No unnamed babies to name.', false);
+                enhancedAddToHistory('No unnamed babies to name.', false);
               }
             } else {
-              addToHistory('You have no children yet.', false);
+              enhancedAddToHistory('You have no children yet.', false);
             }
           } else {
             // Having baby with partner
             const partnerName = args;
             
             if (gameState.partnerName && gameState.partnerName !== partnerName) {
-              showPartnerReaction('baby', partnerName);
+              fixedShowPartnerReaction('baby', partnerName);
             }
             
             // Show baby naming popup
@@ -2743,24 +3782,24 @@ saveGame();
 
       '/breakup': (args) => {
         if (!args) {
-          addToHistory('Usage: /breakup [name]', false);
+          enhancedAddToHistory('Usage: /breakup [name]', false);
           return;
         }
         
         if (gameState.partnerName === args) {
           gameState.partnerName = null;
           gameState.relationship = 'friend';
-          addToHistory(`💔 You broke up with ${args}. You're now single.`, false);
+          enhancedAddToHistory(`💔 You broke up with ${args}. You're now single.`, false);
           addXP(10);
         } else {
-          addToHistory(`💔 You're not in a relationship with ${args}.`, false);
+          enhancedAddToHistory(`💔 You're not in a relationship with ${args}.`, false);
         }
         saveGame();
       },
       '/children': (args) => {
           if (args === 'list') {
     if (gameState.children.length === 0) {
-      addToHistory('👶 You have no children yet. Use /baby [partner] to start a family!', false);
+      enhancedAddToHistory('👶 You have no children yet. Use /baby [partner] to start a family!', false);
     } else {
       let list = `👶 YOUR CHILDREN (${gameState.children.length}):\n\n`;
       gameState.children.forEach((child, index) => {
@@ -2769,10 +3808,10 @@ saveGame();
         list += `   Parents: ${child.parent1} & ${child.parent2}\n`;
         list += `   Age: ${age} Mars days old\n\n`;
       });
-      addToHistory(list, false);
+      enhancedAddToHistory(list, false);
     }
   } else {
-    addToHistory('Usage: /children list', false);
+    enhancedAddToHistory('Usage: /children list', false);
   }
 },
 
@@ -2807,7 +3846,7 @@ saveGame();
       tree += 'Use /partner set [name] to find love';
     }
     
-    addToHistory(tree, false);
+    enhancedAddToHistory(tree, false);
     logEventToServer('family_tree_viewed', { 
       familySize: gameState.children.length + gameState.friends.length + (gameState.partnerName ? 1 : 0)
     });
@@ -2817,10 +3856,10 @@ saveGame();
       '/friends': (args) => {
         if (args === 'list') {
           if (gameState.friends.length === 0) {
-            addToHistory('👥 You have no friends yet. Use /connect to make friends!', false);
+            enhancedAddToHistory('👥 You have no friends yet. Use /connect to make friends!', false);
           } else {
             const friendsList = gameState.friends.map(f => `${f.name} (${f.type})`).join(', ');
-            addToHistory(`👥 Your friends: ${friendsList}`, false);
+            enhancedAddToHistory(`👥 Your friends: ${friendsList}`, false);
           }
         }
       },
@@ -2831,19 +3870,19 @@ saveGame();
         const target = subCommands?.slice(1).join(' ');
         
         if (action === 'home' && target) {
-          addToHistory(`🏠 Building a home for ${target}... Construction started!`, false);
+          enhancedAddToHistory(`🏠 Building a home for ${target}... Construction started!`, false);
           gameState.resources.shelter += 20;
           addXP(75);
           drainEnergy(25);
         } else {
           const structures = ['solar_dome', 'habitat', 'greenhouse', 'landing_pad'];
           if (structures.includes(args)) {
-            addToHistory(`🏗️ Building ${args.replace('_', ' ')}... Construction initiated!`, false);
+            enhancedAddToHistory(`🏗️ Building ${args.replace('_', ' ')}... Construction initiated!`, false);
             gameState.resources.shelter += 10;
             addXP(50);
             drainEnergy(20);
           } else {
-            addToHistory('Usage: /build [home [name] | solar_dome | habitat | greenhouse | landing_pad]', false);
+            enhancedAddToHistory('Usage: /build [home [name] | solar_dome | habitat | greenhouse | landing_pad]', false);
           }
         }
         saveGame();
@@ -2851,11 +3890,11 @@ saveGame();
 
       '/energy': (args) => {
         if (args === 'status') {
-          addToHistory(`⚡ Current energy: ${Math.round(gameState.resources.energy)}%`, false);
+          enhancedAddToHistory(`⚡ Current energy: ${Math.round(gameState.resources.energy)}%`, false);
         } else if (args === 'recharge') {
           showEnergyPopup();
         } else {
-          addToHistory('Energy commands: status, recharge', false);
+          enhancedAddToHistory('Energy commands: status, recharge', false);
         }
       },
 
@@ -2866,11 +3905,11 @@ saveGame();
         
         if (action === 'earn') {
           gameState.resources.credits += amount;
-          addToHistory(`💰 Earned ${amount} credits!`, false);
+          enhancedAddToHistory(`💰 Earned ${amount} credits!`, false);
           addXP(amount / 10);
           drainEnergy(5);
         } else {
-          addToHistory(`💰 Current credits: ${gameState.resources.credits}`, false);
+          enhancedAddToHistory(`💰 Current credits: ${gameState.resources.credits}`, false);
         }
         saveGame();
       },
@@ -2884,21 +3923,21 @@ saveGame();
           if (gameState.resources[resource] >= amount) {
             gameState.resources[resource] -= amount;
             gameState.resources.credits += amount * 5;
-            addToHistory(`💱 Traded ${amount} ${resource} for ${amount * 5} credits!`, false);
+            enhancedAddToHistory(`💱 Traded ${amount} ${resource} for ${amount * 5} credits!`, false);
             addXP(amount * 2);
             drainEnergy(5);
           } else {
-            addToHistory(`❌ Not enough ${resource} to trade.`, false);
+            enhancedAddToHistory(`❌ Not enough ${resource} to trade.`, false);
           }
         } else {
-          addToHistory('Usage: /trade [resource] [amount]', false);
+          enhancedAddToHistory('Usage: /trade [resource] [amount]', false);
         }
         saveGame();
       },
 
       '/mission': (args) => {
         if (gameState.resources.energy < 20) {
-          addToHistory('⚠️ Not enough energy for missions! Recharge first.', false);
+          enhancedAddToHistory('⚠️ Not enough energy for missions! Recharge first.', false);
           showEnergyPopup();
           return;
         }
@@ -2911,19 +3950,19 @@ saveGame();
         };
         
         if (missions[args]) {
-          addToHistory(missions[args], false);
+          enhancedAddToHistory(missions[args], false);
           addXP(40);
           drainEnergy(20);
           gameState.missions.push(args);
         } else {
-          addToHistory('Available missions: ' + Object.keys(missions).join(', '), false);
+          enhancedAddToHistory('Available missions: ' + Object.keys(missions).join(', '), false);
         }
         saveGame();
       },
 
       '/minigame': (args) => {
          if (gameState.resources.energy < 10) {
-            addToHistory('⚠️ Not enough energy for games! Recharge first.', false);
+            enhancedAddToHistory('⚠️ Not enough energy for games! Recharge first.', false);
             showEnergyPopup();
             return;
           }
@@ -2938,7 +3977,7 @@ saveGame();
           };
           
           if (games[args]) {
-            addToHistory(`🎮 Launching ${args}... Have fun!`, false);
+            enhancedAddToHistory(`🎮 Launching ${args}... Have fun!`, false);
             addXP(15);
             drainEnergy(10);
             
@@ -2948,14 +3987,14 @@ saveGame();
               window.location.href = games[args];
             }, 1000);
           } else {
-            addToHistory('Available games: ' + Object.keys(games).join(', '), false);
+            enhancedAddToHistory('Available games: ' + Object.keys(games).join(', '), false);
           }
           saveGame();
         },
 
       '/explore': () => {
         if (gameState.resources.energy < 15) {
-          addToHistory('⚠️ Not enough energy to explore! Recharge first.', false);
+          enhancedAddToHistory('⚠️ Not enough energy to explore! Recharge first.', false);
           showEnergyPopup();
           return;
         }
@@ -2968,7 +4007,7 @@ saveGame();
           '👽 Found signs of possible ancient life!'
         ];
         
-        addToHistory(discoveries[Math.floor(Math.random() * discoveries.length)], false);
+        enhancedAddToHistory(discoveries[Math.floor(Math.random() * discoveries.length)], false);
         addXP(35);
         drainEnergy(15);
         saveGame();
@@ -2977,7 +4016,7 @@ saveGame();
       '/resources': (args) => {
         if (args === 'status') {
           const r = gameState.resources;
-          addToHistory(`📊 RESOURCE STATUS:
+          enhancedAddToHistory(`📊 RESOURCE STATUS:
 💰 Money: ${r.money} | 🫁 Oxygen: ${r.oxygen}% | 💧 Water: ${r.water}L
 🍖 Food: ${r.food} | 🏠 Shelter: ${r.shelter} | ⚡ Energy: ${Math.round(r.energy)}%
 ⛽ Fuel: ${r.fuel}L | 🚗 Rover: ${r.rover} | 💳 Credits: ${r.credits}
@@ -2990,7 +4029,7 @@ saveGame();
         if (args === 'toggle') {
           toggleTheme();
         } else {
-          addToHistory('Usage: /theme toggle', false);
+          enhancedAddToHistory('Usage: /theme toggle', false);
         }
       },
 
@@ -2998,17 +4037,17 @@ saveGame();
         if (args === 'new') {
           clearChat();
         } else {
-          addToHistory('Chat commands: new', false);
+          enhancedAddToHistory('Chat commands: new', false);
         }
       },
 
       '/save': () => {
         saveGame();
-        addToHistory('💾 Game saved successfully.', false);
+        enhancedAddToHistory('💾 Game saved successfully.', false);
       },
 
       '/status': () => {
-        addToHistory(`📊 DETAILED STATUS:
+        enhancedAddToHistory(`📊 DETAILED STATUS:
 👤 Player: Level ${gameState.level} (${gameState.xp} XP)
 💕 Relationship: ${gameState.relationship} with ${gameState.companionName}
 ${gameState.partnerName ? `💖 Partner: ${gameState.partnerName}` : ''}
@@ -3020,7 +4059,7 @@ ${gameState.marriedTo ? `💒 Married to: ${gameState.marriedTo}` : ''}
       },
       '/jealousy': () => {
   if (!gameState.partnerName && !gameState.marriedTo) {
-    addToHistory('💔 You need a partner first to experience jealousy.', false);
+    enhancedAddToHistory('💔 You need a partner first to experience jealousy.', false);
     return;
   }
   
@@ -3028,7 +4067,7 @@ ${gameState.marriedTo ? `💒 Married to: ${gameState.marriedTo}` : ''}
   const health = gameState.relationshipHealth || 100;
   const mood = gameState.partnerMood || 'happy';
   
-  addToHistory(`💞 RELATIONSHIP STATUS with ${partner}:
+  enhancedAddToHistory(`💞 RELATIONSHIP STATUS with ${partner}:
 💖 Health: ${health}%
 😊 Mood: ${mood}
 ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '✅ No trust issues'}`, false);
@@ -3038,12 +4077,12 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
 
 '/propose': (args) => {
   if (!args) {
-    addToHistory('Usage: /propose [name]', false);
+    enhancedAddToHistory('Usage: /propose [name]', false);
     return;
   }
   
   if (gameState.marriedTo) {
-    addToHistory('💒 You\'re already married! Divorce first if you want to remarry.', false);
+    enhancedAddToHistory('💒 You\'re already married! Divorce first if you want to remarry.', false);
     return;
   }
   
@@ -3054,13 +4093,13 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
   showThinking();
   setTimeout(() => {
     if (Math.random() > 0.3) {
-      addToHistory(`💍 ${args} said YES! You're engaged!`, false);
+      enhancedAddToHistory(`💍 ${args} said YES! You're engaged!`, false);
       gameState.engagedTo = args;
       gameState.relationship = 'engaged';
       addXP(150);
       logEventToServer('engagement', { partner: args, success: true });
     } else {
-      addToHistory(`💔 ${args} said they need more time to think...`, false);
+      enhancedAddToHistory(`💔 ${args} said they need more time to think...`, false);
       addXP(25);
       logEventToServer('engagement', { partner: args, success: false });
     }
@@ -3072,12 +4111,12 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
 
 '/gift': (args) => {
   if (!args) {
-    addToHistory('Usage: /gift [name]', false);
+    enhancedAddToHistory('Usage: /gift [name]', false);
     return;
   }
   
   if (gameState.resources.credits < 50) {
-    addToHistory('💰 Not enough credits for a gift! Need 50 credits.', false);
+    enhancedAddToHistory('💰 Not enough credits for a gift! Need 50 credits.', false);
     return;
   }
   
@@ -3092,7 +4131,7 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
   const gift = gifts[Math.floor(Math.random() * gifts.length)];
   gameState.resources.credits -= 50;
   
-  addToHistory(`🎁 You gave ${args} ${gift}! They're delighted!`, false);
+  enhancedAddToHistory(`🎁 You gave ${args} ${gift}! They're delighted!`, false);
   
   if (args === gameState.partnerName || args === gameState.marriedTo) {
     gameState.relationshipHealth = Math.min(100, (gameState.relationshipHealth || 0) + 15);
@@ -3106,31 +4145,31 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
 },
 '/affair': (args) => {
   if (!args) {
-    addToHistory('Usage: /affair [name]', false);
+    enhancedAddToHistory('Usage: /affair [name]', false);
     return;
   }
   
   if (!gameState.partnerName && !gameState.marriedTo) {
-    addToHistory('💔 You need a partner first to have an affair!', false);
+    enhancedAddToHistory('💔 You need a partner first to have an affair!', false);
     return;
   }
   
   const partner = gameState.partnerName || gameState.marriedTo;
   enhancedPartnerReaction('affair', args);
   
-  addToHistory(`🤫 You started a secret affair with ${args}...`, false);
+  enhancedAddToHistory(`🤫 You started a secret affair with ${args}...`, false);
   
   showThinking();
   setTimeout(() => {
     if (Math.random() > 0.4) {
-      addToHistory(`💕 Your secret relationship with ${args} is passionate but dangerous!`, false);
+      enhancedAddToHistory(`💕 Your secret relationship with ${args} is passionate but dangerous!`, false);
       gameState.secretAffairs = gameState.secretAffairs || [];
       gameState.secretAffairs.push({ name: args, started: Date.now() });
       addXP(75);
       
       trackRelationshipEvent('affair_started', { lover: args, partner });
     } else {
-      addToHistory(`😰 ${args} rejected your advances. They respect your relationship.`, false);
+      enhancedAddToHistory(`😰 ${args} rejected your advances. They respect your relationship.`, false);
       addXP(15);
       
       trackRelationshipEvent('affair_rejected', { target: args, partner });
@@ -3143,18 +4182,18 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
 
 '/confess': (args) => {
   if (!gameState.secretAffairs || gameState.secretAffairs.length === 0) {
-    addToHistory('💯 You have nothing to confess. You\'re innocent!', false);
+    enhancedAddToHistory('💯 You have nothing to confess. You\'re innocent!', false);
     return;
   }
   
   const partner = gameState.partnerName || gameState.marriedTo;
   if (!partner) {
-    addToHistory('💔 No partner to confess to.', false);
+    enhancedAddToHistory('💔 No partner to confess to.', false);
     return;
   }
   
   const affair = gameState.secretAffairs[0];
-  addToHistory(`😭 You confessed your affair with ${affair.name} to ${partner}...`, false);
+  enhancedAddToHistory(`😭 You confessed your affair with ${affair.name} to ${partner}...`, false);
   
   showThinking();
   setTimeout(() => {
@@ -3163,12 +4202,12 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
     gameState.secretAffairs = [];
     
     if (gameState.relationshipHealth < 20) {
-      addToHistory(`💔 ${partner} broke up with you! "I can't trust you anymore!"`, false);
+      enhancedAddToHistory(`💔 ${partner} broke up with you! "I can't trust you anymore!"`, false);
       gameState.partnerName = null;
       gameState.marriedTo = null;
       gameState.relationship = 'single';
     } else {
-      addToHistory(`😢 ${partner} is devastated but willing to work on the relationship...`, false);
+      enhancedAddToHistory(`😢 ${partner} is devastated but willing to work on the relationship...`, false);
     }
     
     trackRelationshipEvent('affair_confessed', { 
@@ -3184,24 +4223,24 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
 },
 '/swingers': () => {
   if (!gameState.partnerName && !gameState.marriedTo) {
-    addToHistory('💔 You need a partner to join the swinger lifestyle!', false);
+    enhancedAddToHistory('💔 You need a partner to join the swinger lifestyle!', false);
     return;
   }
   
   const partner = gameState.partnerName || gameState.marriedTo;
-  addToHistory(`🔄 You suggest to ${partner} that you both explore swinging...`, false);
+  enhancedAddToHistory(`🔄 You suggest to ${partner} that you both explore swinging...`, false);
   
   showThinking();
   setTimeout(() => {
     if (Math.random() > 0.6) {
-      addToHistory(`😈 ${partner} is intrigued! "Let's explore together!"`, false);
+      enhancedAddToHistory(`😈 ${partner} is intrigued! "Let's explore together!"`, false);
       gameState.lifestyle = 'swingers';
       gameState.relationshipHealth = Math.min(100, (gameState.relationshipHealth || 100) + 10);
       addXP(100);
       
       trackRelationshipEvent('lifestyle_change', { newLifestyle: 'swingers', partner });
     } else {
-      addToHistory(`😐 ${partner} isn't comfortable with that idea right now.`, false);
+      enhancedAddToHistory(`😐 ${partner} isn't comfortable with that idea right now.`, false);
       addXP(25);
       
       trackRelationshipEvent('lifestyle_rejected', { proposedLifestyle: 'swingers', partner });
@@ -3214,22 +4253,22 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
 
 '/polyamory': (args) => {
   if (!args) {
-    addToHistory('Usage: /polyamory [partner2_name]', false);
+    enhancedAddToHistory('Usage: /polyamory [partner2_name]', false);
     return;
   }
   
   if (!gameState.partnerName && !gameState.marriedTo) {
-    addToHistory('💔 You need at least one partner first!', false);
+    enhancedAddToHistory('💔 You need at least one partner first!', false);
     return;
   }
   
   const primaryPartner = gameState.partnerName || gameState.marriedTo;
-  addToHistory(`💕 You propose polyamory to ${primaryPartner}, wanting to include ${args}...`, false);
+  enhancedAddToHistory(`💕 You propose polyamory to ${primaryPartner}, wanting to include ${args}...`, false);
   
   showThinking();
   setTimeout(() => {
     if (Math.random() > 0.5) {
-      addToHistory(`🌈 ${primaryPartner} agrees! You're now in a polyamorous relationship with ${args}!`, false);
+      enhancedAddToHistory(`🌈 ${primaryPartner} agrees! You're now in a polyamorous relationship with ${args}!`, false);
       gameState.polyPartners = gameState.polyPartners || [];
       gameState.polyPartners.push(args);
       gameState.relationship = 'polyamorous';
@@ -3240,7 +4279,7 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
         newPartner: args 
       });
     } else {
-      addToHistory(`😔 ${primaryPartner} needs time to think about this...`, false);
+      enhancedAddToHistory(`😔 ${primaryPartner} needs time to think about this...`, false);
       gameState.relationshipHealth = Math.max(0, (gameState.relationshipHealth || 100) - 15);
       addXP(30);
       
@@ -3256,7 +4295,7 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
 },
 
 '/scandal': () => {
-  addToHistory(`📰 MARS COLONY GOSSIP NETWORK`, false);
+  enhancedAddToHistory(`📰 MARS COLONY GOSSIP NETWORK`, false);
   
   const scandals = [
     `🔥 Rumor: Someone was seen sneaking between habitats at night...`,
@@ -3275,7 +4314,7 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
   }
   
   const scandal = scandals[Math.floor(Math.random() * scandals.length)];
-  addToHistory(scandal, false);
+  enhancedAddToHistory(scandal, false);
   
   addXP(10);
   drainEnergy(2);
@@ -3284,12 +4323,12 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
 },
 '/divorce_court': () => {
   if (!gameState.marriedTo) {
-    addToHistory('⚖️ You\'re not married, no need for divorce court!', false);
+    enhancedAddToHistory('⚖️ You\'re not married, no need for divorce court!', false);
     return;
   }
   
-  addToHistory(`⚖️ MARS COLONY DIVORCE PROCEEDINGS`, false);
-  addToHistory(`🏛️ You vs. ${gameState.marriedTo}`, false);
+  enhancedAddToHistory(`⚖️ MARS COLONY DIVORCE PROCEEDINGS`, false);
+  enhancedAddToHistory(`🏛️ You vs. ${gameState.marriedTo}`, false);
   
   showThinking();
   setTimeout(() => {
@@ -3309,7 +4348,7 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
     ];
     
     const outcome = courtOutcomes[Math.floor(Math.random() * courtOutcomes.length)];
-    addToHistory(outcome.message, false);
+    enhancedAddToHistory(outcome.message, false);
     
     gameState.resources.credits = Math.max(0, gameState.resources.credits + outcome.creditsChange);
     gameState.marriedTo = null;
@@ -3344,7 +4383,7 @@ ${gameState.lastCheatingIncident ? '⚠️ Recent incident needs addressing' : '
     reputationStatus = "Colony Hero 👑";
   }
   
-  addToHistory(`📊 YOUR MARS COLONY REPUTATION:
+  enhancedAddToHistory(`📊 YOUR MARS COLONY REPUTATION:
 🏆 Status: ${reputationStatus}
 📈 Score: ${reputation}/100
 
@@ -3360,12 +4399,12 @@ ${gameState.polyPartners ? `💕 Poly Partners: ${gameState.polyPartners.length}
 
 '/therapy': () => {
   if (gameState.resources.credits < 100) {
-    addToHistory('💰 Therapy costs 100 credits. Mental health is expensive on Mars!', false);
+    enhancedAddToHistory('💰 Therapy costs 100 credits. Mental health is expensive on Mars!', false);
     return;
   }
   
   gameState.resources.credits -= 100;
-  addToHistory(`🛋️ You attend a therapy session with Dr. Martinez...`, false);
+  enhancedAddToHistory(`🛋️ You attend a therapy session with Dr. Martinez...`, false);
   
   showThinking();
   setTimeout(() => {
@@ -3373,8 +4412,8 @@ ${gameState.polyPartners ? `💕 Poly Partners: ${gameState.polyPartners.length}
     gameState.partnerMood = gameState.partnerMood === 'furious' ? 'hurt_but_forgiving' : 'happy';
     gameState.mentalHealth = Math.min(100, (gameState.mentalHealth || 50) + 40);
     
-    addToHistory(`💚 Therapy helps! You feel more balanced and your relationships improve.`, false);
-    addToHistory(`🧠 Mental Health: ${gameState.mentalHealth}% | Relationship Health: ${gameState.relationshipHealth}%`, false);
+    enhancedAddToHistory(`💚 Therapy helps! You feel more balanced and your relationships improve.`, false);
+    enhancedAddToHistory(`🧠 Mental Health: ${gameState.mentalHealth}% | Relationship Health: ${gameState.relationshipHealth}%`, false);
     
     trackRelationshipEvent('therapy_session', {
       cost: 100,
@@ -3391,14 +4430,14 @@ ${gameState.polyPartners ? `💕 Poly Partners: ${gameState.polyPartners.length}
 
 '/drunk': () => {
   if (gameState.resources.credits < 25) {
-    addToHistory('🍺 You need 25 credits for Mars moonshine!', false);
+    enhancedAddToHistory('🍺 You need 25 credits for Mars moonshine!', false);
     return;
   }
   
   gameState.resources.credits -= 25;
   gameState.isDrunk = true;
   
-  addToHistory(`🍻 You drink some potent Mars moonshine... everything feels fuzzy!`, false);
+  enhancedAddToHistory(`🍻 You drink some potent Mars moonshine... everything feels fuzzy!`, false);
   
   // Drunk commands have different effects
   setTimeout(() => {
@@ -3410,7 +4449,7 @@ ${gameState.polyPartners ? `💕 Poly Partners: ${gameState.polyPartners.length}
     ];
     
     const action = drunkActions[Math.floor(Math.random() * drunkActions.length)];
-    addToHistory(action, false);
+    enhancedAddToHistory(action, false);
     
     logEventToServer('drunk_behavior', { action, cost: 25 });
     addXP(20);
@@ -3418,7 +4457,7 @@ ${gameState.polyPartners ? `💕 Poly Partners: ${gameState.polyPartners.length}
     // Sober up after some time
     setTimeout(() => {
       gameState.isDrunk = false;
-      addToHistory(`😅 You sober up and remember why Mars colonists should drink responsibly...`, false);
+      enhancedAddToHistory(`😅 You sober up and remember why Mars colonists should drink responsibly...`, false);
     }, 120000); // 2 minutes
   }, 1000);
   
@@ -3430,11 +4469,11 @@ ${gameState.polyPartners ? `💕 Poly Partners: ${gameState.polyPartners.length}
 
 '/stalk': (args) => {
   if (!args) {
-    addToHistory('Usage: /stalk [name]', false);
+    enhancedAddToHistory('Usage: /stalk [name]', false);
     return;
   }
   
-  addToHistory(`🕵️ You carefully observe ${args} from a distance...`, false);
+  enhancedAddToHistory(`🕵️ You carefully observe ${args} from a distance...`, false);
   
   showThinking();
   setTimeout(() => {
@@ -3447,10 +4486,10 @@ ${gameState.polyPartners ? `💕 Poly Partners: ${gameState.polyPartners.length}
     ];
     
     const observation = observations[Math.floor(Math.random() * observations.length)];
-    addToHistory(`👁️ You discovered: ${observation}`, false);
+    enhancedAddToHistory(`👁️ You discovered: ${observation}`, false);
     
     if (Math.random() > 0.7) {
-      addToHistory(`😱 ${args} noticed you watching! They seem uncomfortable...`, false);
+      enhancedAddToHistory(`😱 ${args} noticed you watching! They seem uncomfortable...`, false);
       if (args === gameState.partnerName || args === gameState.marriedTo) {
         gameState.relationshipHealth = Math.max(0, (gameState.relationshipHealth || 100) - 10);
       }
@@ -3690,7 +4729,7 @@ function confirmBabyName(partnerName) {
   };
   
   gameState.children.push(baby);
-  addToHistory(`👶 Congratulations! Welcome ${babyName} to the Mars colony!`, false);
+  enhancedAddToHistory(`👶 Congratulations! Welcome ${babyName} to the Mars colony!`, false);
   addXP(200);
   drainEnergy(20);
   
@@ -3752,6 +4791,8 @@ class AdminCheatManager {
         }
       }
     });
+
+
     
     // Keyboard sequence for desktop admin
     document.addEventListener('keydown', (e) => {
@@ -3761,6 +4802,31 @@ class AdminCheatManager {
       if (this.keySequence.length > 9) {
         this.keySequence = this.keySequence.slice(-9);
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'h' && !e.target.matches('input, textarea')) {
+    e.preventDefault();
+    toggleHistoryPanel();
+  }
+  
+  // Ctrl+N or Cmd+N for new session
+  if ((e.ctrlKey || e.metaKey) && e.key === 'n' && !e.target.matches('input, textarea')) {
+    e.preventDefault();
+    conversationManager.createNewSession();
+  }
+  
+  // Escape to close panels
+  if (e.key === 'Escape') {
+    toggleHistoryPanel(false);
+    document.querySelectorAll('.popup-overlay').forEach(popup => {
+      popup.style.display = 'none';
+    });
+  }
+  
+  // End key to scroll to bottom
+  if (e.key === 'End' && !e.target.matches('input, textarea')) {
+    e.preventDefault();
+    scrollToBottom();
+  }
+
       
       if (this.keySequence.join('-') === this.secretSequence.join('-')) {
         this.activateAdminMode();
@@ -3768,6 +4834,7 @@ class AdminCheatManager {
       }
     });
   }
+  
   
   getScreenCorner(touch) {
     const w = window.innerWidth;
@@ -3785,7 +4852,7 @@ class AdminCheatManager {
   activateAdminMode() {
     this.adminMode = true;
     this.showAdminPanel();
-    addToHistory('🛡️ Admin mode activated!', false, 'system');
+    enhancedAddToHistory('🛡️ Admin mode activated!', false, 'system');
     logEventToServer('admin_mode_activated', { timestamp: new Date().toISOString() });
   }
   
@@ -3816,20 +4883,20 @@ class AdminCheatManager {
   
   addXP(amount) {
     addXP(amount);
-    addToHistory(`🛡️ Admin granted ${amount} XP`, false, 'system');
+    enhancedAddToHistory(`🛡️ Admin granted ${amount} XP`, false, 'system');
     logEventToServer('admin_cheat', { type: 'xp', amount });
   }
   
   addCredits(amount) {
     gameState.resources.credits += amount;
-    addToHistory(`🛡️ Admin granted ${amount} credits`, false, 'system');
+    enhancedAddToHistory(`🛡️ Admin granted ${amount} credits`, false, 'system');
     logEventToServer('admin_cheat', { type: 'credits', amount });
     saveGame();
   }
   
   fullEnergy() {
     gameState.resources.energy = 100;
-    addToHistory('🛡️ Admin restored full energy', false, 'system');
+    enhancedAddToHistory('🛡️ Admin restored full energy', false, 'system');
     logEventToServer('admin_cheat', { type: 'energy', amount: 100 });
     saveGame();
   }
@@ -3840,14 +4907,14 @@ class AdminCheatManager {
         gameState.resources[key] = key === 'energy' ? 100 : 9999;
       }
     });
-    addToHistory('🛡️ Admin maxed all resources', false, 'system');
+    enhancedAddToHistory('🛡️ Admin maxed all resources', false, 'system');
     logEventToServer('admin_cheat', { type: 'max_resources' });
     saveGame();
   }
   
   unlockAll() {
     gameState.achievements = ['Explorer', 'Builder', 'Lover', 'Parent', 'Leader', 'Hero'];
-    addToHistory('🛡️ Admin unlocked all achievements', false, 'system');
+    enhancedAddToHistory('🛡️ Admin unlocked all achievements', false, 'system');
     logEventToServer('admin_cheat', { type: 'unlock_all' });
     saveGame();
   }
@@ -3959,19 +5026,85 @@ document.addEventListener('touchstart', function(e) {
   }
 });
 
-    function processCommand(input) {
-      if (input.startsWith('/')) {
-        const [command, ...args] = input.split(' ');
-        const cmdFunction = commands[command.toLowerCase()];
-        if (cmdFunction) {
-          cmdFunction(args.join(' ').toLowerCase());
-        } else {
-          addToHistory(`❌ Unknown command '${command}'. Type /help for available commands.`, false);
+    function processCommandEnhanced(input) {
+  try {
+    if (input.startsWith('/')) {
+      const [command, ...args] = input.split(' ');
+      const cmdFunction = commands[command.toLowerCase()];
+      
+      if (cmdFunction) {
+        // Add command to history with proper session tracking
+        const commandHistory = JSON.parse(localStorage.getItem('zepta_command_history') || '[]');
+        commandHistory.push({
+          command: input,
+          timestamp: Date.now(),
+          session: gameState.gameSession
+        });
+        
+        // Keep only last 100 commands
+        if (commandHistory.length > 100) {
+          commandHistory.splice(0, commandHistory.length - 100);
         }
-      } else if (input) {
-        addToHistory(`${gameState.companionName}: I understand commands starting with /. Try /help!`, false);
+        
+        localStorage.setItem('zepta_command_history', JSON.stringify(commandHistory));
+        
+        // Execute command with error handling
+        try {
+          cmdFunction(args.join(' ').toLowerCase());
+        } catch (error) {
+          console.error('Command execution error:', error);
+          enhancedAddToHistory(`❌ Error executing ${command}: ${error.message}`, false, 'system');
+        }
+      } else {
+        enhancedAddToHistory(`❌ Unknown command '${command}'. Type /help for available commands.`, false);
+        
+        // Suggest similar commands
+        const similarCommands = findSimilarCommands(command);
+        if (similarCommands.length > 0) {
+          enhancedAddToHistory(`💡 Did you mean: ${similarCommands.join(', ')}?`, false, 'system');
+        }
+      }
+    } else if (input) {
+      enhancedAddToHistory(`${gameState.companionName}: I understand commands starting with /. Try /help!`, false);
+    }
+  } catch (error) {
+    console.error('Process command error:', error);
+    enhancedAddToHistory('❌ System error occurred. Please try again.', false, 'system');
+  }
+}function findSimilarCommands(input) {
+  const commandList = Object.keys(commands);
+  return commandList.filter(cmd => {
+    const cmdClean = cmd.replace('/', '');
+    const inputClean = input.replace('/', '');
+    return cmdClean.includes(inputClean) || inputClean.includes(cmdClean) || 
+           levenshteinDistance(cmdClean, inputClean) <= 2;
+  }).slice(0, 3);
+}
+
+function levenshteinDistance(str1, str2) {
+  const matrix = [];
+  for (let i = 0; i <= str2.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= str1.length; j++) {
+    matrix[0][j] = j;
+  }
+  for (let i = 1; i <= str2.length; i++) {
+    for (let j = 1; j <= str1.length; j++) {
+      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
       }
     }
+  }
+  return matrix[str2.length][str1.length];
+}
+
 
     function toggleTheme(save = true) {
       isTerminalMode = !isTerminalMode;
@@ -4003,8 +5136,8 @@ document.addEventListener('touchstart', function(e) {
     document.getElementById('runBtn').addEventListener('click', () => {
       const input = document.getElementById('terminalCommandInput').value.trim();
       if (input) {
-        addToHistory(input, true);
-        processCommand(input);
+        enhancedAddToHistory(input, true);
+        processCommandEnhanced(input);
         document.getElementById('terminalCommandInput').value = '';
       }
     });
@@ -4019,8 +5152,8 @@ document.addEventListener('touchstart', function(e) {
     document.getElementById('sendBtn').addEventListener('click', () => {
       const input = document.getElementById('terminalInput').value.trim();
       if (input) {
-        addToHistory(input, true);
-        processCommand(input);
+        enhancedAddToHistory(input, true);
+        processCommandEnhanced(input);
         document.getElementById('terminalInput').value = '';
       }
     });
@@ -4054,8 +5187,8 @@ document.addEventListener('touchstart', function(e) {
     // Initialize welcome message
     setTimeout(() => {
       if (gameState.chatHistory.length <= 1) {
-        addToHistory(`Welcome back to Mars, Commander! I'm ${gameState.companionName}, your AI companion.`, false);
-        addToHistory(`Your energy is at ${Math.round(gameState.resources.energy)}%. Type /help to see what we can do together!`, false);
+        enhancedAddToHistory(`Welcome back to Mars, Commander! I'm ${gameState.companionName}, your AI companion.`, false);
+        enhancedAddToHistory(`Your energy is at ${Math.round(gameState.resources.energy)}%. Type /help to see what we can do together!`, false);
       }
     }, 1000);
   </script>
@@ -4321,9 +5454,9 @@ class MarsoVersePlayerManager {
   }
 
   showAdminNotification(message) {
-    // Show notification in game if addToHistory function exists
-    if (typeof addToHistory === 'function') {
-      addToHistory(`🛡️ Admin: ${message}`, false, 'system');
+    // Show notification in game if enhancedAddToHistory function exists
+    if (typeof enhancedAddToHistory === 'function') {
+      enhancedAddToHistory(`🛡️ Admin: ${message}`, false, 'system');
     } else {
       console.log(`[Admin] ${message}`);
     }
@@ -4492,8 +5625,8 @@ class EnhancedSolanaPayManager {
     // Close modal and show success
     document.querySelectorAll('.popup-overlay').forEach(modal => modal.remove());
     
-    if (typeof addToHistory === 'function') {
-      addToHistory(`✅ Purchase successful! Received ${pack.name}`, false, 'system');
+    if (typeof enhancedAddToHistory === 'function') {
+      enhancedAddToHistory(`✅ Purchase successful! Received ${pack.name}`, false, 'system');
     }
 
     // Update admin
@@ -4544,14 +5677,14 @@ async function purchasePack(packType) {
   try {
     document.querySelectorAll('.popup-overlay').forEach(modal => modal.remove());
     
-    if (typeof addToHistory === 'function') {
-      addToHistory(`🛒 Initiating purchase for ${enhancedSolanaPayManager.packs[packType].name}...`, false, 'system');
+    if (typeof enhancedAddToHistory === 'function') {
+      enhancedAddToHistory(`🛒 Initiating purchase for ${enhancedSolanaPayManager.packs[packType].name}...`, false, 'system');
     }
     
     await enhancedSolanaPayManager.processPurchase(packType);
   } catch (error) {
-    if (typeof addToHistory === 'function') {
-      addToHistory('❌ Purchase failed. Please try again.', false, 'system');
+    if (typeof enhancedAddToHistory === 'function') {
+      enhancedAddToHistory('❌ Purchase failed. Please try again.', false, 'system');
     }
     console.error('Purchase error:', error);
   }
@@ -4636,7 +5769,7 @@ class RealSolanaPayManager {
     // Close modal
     document.querySelectorAll('.popup-overlay').forEach(m => m.remove());
     
-    addToHistory(`✅ Payment successful! Received ${pack.name}`, false, 'system');
+    enhancedAddToHistory(`✅ Payment successful! Received ${pack.name}`, false, 'system');
     addXP(pack.credits / 10);
     saveGame();
   }
@@ -4661,6 +5794,13 @@ class RealSolanaPayManager {
 }
 window.sendApology = sendApology;
 window.giveGift = giveGift;
+window.scrollToBottom = scrollToBottom;
+window.toggleHistoryPanel = toggleHistoryPanel;
+window.conversationManager = conversationManager;
+window.enhancedDisplayMessage = enhancedDisplayMessage;
+window.enhancedAddToHistory = enhancedAddToHistory;
+window.processCommandEnhanced = processCommandEnhanced;
+window.fixedShowPartnerReaction = fixedShowPartnerReaction;
 // Initialize Solana Pay
 const realSolanaPayManager = new RealSolanaPayManager();
   </script>
