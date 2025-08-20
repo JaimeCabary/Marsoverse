@@ -3913,7 +3913,7 @@ void main() {
     @media (max-width: 600px) {
     padding: 5px 3px calc(5px + env(safe-area-inset-bottom)) 3px;
     font-size: clamp(0.6rem, 2vw, 0.7rem);
-  `,[{key:"base",icon:"fas fa-building",text:"Base",action:()=>th("base")},{key:"weather",icon:"fas fa-cloud-sun",text:"Weather",action:L0},{key:"gallery",icon:"fas fa-images",text:"Gallery",action:I0},{key:"mars360",icon:"fas fa-globe",text:"M360",action:()=>window.open("/mars-rpg.html","_blank")},{key:"map",icon:"fas fa-map",text:"Map",action:F0}].forEach(n=>{const i=document.createElement("button");i.className="nav-item",i.innerHTML=`
+  `,[{key:"base",icon:"fas fa-building",text:"Base",action:()=>th("base")},{key:"weather",icon:"fas fa-cloud-sun",text:"Weather",action:L0},{key:"gallery",icon:"fas fa-images",text:"Gallery",action:I0},{key:"mars360",icon:"fas fa-globe",text:"M360",action:()=>window.open("./mars-rpg.html")},{key:"map",icon:"fas fa-map",text:"Map",action:F0}].forEach(n=>{const i=document.createElement("button");i.className="nav-item",i.innerHTML=`
       <i class="${n.icon}" style="font-size: 0.7rem; margin-bottom: 4px;"></i>
       <div style="font-size: 0.5rem;">${n.text}</div>
     `,i.style.cssText=`
