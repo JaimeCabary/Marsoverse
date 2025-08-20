@@ -430,7 +430,7 @@ function createNavbar() {
     { key: 'base', icon: 'fas fa-building', text: 'Base', action: () => showModel('base') },
     { key: 'weather', icon: 'fas fa-cloud-sun', text: 'Weather', action: toggleWeather },
     { key: 'gallery', icon: 'fas fa-images', text: 'Gallery', action: toggleGallery },
-    { key: 'mars360', icon: 'fas fa-globe', text: 'M360', action: () => toggleMars360(true) },
+    { key: 'mars360', icon: 'fas fa-globe', text: 'M360', action: () => window.open('/mars-rpg.html', '_blank') },
     { key: 'map', icon: 'fas fa-map', text: 'Map', action: showMapPlaceholder }
   ];
 

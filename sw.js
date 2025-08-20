@@ -1,6 +1,6 @@
 const CACHE_NAME = "marsoverse-cache-v8";
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
-const OFFLINE_FALLBACK = "/index.html";
+const MAX_FILE_SIZE = 70 * 1024 * 1024; // 70MB in bytes
+const OFFLINE_FALLBACK = "/marzo.html";
 
 // Core files that MUST be cached for basic functionality
 const criticalFiles = [
@@ -74,6 +74,14 @@ const criticalFiles = [
   "/sounds/intro.mp3",
   "/sounds/sparkle.mp3",
   "/sounds/explosion.mp3",
+  "/Earth Explosion.mp4",
+  "/sounds/marsostory.mp3",
+    "/marsoo.mp4",
+  "/moi.mp4", 
+  "/marshuda.mp4",
+  "/marshud.mp4",
+  "/marselsa.mp4",
+  "/marsanna.mp4",
 
   // Web App Manifest
   "/manifest.json"
@@ -81,30 +89,24 @@ const criticalFiles = [
 
 // Known large video files that should be excluded (likely >50MB)
 const knownLargeFiles = [
-  "/marsoo.mp4",
-  "/moi.mp4", 
-  "/marshuda.mp4",
-  "/marshud.mp4",
-  "/marselsa.mp4",
-  "/marsanna.mp4",
   "/shaca.mp4",
   "/starry.mp4",
   "/elphaba.mp4",
   "/gaba.mp4",
   "/giga.mp4",
   "/astro.mp4",
-  "/Earth Explosion.mp4",
+  
   
   // Large audio files
   "/sounds/afterstory.mp3",
-  "/sounds/marsostory.mp3"
+  
 ];
 
 // File extensions that are typically safe to cache
 const cacheableExtensions = [
   '.html', '.htm', '.css', '.js', '.json', '.xml',
   '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico',
-  '.mp3', '.wav', '.ogg', '.m4a',
+  '.mp3', '.wav', '.ogg', '.m4a', '.mp4',
   '.gltf', '.bin', '.glb', '.obj', '.mtl',
   '.woff', '.woff2', '.ttf', '.eot',
   '.txt', '.md', '.pdf'
@@ -170,7 +172,7 @@ async function discoverAndCacheAssets() {
       "/mars_img/", 
       "/sounds/",
       "/mars-viewer/dist/models/",
-      "/mars-viewerr/models/"
+      "/mars-viewer/models/"
     ];
     
     // Try to discover assets by fetching directory listings or manifest files

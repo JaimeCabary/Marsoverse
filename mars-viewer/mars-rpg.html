@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mars RPG - Immersive Environment</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        #gameContainer {
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ffeae2;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.507);
+            /* font-size: 12px; */
+            /* text-shadow: 2px 2px 4px rgba(0,0,0,0.8); */
+            font-size: 14px;
+             padding: 10px;
+            border-radius: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffddd0;
+            /* background-color: rgba(0, 0, 0, 0.507);
+            font-size: 12px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8); */
+            z-index: 100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #ffe9e2;
+            z-index: 100;
+            padding: 10px;
+            border-radius: 15px;
+            background-color: rgba(0, 0, 0, 0.507);
+            font-size: 12px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            max-width: 300px;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #f4b69f;
+            font-size: 18px;
+            z-index: 1000;
+            text-align: center;
+        }
+        
+        /* Back Button Styles */
+        #backButton {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        #backButton button {
+            background: #8b2500;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            transition: background 0.3s;
+        }
+        
+        #backButton button:hover {
+            background: rgb(48, 13, 0);
+        }
+        
+        /* Mobile controls */
+        #joystick-container {
+            position: fixed;
+            bottom: 250px;
+            left: 20px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 200, 170, 0.3);
+            border-radius: 50%;
+            z-index: 1001;
+            display: none;
+            touch-action: none;
+            pointer-events: auto;
+            border: 2px solid #ff6b35;
+        }
+
+        #joystick-container > div {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #ff5618;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.8);
+        }
+
+        @media (max-width: 768px), (pointer: coarse) {
+            #joystick-container {
+                display: block;
+            }
+            #crosshair {
+                display: none;
+            }
+
+            #ui {
+                width: 200px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ffeae2;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.507);
+            /* font-size: 12px; */
+            /* text-shadow: 2px 2px 4px rgba(0,0,0,0.8); */
+            font-size: 14px;
+             padding: 10px;
+            border-radius: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+                    /* #backButton button {
+                        width: 30px;
+                        font-size: 7px;
+            background: #8b2500;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            transition: background 0.3s;
+        } */
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer"></div>
+    
+    <!-- Back Button -->
+    <div id="backButton">
+        <button>← Back</button>
+    </div>
+    
+    <div id="loading">
+        <div>MARS MISSION INITIALIZING...</div>
+        <div style="margin-top: 10px; font-size: 14px;">Loading Martian Environment</div>
+    </div>
+    
+    <div id="ui">
+        <div>MARS EXPLORATION SUIT - STATUS: ACTIVE</div>
+        <div id="position">Position: (0, 0)</div>
+        <div id="altitude">Altitude: 0m</div>
+        <div>Oxygen: 98%</div>
+        <div>Power: 100%</div>
+    </div>
+    
+    <div id="crosshair">+</div>
+    
+    <div id="instructions">
+        <strong>CONTROLS:</strong><br>
+        WASD - Move (W forward, S back, A left, D right)<br>
+        Mouse - Look Around<br>
+        SHIFT - Run<br>
+        SPACE - Jump/Climb<br>
+        Click - Interact<br>
+        ESC - Release Mouse<br>
+        Double Tap/Click - Stop Movement<br>
+        Mobile: Joystick - Move, Swipe - Look
+    </div>
+
+    <script>
+        // Key states for movement
+        const keys = {
+            w: false, // forward
+            s: false, // back
+            a: false, // left
+            d: false, // right
+            shift: false // run
+        };
+
+        // Mars RPG Environment Class
+        class MarsRPGEnvironment {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.velocity = new THREE.Vector3();
+                this.direction = new THREE.Vector3();
+                this.raycaster = new THREE.Raycaster();
+                this.objects = [];
+                this.dustParticles = null;
+                this.playerHeight = 1.8;
+                this.playerRadius = 0.5;
+                this.isPointerLocked = false;
+                this.isActive = false;
+                this.touchStartX = null;
+                this.touchStartY = null;
+                this.lastTapTime = 0;
+                this.textureLoader = new THREE.TextureLoader();
+            }
+            
+            init(container) {
+                if (this.isActive) return;
+                this.isActive = true;
+                
+                container.innerHTML = '';
+                this.setupScene(container);
+                this.createLighting();
+                this.createTerrain();
+                this.createStructures();
+                this.createBuildings();
+                this.createAtmosphere();
+                this.createDustParticles();
+                this.setupControls();
+                this.setupPointerLock();
+                this.setupTouchControls();
+                this.createVirtualJoystick();
+                this.setupStopEvents();
+                this.animate();
+                
+                document.getElementById('loading').style.display = 'none';
+                
+                return this;
+            }
+            
+            destroy() {
+                if (!this.isActive) return;
+                this.isActive = false;
+                
+                if (this.renderer) {
+                    this.renderer.dispose();
+                    if (this.renderer.domElement && this.renderer.domElement.parentNode) {
+                        this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+                    }
+                }
+                
+                document.removeEventListener('keydown', this.onKeyDown);
+                document.removeEventListener('keyup', this.onKeyUp);
+                document.removeEventListener('mousemove', this.onMouseMove);
+                document.removeEventListener('click', this.onClick);
+                document.removeEventListener('dblclick', this.onDblClick);
+                document.removeEventListener('touchstart', this.onTouchStart);
+                document.removeEventListener('touchmove', this.onTouchMove);
+                document.removeEventListener('touchend', this.onTouchEnd);
+                
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+            }
+            
+            setupScene(container) {
+                this.scene = new THREE.Scene();
+                this.scene.fog = new THREE.Fog(0xd2691e, 100, 2000);
+                
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+                this.camera.position.set(0, this.playerHeight, 0);
+                
+                this.renderer = new THREE.WebGLRenderer({ antialias: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setClearColor(0x8B4513);
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                container.appendChild(this.renderer.domElement);
+            }
+            
+            createLighting() {
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+                this.scene.add(ambientLight);
+                
+                const sunLight = new THREE.DirectionalLight(0xffaa44, 1.2);
+                sunLight.position.set(100, 100, 50);
+                sunLight.castShadow = true;
+                sunLight.shadow.mapSize.width = 2048;
+                sunLight.shadow.mapSize.height = 2048;
+                sunLight.shadow.camera.near = 0.5;
+                sunLight.shadow.camera.far = 5000;
+                sunLight.shadow.camera.left = -500;
+                sunLight.shadow.camera.right = 500;
+                sunLight.shadow.camera.top = 500;
+                sunLight.shadow.camera.bottom = -500;
+                this.scene.add(sunLight);
+            }
+            
+            createTerrain() {
+                // Load Mars texture
+                const marsTexture = this.textureLoader.load('/textures/mars_textura.jpg');
+                marsTexture.wrapS = marsTexture.wrapT = THREE.RepeatWrapping;
+                marsTexture.repeat.set(50, 50);
+                
+                const terrainGeometry = new THREE.PlaneGeometry(10000, 10000, 100, 100);
+                const terrainMaterial = new THREE.MeshStandardMaterial({ 
+                    map: marsTexture,
+                    roughness: 1,
+                    metalness: 0
+                });
+                
+                // Flat terrain
+                const vertices = terrainGeometry.attributes.position.array;
+                for (let i = 2; i < vertices.length; i += 3) {
+                    vertices[i] = 0;
+                }
+                terrainGeometry.attributes.position.needsUpdate = true;
+                terrainGeometry.computeVertexNormals();
+                
+                const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
+                terrain.rotation.x = -Math.PI / 2;
+                terrain.receiveShadow = true;
+                this.scene.add(terrain);
+                this.objects.push(terrain);
+                
+                // Add random rocks
+                for (let i = 0; i < 200; i++) {
+                    const rockGeometry = new THREE.SphereGeometry(Math.random() * 5 + 1, 8, 6);
+                    const rockMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+                    const rock = new THREE.Mesh(rockGeometry, rockMaterial);
+                    rock.position.set(
+                        (Math.random() - 0.5) * 9000,
+                        0,
+                        (Math.random() - 0.5) * 9000
+                    );
+                    rock.castShadow = true;
+                    rock.receiveShadow = true;
+                    this.scene.add(rock);
+                    this.objects.push(rock);
+                }
+            }
+            
+            createStructures() {
+                const material = new THREE.MeshStandardMaterial({ color: 0x654321 });
+                
+                // Tall spire
+                const spire = new THREE.Mesh(new THREE.CylinderGeometry(2, 4, 50, 8), material);
+                spire.position.set(50, 25, -100);
+                spire.castShadow = true;
+                spire.receiveShadow = true;
+                this.scene.add(spire);
+                this.objects.push(spire);
+                
+                // Pyramid
+                for (let level = 0; level < 5; level++) {
+                    const size = 10 - level * 1.5;
+                    const step = new THREE.Mesh(new THREE.BoxGeometry(size, 5, size), material);
+                    step.position.set(-80, 2.5 + level * 5, 80);
+                    step.castShadow = true;
+                    step.receiveShadow = true;
+                    this.scene.add(step);
+                    this.objects.push(step);
+                }
+                
+                // Arch
+                const arch = new THREE.Mesh(new THREE.TorusGeometry(15, 3, 8, 20, Math.PI), material);
+                arch.position.set(100, 15, 50);
+                arch.rotation.z = Math.PI / 2;
+                arch.castShadow = true;
+                arch.receiveShadow = true;
+                this.scene.add(arch);
+                this.objects.push(arch);
+            }
+            
+            createBuildings() {
+                // Create 8 walk-in buildings with steps and balconies
+                const buildingPositions = [
+                    { x: -200, z: -200 },
+                    { x: 200, z: -200 },
+                    { x: -200, z: 200 },
+                    { x: 200, z: 200 },
+                    { x: -350, z: 0 },
+                    { x: 350, z: 0 },
+                    { x: 0, z: -350 },
+                    { x: 0, z: 350 }
+                ];
+                
+                buildingPositions.forEach((pos, index) => {
+                    this.createBuilding(pos.x, pos.z, 15 + Math.random() * 10, index);
+                });
+            }
+            
+            createBuilding(x, z, height, id) {
+                const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0x70342a });
+                const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+                
+                // Building base
+                const buildingGeometry = new THREE.BoxGeometry(30, height, 30);
+                const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+                building.position.set(x, height/2, z);
+                building.castShadow = true;
+                building.receiveShadow = true;
+                this.scene.add(building);
+                this.objects.push(building);
+                
+                // Floor inside building
+                const floor = new THREE.Mesh(new THREE.BoxGeometry(28, 0.1, 28), floorMaterial);
+                floor.position.set(x, 0.05, z);
+                floor.receiveShadow = true;
+                this.scene.add(floor);
+                this.objects.push(floor);
+                
+                // Steps leading to building
+                for (let i = 0; i < 5; i++) {
+                    const stepGeometry = new THREE.BoxGeometry(35 - i*2, 2, 10);
+                    const stepMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+                    const step = new THREE.Mesh(stepGeometry, stepMaterial);
+                    step.position.set(x, i*2, z - 15 + i*2);
+                    step.castShadow = true;
+                    step.receiveShadow = true;
+                    this.scene.add(step);
+                    this.objects.push(step);
+                }
+                
+                // Balcony
+                const balconyGeometry = new THREE.BoxGeometry(20, 2, 8);
+                const balconyMaterial = new THREE.MeshStandardMaterial({ color: 0x5a2a1f });
+                const balcony = new THREE.Mesh(balconyGeometry, balconyMaterial);
+                balcony.position.set(x, height - 5, z + 15);
+                balcony.castShadow = true;
+                balcony.receiveShadow = true;
+                this.scene.add(balcony);
+                this.objects.push(balcony);
+                
+                // Balcony railing
+                const railingGeometry = new THREE.BoxGeometry(22, 3, 1);
+                const railingMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+                const railing = new THREE.Mesh(railingGeometry, railingMaterial);
+                railing.position.set(x, height - 3, z + 19);
+                this.scene.add(railing);
+                
+                // Door opening (no door, so player can walk in)
+                const doorGeometry = new THREE.BoxGeometry(8, 10, 1);
+                const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, transparent: true, opacity: 0.5 });
+                const door = new THREE.Mesh(doorGeometry, doorMaterial);
+                door.position.set(x, 5, z - 15);
+                this.scene.add(door);
+                
+                // Windows
+                for (let i = 0; i < 2; i++) {
+                    for (let j = 0; j < 2; j++) {
+                        const windowGeometry = new THREE.BoxGeometry(4, 4, 1);
+                        const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x1a5276 });
+                        const window = new THREE.Mesh(windowGeometry, windowMaterial);
+                        window.position.set(
+                            x - 10 + i*20, 
+                            height/2 - 5 + j*10, 
+                            z + 15
+                        );
+                        this.scene.add(window);
+                    }
+                }
+                
+                // Interior walls to create rooms
+                const roomDivider = new THREE.Mesh(
+                    new THREE.BoxGeometry(28, height, 1),
+                    buildingMaterial
+                );
+                roomDivider.position.set(x, height/2, z);
+                this.scene.add(roomDivider);
+                this.objects.push(roomDivider);
+            }
+            
+            createAtmosphere() {
+                const skyGeometry = new THREE.SphereGeometry(4500, 32, 16);
+                const skyMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0xd2691e,
+                    side: THREE.BackSide,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+                this.scene.add(sky);
+            }
+            
+            createDustParticles() {
+                const particleCount = 2000;
+                const particles = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                const velocities = [];
+                
+                for (let i = 0; i < particleCount * 3; i += 3) {
+                    positions[i] = (Math.random() - 0.5) * 9000;
+                    positions[i + 1] = Math.random() * 50;
+                    positions[i + 2] = (Math.random() - 0.5) * 9000;
+                    velocities.push({
+                        x: (Math.random() - 0.5) * 0.05,
+                        y: Math.random() * 0.02,
+                        z: (Math.random() - 0.5) * 0.05
+                    });
+                }
+                
+                particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                
+                const particleMaterial = new THREE.PointsMaterial({
+                    color: 0xcd853f,
+                    size: 0.5,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                
+                this.dustParticles = new THREE.Points(particles, particleMaterial);
+                this.dustParticles.userData = { velocities };
+                this.scene.add(this.dustParticles);
+            }
+            
+            createVirtualJoystick() {
+                const joystickContainer = document.createElement('div');
+                joystickContainer.id = 'joystick-container';
+                document.body.appendChild(joystickContainer);
+                
+                if (window.innerWidth <= 768 || 'ontouchstart' in window) {
+                    joystickContainer.style.display = 'block';
+                }
+                
+                let joystickActive = false;
+                let joystickCenterX, joystickCenterY;
+                
+                joystickContainer.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    joystickActive = true;
+                    const rect = joystickContainer.getBoundingClientRect();
+                    joystickCenterX = rect.left + rect.width / 2;
+                    joystickCenterY = rect.top + rect.height / 2;
+                });
+                
+                joystickContainer.addEventListener('touchmove', (e) => {
+                    if (!joystickActive) return;
+                    const touch = e.touches[0];
+                    let dx = touch.clientX - joystickCenterX;
+                    let dy = touch.clientY - joystickCenterY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const maxDistance = 50;
+                    if (distance > maxDistance) {
+                        dx = (dx / distance) * maxDistance;
+                        dy = (dy / distance) * maxDistance;
+                    }
+                    const knob = joystickContainer.querySelector('div');
+                    if (!knob) {
+                        const newKnob = document.createElement('div');
+                        joystickContainer.appendChild(newKnob);
+                    }
+                    knob.style.transform = `translate(${dx - 25}px, ${dy - 25}px)`;
+                    keys.w = dy < -20;
+                    keys.s = dy > 20;
+                    keys.a = dx < -20;
+                    keys.d = dx > 20;
+                    keys.shift = distance > 40;
+                });
+                
+                joystickContainer.addEventListener('touchend', () => {
+                    joystickActive = false;
+                    const knob = joystickContainer.querySelector('div');
+                    if (knob) knob.style.transform = 'translate(-50%, -50%)';
+                    keys.w = false;
+                    keys.s = false;
+                    keys.a = false;
+                    keys.d = false;
+                    keys.shift = false;
+                });
+            }
+            
+            setupControls() {
+                this.onKeyDown = (event) => {
+                    switch (event.code) {
+                        case 'KeyW': keys.w = true; break;
+                        case 'KeyS': keys.s = true; break;
+                        case 'KeyA': keys.a = true; break;
+                        case 'KeyD': keys.d = true; break;
+                        case 'ShiftLeft': keys.shift = true; break;
+                    }
+                };
+                
+                this.onKeyUp = (event) => {
+                    switch (event.code) {
+                        case 'KeyW': keys.w = false; break;
+                        case 'KeyS': keys.s = false; break;
+                        case 'KeyA': keys.a = false; break;
+                        case 'KeyD': keys.d = false; break;
+                        case 'ShiftLeft': keys.shift = false; break;
+                    }
+                };
+                
+                this.onMouseMove = (event) => {
+                    if (!this.isPointerLocked) return;
+                    const movementX = event.movementX || 0;
+                    const movementY = event.movementY || 0;
+                    this.camera.rotation.y -= movementX * 0.002;
+                    this.camera.rotation.x -= movementY * 0.002;
+                    this.camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, this.camera.rotation.x));
+                };
+                
+                this.onClick = () => {
+                    if (!this.isPointerLocked) return;
+                    this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.camera);
+                    const intersects = this.raycaster.intersectObjects(this.objects);
+                    if (intersects.length > 0) {
+                        console.log('Interacted with:', intersects[0].object);
+                    }
+                };
+                
+                document.addEventListener('keydown', this.onKeyDown);
+                document.addEventListener('keyup', this.onKeyUp);
+                document.addEventListener('mousemove', this.onMouseMove);
+                document.addEventListener('click', this.onClick);
+            }
+            
+            setupTouchControls() {
+                this.onTouchStart = (e) => {
+                    if (e.target.closest('#joystick-container')) return;
+                    this.touchStartX = e.touches[0].clientX;
+                    this.touchStartY = e.touches[0].clientY;
+                };
+                
+                this.onTouchMove = (e) => {
+                    if (e.target.closest('#joystick-container') || !this.touchStartX) return;
+                    const deltaX = e.touches[0].clientX - this.touchStartX;
+                    const deltaY = e.touches[0].clientY - this.touchStartY;
+                    this.camera.rotation.y -= deltaX * 0.005;
+                    this.camera.rotation.x -= deltaY * 0.005;
+                    this.camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, this.camera.rotation.x));
+                    this.touchStartX = e.touches[0].clientX;
+                    this.touchStartY = e.touches[0].clientY;
+                };
+                
+                this.onTouchEnd = (e) => {
+                    const currentTime = new Date().getTime();
+                    if (currentTime - this.lastTapTime < 300) {
+                        this.stopMovement();
+                    }
+                    this.lastTapTime = currentTime;
+                    this.touchStartX = null;
+                    this.touchStartY = null;
+                };
+                
+                document.addEventListener('touchstart', this.onTouchStart);
+                document.addEventListener('touchmove', this.onTouchMove);
+                document.addEventListener('touchend', this.onTouchEnd);
+            }
+            
+            setupPointerLock() {
+                const element = this.renderer.domElement;
+                element.addEventListener('click', () => {
+                    if (!this.isPointerLocked) {
+                        element.requestPointerLock();
+                    }
+                });
+                
+                document.addEventListener('pointerlockchange', () => {
+                    this.isPointerLocked = document.pointerLockElement === element;
+                });
+                
+                document.addEventListener('keydown', (event) => {
+                    if (event.code === 'Escape') {
+                        document.exitPointerLock();
+                    }
+                });
+            }
+            
+            setupStopEvents() {
+                this.onDblClick = () => {
+                    this.stopMovement();
+                };
+                document.addEventListener('dblclick', this.onDblClick);
+            }
+            
+            stopMovement() {
+                keys.w = false;
+                keys.s = false;
+                keys.a = false;
+                keys.d = false;
+                keys.shift = false;
+                this.velocity.set(0, 0, 0);
+            }
+            
+            updateMovement() {
+                const speed = keys.shift ? 4.0 : 2.0;
+                
+                this.direction.z = Number(keys.w) - Number(keys.s);
+                this.direction.x = Number(keys.a) - Number(keys.d);
+                this.direction.normalize();
+                
+                if (keys.w || keys.s) this.velocity.z -= this.direction.z * speed;
+                if (keys.a || keys.d) this.velocity.x -= this.direction.x * speed;
+                
+                const horizontalVelocity = new THREE.Vector3(this.velocity.x, 0, this.velocity.z);
+                const horizontalDelta = horizontalVelocity.clone().multiplyScalar(0.1);
+                
+                if (horizontalDelta.length() > 0) {
+                    const direction = horizontalDelta.clone().normalize();
+                    this.raycaster.set(this.camera.position, direction);
+                    this.raycaster.far = horizontalDelta.length() + this.playerRadius;
+                    const intersects = this.raycaster.intersectObjects(this.objects);
+                    if (intersects.length > 0 && intersects[0].distance <= this.playerRadius) {
+                        horizontalDelta.set(0, 0, 0);
+                    }
+                }
+                
+                this.camera.position.add(horizontalDelta);
+                this.camera.position.y = this.playerHeight; // Fixed height
+                
+                this.velocity.multiplyScalar(0.8);
+                
+                this.updateUI();
+            }
+            
+            updateUI() {
+                const pos = this.camera.position;
+                document.getElementById('position').textContent = 
+                    `Position: (${Math.round(pos.x)}, ${Math.round(pos.z)})`;
+            }
+            
+            updateDustParticles() {
+                const positions = this.dustParticles.geometry.attributes.position.array;
+                const velocities = this.dustParticles.userData.velocities;
+                
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i] += velocities[i/3].x;
+                    positions[i + 1] += velocities[i/3].y;
+                    positions[i + 2] += velocities[i/3].z;
+                    
+                    if (positions[i + 1] > 50) {
+                        positions[i + 1] = 0;
+                    }
+                }
+                
+                this.dustParticles.geometry.attributes.position.needsUpdate = true;
+            }
+            
+            animate() {
+                if (!this.isActive) return;
+                requestAnimationFrame(() => this.animate());
+                
+                this.updateMovement();
+                this.updateDustParticles();
+                
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+        
+        // Global instance
+        window.marsRPG = new MarsRPGEnvironment();
+        
+        // Initialize
+        window.marsRPG.init(document.getElementById('gameContainer'));
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            window.marsRPG.camera.aspect = window.innerWidth / window.innerHeight;
+            window.marsRPG.camera.updateProjectionMatrix();
+            window.marsRPG.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Back button functionality
+        document.getElementById('backButton').addEventListener('click', function() {
+            window.history.back();
+        });
+    </script>
+</body>
+</html>
